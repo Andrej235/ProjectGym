@@ -8,5 +8,8 @@
         public bool IsFront { get; set; }
         public string ImageUrlMain { get; set; } = null!;
         public string ImageUrlSecondary { get; set; } = null!;
+
+        public IEnumerable<Exercise> PrimaryInExercises { get; set; } = Enumerable.Empty<Exercise>();
+        public IEnumerable<Exercise> SecondaryInExercises { get; set; } = Enumerable.Empty<Exercise>();
     }
 }

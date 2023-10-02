@@ -4,5 +4,7 @@
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
+
+        public IEnumerable<Exercise> Exercises { get; set; } = Enumerable.Empty<Exercise>();
     }
 }

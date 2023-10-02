@@ -5,18 +5,23 @@
         public int Id { get; set; }
         public string UUID { get; set; } = null!;
         public string Name { get; set; } = null!;
-        public int ExerciseBase { get; set; }
         public string ExerciseBaseUUID { get; set; } = null!;
         public string Description { get; set; } = null!;
-        public int Category { get; set; }
-        public IEnumerable<int> Muscles { get; set; } = new List<int>();
-        public IEnumerable<int> MusclesSecondary { get; set; } = new List<int>();
-        public IEnumerable<int> Equipment { get; set; } = new List<int>();
-        public IEnumerable<int> CommentIds { get; set; } = new List<int>();
-        public IEnumerable<int> ImageIds { get; set; } = new List<int>();
-        public IEnumerable<int> VariationExerciseIds { get; set; } = new List<int>();
-        public IEnumerable<int> VideoIds { get; set; } = new List<int>();
-        public IEnumerable<int> NoteIds { get; set; } = new List<int>();
-        public IEnumerable<int> AliaseIds { get; set; } = new List<int>();
+
+        public IEnumerable<Exercise> VariationExercise { get; set; } = new List<Exercise>();
+
+        public ExerciseCategory Category { get; set; } = null!;
+        public int CategoryId { get; set; }
+
+        public IEnumerable<Muscle> Muscles { get; set; } = new List<Muscle>();
+        public IEnumerable<Muscle> MusclesSecondary { get; set; } = new List<Muscle>();
+        public IEnumerable<Equipment> Equipment { get; set; } = new List<Equipment>();
+
+        public IEnumerable<ExerciseImage> Images { get; set; } = new List<ExerciseImage>();
+        public IEnumerable<ExerciseVideo> Videos { get; set; } = new List<ExerciseVideo>();
+
+        public IEnumerable<ExerciseComment> Comments { get; set; } = new List<ExerciseComment>();
+        public IEnumerable<ExerciseNote> Notes { get; set; } = new List<ExerciseNote>();
+        public IEnumerable<ExerciseAlias> Aliases { get; set; } = new List<ExerciseAlias>();
     }
 }
