@@ -1,3 +1,6 @@
+using ProjectGym.Controllers;
+using ProjectGym.Data;
+
 namespace ProjectGym
 {
     public class Program

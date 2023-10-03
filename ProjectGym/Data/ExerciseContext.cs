@@ -17,18 +17,26 @@ namespace ProjectGym.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=StableDiffusionDB;Integrated Security=True;");
+            optionsBuilder.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=ProjectGymDB;Integrated Security=True;");
             base.OnConfiguring(optionsBuilder);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
+            //base.OnModelCreating(modelBuilder);
 
-            /*            modelBuilder.Entity<Exercise>()
-                            .HasMany(e => e.VariationExercise)
-                            .WithMany(e => e.VariationExercise)
-                            .UsingEntity*/ //TODO: Add using entity, idk if this will even work
+            modelBuilder.Entity<Exercise>()
+                .HasMany(e => e.VariationExercises)
+                .WithMany(e => e.IsVariationOf)
+                .UsingEntity<Variation>(
+                    v => v.HasOne<Exercise>().WithMany().HasForeignKey(v => v.Exercise1Id).OnDelete(DeleteBehavior.NoAction),
+                    v => v.HasOne<Exercise>().WithMany().HasForeignKey(v => v.Exercise2Id).OnDelete(DeleteBehavior.NoAction),
+                    v =>
+                    {
+                        v.Property(v => v.Id).ValueGeneratedOnAdd();
+                        v.HasKey(v => v.Id);
+                    }
+                );
 
             modelBuilder.Entity<Exercise>()
                 .HasOne(e => e.Category)
@@ -37,16 +45,43 @@ namespace ProjectGym.Data
                 .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Exercise>()
-                .HasMany(e => e.Muscles)
-                .WithMany(m => m.PrimaryInExercises); //TODO: Add using entity
+                .HasMany(e => e.PrimaryMuscles)
+                .WithMany(m => m.PrimaryInExercises)
+                .UsingEntity<PrimaryMuscleExerciseConnection>(
+                    me => me.HasOne<Muscle>().WithMany().HasForeignKey(m => m.MuscleId).OnDelete(DeleteBehavior.NoAction),
+                    me => me.HasOne<Exercise>().WithMany().HasForeignKey(e => e.ExerciseId).OnDelete(DeleteBehavior.NoAction),
+                    me =>
+                    {
+                        me.Property(me => me.Id).ValueGeneratedOnAdd();
+                        me.HasKey(me => me.Id);
+                    }
+                );
 
             modelBuilder.Entity<Exercise>()
-                .HasMany(e => e.MusclesSecondary)
-                .WithMany(m => m.SecondaryInExercises); //TODO: Add using entity
+                .HasMany(e => e.SecondaryMuscles)
+                .WithMany(m => m.SecondaryInExercises)
+                .UsingEntity<SecondaryMuscleExerciseConnection>(
+                    me => me.HasOne<Muscle>().WithMany().HasForeignKey(m => m.MuscleId).OnDelete(DeleteBehavior.NoAction),
+                    me => me.HasOne<Exercise>().WithMany().HasForeignKey(e => e.ExerciseId).OnDelete(DeleteBehavior.NoAction),
+                    me =>
+                    {
+                        me.Property(me => me.Id).ValueGeneratedOnAdd();
+                        me.HasKey(me => me.Id);
+                    }
+                );
 
             modelBuilder.Entity<Exercise>()
                 .HasMany(e => e.Equipment)
-                .WithMany(e => e.UsedInExercises); //TODO: Add using entity
+                .WithMany(e => e.UsedInExercises)
+                .UsingEntity<EquipmentExerciseUsage>(
+                    ee => ee.HasOne<Equipment>().WithMany().HasForeignKey(e => e.EquipmentId).OnDelete(DeleteBehavior.NoAction),
+                    ee => ee.HasOne<Exercise>().WithMany().HasForeignKey(e => e.EquipmentId).OnDelete(DeleteBehavior.NoAction),
+                    ee =>
+                    {
+                        ee.Property(ee => ee.Id).ValueGeneratedOnAdd();
+                        ee.HasKey(ee => ee.Id);
+                    }
+                );
 
             modelBuilder.Entity<Exercise>()
                 .HasMany(e => e.Images)
@@ -77,6 +112,34 @@ namespace ProjectGym.Data
                 .WithOne(a => a.Exercise)
                 .HasForeignKey(a => a.ExerciseId)
                 .OnDelete(DeleteBehavior.Cascade);
+        }
+
+        public class PrimaryMuscleExerciseConnection
+        {
+            public int Id { get; set; }
+            public int ExerciseId { get; set; }
+            public int MuscleId { get; set; }
+        }
+
+        public class SecondaryMuscleExerciseConnection
+        {
+            public int Id { get; set; }
+            public int ExerciseId { get; set; }
+            public int MuscleId { get; set; }
+        }
+
+        public class EquipmentExerciseUsage
+        {
+            public int Id { get; set; }
+            public int ExerciseId { get; set; }
+            public int EquipmentId { get; set; }
+        }
+
+        public class Variation
+        {
+            public int Id { get; set; }
+            public int Exercise1Id { get; set; }
+            public int Exercise2Id { get; set; }
         }
     }
 }
