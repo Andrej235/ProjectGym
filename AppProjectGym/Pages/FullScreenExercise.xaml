@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:Models="clr-namespace:AppProjectGym.Models"
+             xmlns:Pages="clr-namespace:AppProjectGym.Pages"
+             x:Class="AppProjectGym.Pages.FullScreenExercise"
+             x:DataType="Pages:FullScreenExercise"
+             Title="{Binding Exercise.Name}">
+
+    <ScrollView>
+        <VerticalStackLayout>
+            <Image Source="{Binding MainImage.ImageURL}"
+                   BackgroundColor="#fff"
+                   MaximumHeightRequest="500"
+                   Margin="0 0 7 0"/>
+
+            <Border StrokeShape="Line -100, 0, 1000, 0"
+                    Stroke="#fff"
+                    StrokeThickness="1"
+                    Margin="0 0 7 0"/>
+            <Label Text="{Binding Exercise.Name}"/>
+            <Label Text="{Binding Exercise.Description}"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

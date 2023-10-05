@@ -34,7 +34,7 @@ namespace ProjectGym.Controllers
             await context.Database.EnsureDeletedAsync();
             await context.Database.EnsureCreatedAsync();
 
-            var muscleDTOs = JsonSerializer.Deserialize<DTORootObject<MuscleDTO>>(await GetData("muscle?limit=100000000&ordering=id&language=2"), jsonSerializerOptions);
+            var muscleDTOs = JsonSerializer.Deserialize<DTORootObject<ResetMuscleDTO>>(await GetData("muscle?limit=100000000&ordering=id&language=2"), jsonSerializerOptions);
             var muscles = muscleDTOs?.Results.Select(m => new Muscle
             {
                 Name = m.Name,
@@ -51,7 +51,7 @@ namespace ProjectGym.Controllers
 
 
 
-            var equipmentDTOs = JsonSerializer.Deserialize<DTORootObject<EquipmentDTO>>(await GetData("equipment?limit=100000000&ordering=id&language=2"), jsonSerializerOptions);
+            var equipmentDTOs = JsonSerializer.Deserialize<DTORootObject<ResetEquipmentDTO>>(await GetData("equipment?limit=100000000&ordering=id&language=2"), jsonSerializerOptions);
             var equipment = equipmentDTOs?.Results.Select(m => new Equipment
             {
                 Name = m.Name,
@@ -64,7 +64,7 @@ namespace ProjectGym.Controllers
 
 
 
-            var exerciseCategoryDTOs = JsonSerializer.Deserialize<DTORootObject<ExerciseCategoryDTO>>(await GetData("exercisecategory?limit=100000000&ordering=id&language=2"), jsonSerializerOptions);
+            var exerciseCategoryDTOs = JsonSerializer.Deserialize<DTORootObject<ResetExerciseCategoryDTO>>(await GetData("exercisecategory?limit=100000000&ordering=id&language=2"), jsonSerializerOptions);
             var exerciseCategories = exerciseCategoryDTOs?.Results.Select(m => new ExerciseCategory
             {
                 Name = m.Name,
@@ -81,7 +81,7 @@ namespace ProjectGym.Controllers
                     categoryIdPairs.Add(new() { oldId = exerciseCategoryDTOs.Results[i].Id, newId = exerciseCategories[i].Id });
 
 
-            var exerciseDTOs = JsonSerializer.Deserialize<DTORootObject<ExerciseDTO>>(await GetData("exercise?limit=100000000&ordering=id&language=2"), jsonSerializerOptions);
+            var exerciseDTOs = JsonSerializer.Deserialize<DTORootObject<ResetExerciseDTO>>(await GetData("exercise?limit=100000000&ordering=id&language=2"), jsonSerializerOptions);
             var exercises = exerciseDTOs?.Results.Select(e => new Exercise
             {
                 UUID = e.Uuid,
@@ -135,23 +135,23 @@ namespace ProjectGym.Controllers
             }
             await context.SaveChangesAsync();
 
-            var exerciseBaseInfoDTOs = JsonSerializer.Deserialize<DTORootObject<ExerciseBaseInfoDTO>>(await GetData("exercisebaseinfo?ordering=id&language=2&limit=1000000"), jsonSerializerOptions);
+            var exerciseBaseInfoDTOs = JsonSerializer.Deserialize<DTORootObject<ResetExerciseBaseInfoDTO>>(await GetData("exercisebaseinfo?ordering=id&language=2&limit=1000000"), jsonSerializerOptions);
             if (exerciseBaseInfoDTOs != null)
             {
-                IEnumerable<ExerciseFromInfoDTO> exercisesInBaseInfos = exerciseBaseInfoDTOs.Results.SelectMany(x => x.Exercises);
+                IEnumerable<ResetExerciseFromInfoDTO> exercisesInBaseInfos = exerciseBaseInfoDTOs.Results.SelectMany(x => x.Exercises);
                 exercisesInBaseInfos = exercisesInBaseInfos.Where(x => x.Language == 2);
                 Debug.WriteLine($"---> Exercises: {exercisesInBaseInfos.Count()}");
 
-                IEnumerable<ImageDTO> imageDTOs = exerciseBaseInfoDTOs.Results.SelectMany(x => x.Images);
+                IEnumerable<ResetImageDTO> imageDTOs = exerciseBaseInfoDTOs.Results.SelectMany(x => x.Images);
                 Debug.WriteLine($"---> Images: {imageDTOs.Count()}");
 
-                IEnumerable<VideoDTO> videoDTOs = exerciseBaseInfoDTOs.Results.SelectMany(x => x.Videos);
+                IEnumerable<ResetVideoDTO> videoDTOs = exerciseBaseInfoDTOs.Results.SelectMany(x => x.Videos);
                 Debug.WriteLine($"---> Videos: {videoDTOs.Count()}");
 
-                IEnumerable<NoteDTO> noteDTOs = exercisesInBaseInfos.SelectMany(e => e.Notes);
+                IEnumerable<ResetNoteDTO> noteDTOs = exercisesInBaseInfos.SelectMany(e => e.Notes);
                 Debug.WriteLine($"---> Notes: {noteDTOs.Count()}");
 
-                imageDTOs ??= new List<ImageDTO>();
+                imageDTOs ??= new List<ResetImageDTO>();
                 foreach (var imgDTO in imageDTOs)
                 {
                     int exerciseIdOld = exercisesInBaseInfos.First(e => e.Exercise_base == imgDTO.Exercise_base).Id;
@@ -171,7 +171,7 @@ namespace ProjectGym.Controllers
 
 
 
-                videoDTOs ??= new List<VideoDTO>();
+                videoDTOs ??= new List<ResetVideoDTO>();
                 foreach (var videoDTO in videoDTOs)
                 {
                     int exerciseIdOld = exercisesInBaseInfos.First(e => e.Exercise_base == videoDTO.Exercise_base).Id;
@@ -196,7 +196,7 @@ namespace ProjectGym.Controllers
 
 
 
-                noteDTOs ??= new List<NoteDTO>();
+                noteDTOs ??= new List<ResetNoteDTO>();
                 foreach (var noteDTO in noteDTOs)
                 {
                     int exerciseId = exerciseIdPairs.First(x => x.oldId == noteDTO.Exercise).newId;
@@ -266,7 +266,7 @@ namespace ProjectGym.Controllers
             public T[] Results { get; set; } = null!;
         }
 
-        public class ExerciseDTO
+        public class ResetExerciseDTO
         {
             public int Id { get; set; }
             public string Uuid { get; set; } = null!;
@@ -284,12 +284,12 @@ namespace ProjectGym.Controllers
             public int?[] Variations { get; set; } = null!;
             public string[] Author_history { get; set; } = null!;
         }
-        public class ExerciseCategoryDTO
+        public class ResetExerciseCategoryDTO
         {
             public int Id { get; set; }
             public string Name { get; set; } = null!;
         }
-        public class ExerciseBaseInfoDTO
+        public class ResetExerciseBaseInfoDTO
         {
             public int Id { get; set; }
             public string Uuid { get; set; } = null!;
@@ -297,20 +297,20 @@ namespace ProjectGym.Controllers
             public string Creation_date { get; set; } = null!;
             public DateTime Last_update { get; set; }
             public DateTime Last_update_global { get; set; }
-            public CategoryDTO Category { get; set; } = null!;
-            public MuscleDTO[] Muscles { get; set; } = null!;
-            public Muscles_SecondaryDTO[] Muscles_secondary { get; set; } = null!;
-            public EquipmentDTO[] Equipment { get; set; } = null!;
-            public LicenseDTO License { get; set; } = null!;
+            public ResetCategoryDTO Category { get; set; } = null!;
+            public ResetMuscleDTO[] Muscles { get; set; } = null!;
+            public ResetMuscles_SecondaryDTO[] Muscles_secondary { get; set; } = null!;
+            public ResetEquipmentDTO[] Equipment { get; set; } = null!;
+            public ResetLicenseDTO License { get; set; } = null!;
             public string License_author { get; set; } = null!;
-            public ImageDTO[] Images { get; set; } = null!;
-            public ExerciseFromInfoDTO[] Exercises { get; set; } = null!;
+            public ResetImageDTO[] Images { get; set; } = null!;
+            public ResetExerciseFromInfoDTO[] Exercises { get; set; } = null!;
             public int? Variations { get; set; } = null!;
-            public VideoDTO[] Videos { get; set; } = null!;
+            public ResetVideoDTO[] Videos { get; set; } = null!;
             public string[] Author_history { get; set; } = null!;
             public string[] Total_authors_history { get; set; } = null!;
         }
-        public class ExerciseFromInfoDTO
+        public class ResetExerciseFromInfoDTO
         {
             public int Id { get; set; }
             public string Uuid { get; set; } = null!;
@@ -320,8 +320,8 @@ namespace ProjectGym.Controllers
             public DateTime Created { get; set; }
             public string Creation_date { get; set; } = null!;
             public int Language { get; set; }
-            public AliasDTO[] Aliases { get; set; } = null!;
-            public NoteDTO[] Notes { get; set; } = null!;
+            public ResetAliasDTO[] Aliases { get; set; } = null!;
+            public ResetNoteDTO[] Notes { get; set; } = null!;
             public int License { get; set; }
             public string License_title { get; set; } = null!;
             public string License_object_url { get; set; } = null!;
@@ -330,21 +330,12 @@ namespace ProjectGym.Controllers
             public string License_derivative_source_url { get; set; } = null!;
             public string[] Author_history { get; set; } = null!;
         }
-        public class CategoryDTO
+        public class ResetCategoryDTO
         {
             public int Id { get; set; }
             public string Name { get; set; } = null!;
         }
-        public class MuscleDTO
-        {
-            public int Id { get; set; }
-            public string Name { get; set; } = null!;
-            public string Name_en { get; set; } = null!;
-            public bool Is_front { get; set; }
-            public string Image_url_main { get; set; } = null!;
-            public string Image_url_secondary { get; set; } = null!;
-        }
-        public class Muscles_SecondaryDTO
+        public class ResetMuscleDTO
         {
             public int Id { get; set; }
             public string Name { get; set; } = null!;
@@ -353,12 +344,21 @@ namespace ProjectGym.Controllers
             public string Image_url_main { get; set; } = null!;
             public string Image_url_secondary { get; set; } = null!;
         }
-        public class EquipmentDTO
+        public class ResetMuscles_SecondaryDTO
+        {
+            public int Id { get; set; }
+            public string Name { get; set; } = null!;
+            public string Name_en { get; set; } = null!;
+            public bool Is_front { get; set; }
+            public string Image_url_main { get; set; } = null!;
+            public string Image_url_secondary { get; set; } = null!;
+        }
+        public class ResetEquipmentDTO
         {
             public int Id { get; set; }
             public string Name { get; set; } = null!;
         }
-        public class ImageDTO
+        public class ResetImageDTO
         {
             public int Id { get; set; }
             public string Uuid { get; set; } = null!;
@@ -375,7 +375,7 @@ namespace ProjectGym.Controllers
             public string License_derivative_source_url { get; set; } = null!;
             public string[] Author_history { get; set; } = null!;
         }
-        public class VideoDTO
+        public class ResetVideoDTO
         {
             public int Id { get; set; }
             public string Uuid { get; set; } = null!;
@@ -397,18 +397,18 @@ namespace ProjectGym.Controllers
             public string License_derivative_source_url { get; set; } = null!;
             public string[] Author_history { get; set; } = null!;
         }
-        public class AliasDTO
+        public class ResetAliasDTO
         {
             public int Id { get; set; }
             public string Alias { get; set; } = null!;
         }
-        public class NoteDTO
+        public class ResetNoteDTO
         {
             public int Id { get; set; }
             public int Exercise { get; set; }
             public string Comment { get; set; } = null!;
         }
-        public class LicenseDTO
+        public class ResetLicenseDTO
         {
             public int Id { get; set; }
             public string Full_name { get; set; } = null!;

@@ -1,35 +1,53 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:AppProjectGym"
-             x:Class="AppProjectGym.MainPage">
+             xmlns:ProjectGym="clr-namespace:AppProjectGym"
+             xmlns:Models="clr-namespace:AppProjectGym.Models"
+             x:Class="AppProjectGym.MainPage"
+             x:DataType="ProjectGym:MainPage"
+             Title="Exercises">
 
     <Grid RowDefinitions="*, 90"
               ColumnDefinitions="*"
               VerticalOptions="FillAndExpand"
               HorizontalOptions="FillAndExpand">
 
-        <CollectionView x:Name="exerciseCollectionView">
+        <CollectionView x:Name="exerciseCollectionView" 
+                        SelectionMode="Single"
+                        SelectionChanged="OnExerciseSelect">
             <CollectionView.ItemsLayout>
-                <GridItemsLayout Orientation="Vertical" Span="2" />
+                <GridItemsLayout Orientation="Vertical" Span="1" />
             </CollectionView.ItemsLayout>
 
             <CollectionView.ItemTemplate>
-                <DataTemplate>
+                <DataTemplate x:DataType="Models:Exercise">
                     <Border Stroke="#aaa"
                             StrokeThickness="7"
-                            BackgroundColor="#fff"
-                            MaximumHeightRequest="1000"
-                            MinimumHeightRequest="1000"
                             Margin="25">
 
-                        <Grid RowDefinitions="Auto">
+                        <Grid RowDefinitions="*, 125"
+                              x:DataType="Models:Exercise">
+                            <Image Source="{Binding Images}"
+                                         Aspect="AspectFit"
+                                         BackgroundColor="#fff"/>
 
-                            <Image Source="{Binding Path=imageUrls[0]}"
-                               Aspect="AspectFill"
-                               BackgroundColor="#fff"
-                               VerticalOptions="FillAndExpand"
-                               HorizontalOptions="Center"/>
+                            <Label Text="{Binding Name}" 
+                                   TextColor="#3d3d3d"
+                                   FontSize="Title"
+                                   HorizontalTextAlignment="Center"
+                                   VerticalTextAlignment="Center"
+                                   Grid.Row="1">
+
+                                <Label.Background>
+                                    <LinearGradientBrush EndPoint="0, 1">
+                                        <GradientStop Color="#fff"
+                                                      Offset="0"/>
+
+                                        <GradientStop Color="#aaa"
+                                                      Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Label.Background>
+                            </Label>
                         </Grid>
                     </Border>
                 </DataTemplate>

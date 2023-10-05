@@ -8,8 +8,35 @@ namespace ProjectGym.Controllers
     [ApiController]
     public class ExerciseController : ControllerBase
     {
-        [HttpGet]
+        [HttpGet("basic")]
         public async Task<IActionResult> A()
+        {
+            ExerciseContext context = new();
+
+            var a = await context.Exercises
+                .Include(e => e.Images)
+                .Take(10)
+                .ToListAsync();
+
+            var res = a.Select(a => new ExerciseDTO()
+            {
+                Id = a.Id,
+                Name = a.Name,
+                Description = a.Description,
+                Images = a.Images.Select(i => new ImageDTO()
+                {
+                    Id = i.Id,
+                    ImageURL = i.ImageURL,
+                    IsMain = i.IsMain,
+                    Style = i.Style
+                }),
+            });
+
+            return Ok(res);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetFull()
         {
             ExerciseContext context = new();
 
@@ -24,43 +51,59 @@ namespace ProjectGym.Controllers
                 .Include(e => e.Videos)
                 .Include(e => e.Aliases)
                 .Include(e => e.Notes)
+                .Take(10)
                 .ToListAsync();
 
-            var res = a.Select(a => new SimpleExerciseDTO()
+            var res = a.Select(e => new ExerciseDTO()
             {
-                Id = a.Id,
-                Name = a.Name,
-                Description = a.Description,
-                ImageUrls = a.Images.Select(i => i.ImageURL),
-                VideoUrls = a.Videos.Select(i => i.VideoUrl),
-                IsVariationOf = a.IsVariationOf.Select(e => e.Id),
-                Variations = a.VariationExercises.Select(e => e.Id),
-                Aliases = a.Aliases.Select(a => a.Alias),
-                Notes = a.Notes.Select(n => n.Comment),
-                EquipmentName = a.Equipment.Select(e => e.Name),
-                PrimaryMuscles = a.PrimaryMuscles.Select(m => m.Name),
-                SecondaryMuscles = a.SecondaryMuscles.Select(m => m.Name),
-                Category = a.Category.Name
+                Id = e.Id,
+                Name = e.Name,
+                Description = e.Description,
+                Images = e.Images.Select(i => new ImageDTO()
+                {
+                    Id = i.Id,
+                    ImageURL = i.ImageURL,
+                    IsMain = i.IsMain,
+                    Style = i.Style
+                }),
+                AliasIds = e.Aliases.Select(a => a.Id),
+                CategoryId = e.CategoryId,
+                EquipmentIds = e.Equipment.Select(a => a.Id),
+                IsVariationOfIds = e.IsVariationOf.Select(a => a.Id),
+                VariationIds = e.VariationExercises.Select(a => a.Id),
+                NoteIds = e.Notes.Select(a => a.Id),
+                PrimaryMuscleIds = e.PrimaryMuscles.Select(a => a.Id),
+                SecondaryMuscleIds = e.SecondaryMuscles.Select(a => a.Id),
+                VideoIds = e.Videos.Select(a => a.Id)
             });
 
             return Ok(res);
         }
 
-        public class SimpleExerciseDTO
+        public class ExerciseDTO
         {
             public int Id { get; set; }
             public string Name { get; set; } = null!;
             public string Description { get; set; } = null!;
-            public string Category { get; set; } = null!;
-            public IEnumerable<string> ImageUrls { get; set; } = null!;
-            public IEnumerable<string> VideoUrls { get; set; } = null!;
-            public IEnumerable<int> IsVariationOf { get; set; } = null!;
-            public IEnumerable<int> Variations { get; set; } = null!;
-            public IEnumerable<string> EquipmentName { get; set; } = null!;
-            public IEnumerable<string> PrimaryMuscles { get; set; } = null!;
-            public IEnumerable<string> SecondaryMuscles { get; set; } = null!;
-            public IEnumerable<string> Aliases { get; set; } = null!;
-            public IEnumerable<string> Notes { get; set; } = null!;
+
+            public int CategoryId { get; set; }
+            public IEnumerable<ImageDTO> Images { get; set; } = null!;
+            public IEnumerable<int> VideoIds { get; set; } = null!;
+            public IEnumerable<int> IsVariationOfIds { get; set; } = null!;
+            public IEnumerable<int> VariationIds { get; set; } = null!;
+            public IEnumerable<int> EquipmentIds { get; set; } = null!;
+            public IEnumerable<int> PrimaryMuscleIds { get; set; } = null!;
+            public IEnumerable<int> SecondaryMuscleIds { get; set; } = null!;
+            public IEnumerable<int> AliasIds { get; set; } = null!;
+            public IEnumerable<int> NoteIds { get; set; } = null!;
+        }
+
+        public class ImageDTO
+        {
+            public int Id { get; set; }
+            public string ImageURL { get; set; } = null!;
+            public bool IsMain { get; set; }
+            public string Style { get; set; } = null!;
         }
     }
 }

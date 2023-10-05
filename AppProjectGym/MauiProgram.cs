@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using AppProjectGym.Pages;
+using Microsoft.Extensions.Logging;
 
 namespace AppProjectGym
 {
@@ -18,6 +19,8 @@ namespace AppProjectGym
 #if DEBUG
 		builder.Logging.AddDebug();
 #endif
+            builder.Services.AddSingleton<MainPage>();
+            builder.Services.AddTransient<FullScreenExercise>();
 
             return builder.Build();
         }
