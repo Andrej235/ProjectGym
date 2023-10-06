@@ -25,6 +25,15 @@ namespace ProjectGym.Controllers
             };
         }
 
+        [HttpGet("deletedb")]
+        public async Task<IActionResult> DeleteDB()
+        {
+            ExerciseContext context = new();
+            await context.Database.EnsureCreatedAsync();
+            await context.Database.EnsureDeletedAsync();
+            return Ok();
+        }
+
         [HttpGet]
         public async Task<IActionResult> PopulateDB()
         {
@@ -131,17 +140,7 @@ namespace ProjectGym.Controllers
                 exercise.PrimaryMuscles = primaryMuscles;
                 exercise.SecondaryMuscles = secondaryMuscles;
 
-                foreach (var eq in exerciseDTO.Equipment)
-                {
-/*                    var equipmentRef = equipment.FirstOrDefault(e => e.Id == eq);
-                    if (equipmentRef == null)
-                        continue;
-
-                    var e = equipmentRef.UsedInExercises.ToList();
-                    e.Add(exercise);
-                    equipmentRef.UsedInExercises = e;*/
-                }
-                //exercise.Equipment = equipment.Where(eq => exerciseDTO.Equipment.Contains(eq.Id)).ToList();
+                exercise.Equipment = equipment.Where(eq => exerciseDTO.Equipment.Contains(eq.Id)).ToList();
             }
             await context.SaveChangesAsync();
 

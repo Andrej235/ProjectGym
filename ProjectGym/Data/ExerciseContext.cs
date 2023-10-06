@@ -75,7 +75,7 @@ namespace ProjectGym.Data
                 .WithMany(e => e.UsedInExercises)
                 .UsingEntity<EquipmentExerciseUsage>(
                     ee => ee.HasOne<Equipment>().WithMany().HasForeignKey(e => e.EquipmentId).OnDelete(DeleteBehavior.NoAction),
-                    ee => ee.HasOne<Exercise>().WithMany().HasForeignKey(e => e.EquipmentId).OnDelete(DeleteBehavior.NoAction),
+                    ee => ee.HasOne<Exercise>().WithMany().HasForeignKey(e => e.ExerciseId).OnDelete(DeleteBehavior.NoAction),
                     ee =>
                     {
                         ee.Property(ee => ee.Id).ValueGeneratedOnAdd();
