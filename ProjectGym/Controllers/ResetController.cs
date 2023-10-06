@@ -131,7 +131,17 @@ namespace ProjectGym.Controllers
                 exercise.PrimaryMuscles = primaryMuscles;
                 exercise.SecondaryMuscles = secondaryMuscles;
 
-                exercise.Equipment = equipment.Where(eq => exerciseDTO.Equipment.Contains(eq.Id)).ToList();
+                foreach (var eq in exerciseDTO.Equipment)
+                {
+/*                    var equipmentRef = equipment.FirstOrDefault(e => e.Id == eq);
+                    if (equipmentRef == null)
+                        continue;
+
+                    var e = equipmentRef.UsedInExercises.ToList();
+                    e.Add(exercise);
+                    equipmentRef.UsedInExercises = e;*/
+                }
+                //exercise.Equipment = equipment.Where(eq => exerciseDTO.Equipment.Contains(eq.Id)).ToList();
             }
             await context.SaveChangesAsync();
 
