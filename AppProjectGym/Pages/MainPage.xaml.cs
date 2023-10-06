@@ -11,6 +11,9 @@ namespace AppProjectGym
     {
         private readonly JsonSerializerOptions serializerOptions;
 
+        private static List<Exercise> exercises;
+        public static List<Exercise> Exercises { get => exercises; set => exercises = value; }
+
         public MainPage()
         {
             InitializeComponent();
@@ -36,6 +39,7 @@ namespace AppProjectGym
                 var res = JsonSerializer.Deserialize<List<Exercise>>(body, serializerOptions);
                 res = res.Where(x => x.Images.Any()).ToList(); //TODO: Instead of deleting ones without images push them to the end of the list
 
+                Exercises = res;
                 exerciseCollectionView.ItemsSource = res;
             }
             catch (Exception ex)

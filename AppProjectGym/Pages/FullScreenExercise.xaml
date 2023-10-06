@@ -12,14 +12,17 @@
             <Image Source="{Binding MainImage.ImageURL}"
                    BackgroundColor="#fff"
                    MaximumHeightRequest="500"
-                   Margin="0 0 7 0"/>
+                   Margin="5"/>
 
             <Border StrokeShape="Line -100, 0, 1000, 0"
                     Stroke="#fff"
                     StrokeThickness="1"
-                    Margin="0 0 7 0"/>
-            <Label Text="{Binding Exercise.Name}"/>
-            <Label Text="{Binding Exercise.Description}"/>
+                    Margin="5"/>
+
+            <Grid RowDefinitions="Auto, Auto" RowSpacing="5" Padding="10">
+                <Label Text="{Binding Exercise.Name}" Grid.Row="0"/>
+                <Label Text="{Binding Exercise.Description}" Grid.Row="1"/>
+            </Grid>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

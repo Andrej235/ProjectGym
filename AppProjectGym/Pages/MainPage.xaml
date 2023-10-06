@@ -7,6 +7,26 @@
              x:DataType="ProjectGym:MainPage"
              Title="Exercises">
 
+    <ContentPage.Resources>
+        <Style TargetType="Border">
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal" />
+                        <VisualState x:Name="Selected">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor"
+                                        Value="LightSkyBlue" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+
+        <ProjectGym:ValueConverters x:Key="exerciseToImage"/>
+    </ContentPage.Resources>
+
     <Grid RowDefinitions="*, 90"
               ColumnDefinitions="*"
               VerticalOptions="FillAndExpand"
@@ -27,11 +47,12 @@
 
                         <Grid RowDefinitions="*, 125"
                               x:DataType="Models:Exercise">
-                            <Image Source="{Binding Images}"
+                            <Image Source="{Binding Id, Converter={StaticResource exerciseToImage}}"
                                          Aspect="AspectFit"
                                          BackgroundColor="#fff"/>
 
-                            <Label Text="{Binding Name}" 
+                            <Label x:Name="exercises"
+                                   Text="{Binding Name}" 
                                    TextColor="#3d3d3d"
                                    FontSize="Title"
                                    HorizontalTextAlignment="Center"

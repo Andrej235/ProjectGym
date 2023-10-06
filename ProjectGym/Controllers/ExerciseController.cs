@@ -15,7 +15,6 @@ namespace ProjectGym.Controllers
 
             var a = await context.Exercises
                 .Include(e => e.Images)
-                .Take(10)
                 .ToListAsync();
 
             var res = a.Select(a => new ExerciseDTO()
