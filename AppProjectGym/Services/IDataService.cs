@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AppProjectGym.Services
 {
-    public delegate void OnDataLoad<T>(T input);
+    public delegate void OnDataLoad<T>(List<T> input);
     public interface IDataService<T>
     {
         Task Create(T newData);

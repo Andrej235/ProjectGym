@@ -25,7 +25,7 @@ namespace AppProjectGym
             };
 
             BindingContext = this;
-            this.exerciseDataService = dataService;
+            exerciseDataService = dataService;
         }
 
         protected async override void OnAppearing()
@@ -46,8 +46,8 @@ namespace AppProjectGym
 
         private async void OnExerciseSelect(object sender, SelectionChangedEventArgs e)
         {
-            var exercise = (e.CurrentSelection[0] as Exercise);
-            Debug.WriteLine($"---> Selected {exercise}");
+            var exercise = e.CurrentSelection[0] as Exercise;
+            Debug.WriteLine($"---> Selected {exercise.Name}");
 
             Dictionary<string, object> navigationParameter = new()
             {

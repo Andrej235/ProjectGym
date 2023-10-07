@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ProjectGym.Data;
 
 namespace ProjectGym.Controllers
@@ -15,9 +16,9 @@ namespace ProjectGym.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
-        {
-            return Ok(await exerciseContext.Muscles.FindAsync(id));
-        }
+        public async Task<IActionResult> Get(int id) => Ok(await exerciseContext.Muscles.FindAsync(id));
+
+        [HttpGet]
+        public async Task<IActionResult> Get() => Ok(await exerciseContext.Muscles.ToListAsync());
     }
 }

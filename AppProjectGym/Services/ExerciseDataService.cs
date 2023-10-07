@@ -1,12 +1,6 @@
 ﻿using AppProjectGym.Models;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
 
 namespace AppProjectGym.Services
 {
@@ -34,15 +28,10 @@ namespace AppProjectGym.Services
         {
             try
             {
-                var response = await httpClient.GetAsync("http://192.168.1.9:5054/api/exercise/basic");
+                var response = await httpClient.GetAsync("http://192.168.1.9:5054/api/exercise?include=images");
                 var body = await response.Content.ReadAsStringAsync();
 
-                var res = JsonSerializer.Deserialize<List<Exercise>>(body, serializerOptions);
-                res = res.OrderBy(e => e.Images == null || !e.Images.Any() ? int.MaxValue : e.Id).ToList();
-
-                _ = Get(e => Debug.WriteLine(e.Name));
-
-                return res;
+                return JsonSerializer.Deserialize<AdvancedDTO<Exercise>>(body, serializerOptions).Values.OrderBy(e => e.Images == null || !e.Images.Any() ? int.MaxValue : e.Id).ToList();
             }
             catch (Exception ex)
             {
@@ -51,24 +40,32 @@ namespace AppProjectGym.Services
             }
         }
 
-        public Task<Exercise> Get(int id)
+        public async Task<Exercise> Get(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var response = await httpClient.GetAsync($"http://192.168.1.9:5054/api/exercise/{id}?include=all");
+                var body = await response.Content.ReadAsStringAsync();
+
+                return JsonSerializer.Deserialize<Exercise>(body, serializerOptions);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"---> Exception: {ex}");
+                return new();
+            }
         }
 
         public async Task Get(OnDataLoad<Exercise> onDataLoad)
         {
             AdvancedDTO<Exercise> data = null;
-            string startingUrl = "/exercise/querytest?include=all&offset=0&limit=10";
+            string startingUrl = "/exercise?include=all&offset=0&limit=10";
             do
             {
                 var response = await httpClient.GetAsync(baseApiURL + (data == null ? startingUrl : data.NextBatchURLExtension));
                 var body = await response.Content.ReadAsStringAsync();
                 data = JsonSerializer.Deserialize<AdvancedDTO<Exercise>>(body, serializerOptions);
-                foreach (var e in data.Values)
-                {
-                    onDataLoad(e);
-                }
+                onDataLoad(data.Values);
             } while (data.NextBatchURLExtension != null);
         }
 
