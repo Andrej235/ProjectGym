@@ -11,37 +11,37 @@ namespace ProjectGym.Controllers
     [ApiController]
     public class ResetController : ControllerBase
     {
+        private readonly ExerciseContext exerciseContext;
+
         struct IdPairs
         {
             public int oldId;
             public int newId;
         }
         readonly JsonSerializerOptions jsonSerializerOptions;
-        public ResetController()
+        public ResetController(ExerciseContext exerciseContext)
         {
             jsonSerializerOptions = new JsonSerializerOptions()
             {
                 PropertyNameCaseInsensitive = true
             };
+            this.exerciseContext = exerciseContext;
         }
 
         [HttpGet("deletedb")]
         public async Task<IActionResult> DeleteDB()
         {
-            ExerciseContext context = new();
-            await context.Database.EnsureCreatedAsync();
-            await context.Database.EnsureDeletedAsync();
+            await exerciseContext.Database.EnsureCreatedAsync();
+            await exerciseContext.Database.EnsureDeletedAsync();
             return Ok();
         }
 
         [HttpGet]
         public async Task<IActionResult> PopulateDB()
         {
-            ExerciseContext context = new();
-
-            await context.Database.EnsureCreatedAsync();
-            await context.Database.EnsureDeletedAsync();
-            await context.Database.EnsureCreatedAsync();
+            await exerciseContext.Database.EnsureCreatedAsync();
+            await exerciseContext.Database.EnsureDeletedAsync();
+            await exerciseContext.Database.EnsureCreatedAsync();
 
             var muscleDTOs = JsonSerializer.Deserialize<DTORootObject<ResetMuscleDTO>>(await GetData("muscle?limit=100000000&ordering=id&language=2"), jsonSerializerOptions);
             var muscles = muscleDTOs?.Results.Select(m => new Muscle
@@ -55,8 +55,8 @@ namespace ProjectGym.Controllers
 
             muscles ??= new();
             foreach (var muscle in muscles)
-                await context.Muscles.AddAsync(muscle);
-            await context.SaveChangesAsync();
+                await exerciseContext.Muscles.AddAsync(muscle);
+            await exerciseContext.SaveChangesAsync();
 
 
 
@@ -68,8 +68,8 @@ namespace ProjectGym.Controllers
 
             equipment ??= new();
             foreach (var eq in equipment)
-                await context.Equipment.AddAsync(eq);
-            await context.SaveChangesAsync();
+                await exerciseContext.Equipment.AddAsync(eq);
+            await exerciseContext.SaveChangesAsync();
 
 
 
@@ -81,8 +81,8 @@ namespace ProjectGym.Controllers
 
             exerciseCategories ??= new();
             foreach (var category in exerciseCategories)
-                await context.ExerciseCategories.AddAsync(category);
-            await context.SaveChangesAsync();
+                await exerciseContext.ExerciseCategories.AddAsync(category);
+            await exerciseContext.SaveChangesAsync();
 
             List<IdPairs> categoryIdPairs = new();
             if (exerciseCategoryDTOs != null)
@@ -101,8 +101,8 @@ namespace ProjectGym.Controllers
 
             exercises ??= new();
             foreach (var exercise in exercises)
-                await context.Exercises.AddAsync(exercise);
-            await context.SaveChangesAsync();
+                await exerciseContext.Exercises.AddAsync(exercise);
+            await exerciseContext.SaveChangesAsync();
 
             List<IdPairs> exerciseIdPairs = new();
             if (exerciseDTOs != null)
@@ -142,7 +142,7 @@ namespace ProjectGym.Controllers
 
                 exercise.Equipment = equipment.Where(eq => exerciseDTO.Equipment.Contains(eq.Id)).ToList();
             }
-            await context.SaveChangesAsync();
+            await exerciseContext.SaveChangesAsync();
 
             var exerciseBaseInfoDTOs = JsonSerializer.Deserialize<DTORootObject<ResetExerciseBaseInfoDTO>>(await GetData("exercisebaseinfo?ordering=id&language=2&limit=1000000"), jsonSerializerOptions);
             if (exerciseBaseInfoDTOs != null)
@@ -174,9 +174,9 @@ namespace ProjectGym.Controllers
                         Style = imgDTO.Style,
                         ExerciseId = exerciseId,
                     };
-                    await context.ExerciseImages.AddAsync(img);
+                    await exerciseContext.ExerciseImages.AddAsync(img);
                 }
-                await context.SaveChangesAsync();
+                await exerciseContext.SaveChangesAsync();
 
 
 
@@ -199,9 +199,9 @@ namespace ProjectGym.Controllers
                         VideoUrl = videoDTO.Video,
                         ExerciseId = exerciseId
                     };
-                    await context.ExerciseVideos.AddAsync(video);
+                    await exerciseContext.ExerciseVideos.AddAsync(video);
                 }
-                await context.SaveChangesAsync();
+                await exerciseContext.SaveChangesAsync();
 
 
 
@@ -215,9 +215,9 @@ namespace ProjectGym.Controllers
                         Comment = noteDTO.Comment,
                         ExerciseId = exerciseId
                     };
-                    await context.ExerciseNotes.AddAsync(note);
+                    await exerciseContext.ExerciseNotes.AddAsync(note);
                 }
-                await context.SaveChangesAsync();
+                await exerciseContext.SaveChangesAsync();
 
 
 
@@ -233,13 +233,13 @@ namespace ProjectGym.Controllers
                                 Alias = aliasDTO.Alias,
                                 ExerciseId = newExerciseId
                             };
-                            await context.ExerciseAliases.AddAsync(alias);
+                            await exerciseContext.ExerciseAliases.AddAsync(alias);
                         }
                     }
                 }
-                await context.SaveChangesAsync();
+                await exerciseContext.SaveChangesAsync();
             }
-            await context.SaveChangesAsync();
+            await exerciseContext.SaveChangesAsync();
             return Ok("Database has been successfully reset.");
         }
 

@@ -3,9 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using ProjectGym.Data;
 using ProjectGym.Models;
 using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore.Query;
-using static ProjectGym.Controllers.ExerciseController;
-using System.Text.RegularExpressions;
 
 namespace ProjectGym.Controllers
 {
@@ -13,7 +10,12 @@ namespace ProjectGym.Controllers
     [ApiController]
     public class ExerciseController : ControllerBase
     {
-        private readonly ExerciseContext context = new();
+        private readonly ExerciseContext exerciseContext;
+        public ExerciseController(ExerciseContext exerciseContext)
+        {
+            this.exerciseContext = exerciseContext;
+        }
+
         public enum IncludeType
         {
             None,
@@ -26,9 +28,9 @@ namespace ProjectGym.Controllers
         {
             return includeType switch
             {
-                IncludeType.None => context.Exercises,
-                IncludeType.Basic => context.Exercises.Include(e => e.Images),
-                IncludeType.All => context.Exercises
+                IncludeType.None => exerciseContext.Exercises,
+                IncludeType.Basic => exerciseContext.Exercises.Include(e => e.Images),
+                IncludeType.All => exerciseContext.Exercises
                 .Include(e => e.VariationExercises)
                 .Include(e => e.IsVariationOf)
                 .Include(e => e.Category)
@@ -39,7 +41,7 @@ namespace ProjectGym.Controllers
                 .Include(e => e.Aliases)
                 .Include(e => e.Notes)
                 .Include(e => e.Images),
-                _ => context.Exercises
+                _ => exerciseContext.Exercises
             };
         }
 
@@ -64,7 +66,7 @@ namespace ProjectGym.Controllers
                 }
                 else
                 {
-                    exercisesIncluding = context.Exercises.AsQueryable();
+                    exercisesIncluding = exerciseContext.Exercises.AsQueryable();
                     foreach (var inc in toInclude)
                     {
                         exercisesIncluding = inc switch
@@ -90,7 +92,7 @@ namespace ProjectGym.Controllers
             }
 
 
-            string url = "/api/exercise/querytest";
+            string url = "/exercise/querytest";
             
             if (include != null)
                 url += $"?include={include}";

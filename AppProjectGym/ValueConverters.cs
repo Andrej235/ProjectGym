@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace AppProjectGym
 {
-    public class ValueConverters : IValueConverter
+    public class ExerciseImageURLConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

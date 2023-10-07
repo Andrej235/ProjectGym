@@ -24,7 +24,7 @@
             </Setter>
         </Style>
 
-        <ProjectGym:ValueConverters x:Key="exerciseToImage"/>
+        <ProjectGym:ExerciseImageURLConverter x:Key="exerciseToImage"/>
     </ContentPage.Resources>
 
     <Grid RowDefinitions="*, 90"

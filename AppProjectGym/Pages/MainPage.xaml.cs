@@ -4,17 +4,18 @@ using System;
 using System.Text.Json;
 using AppProjectGym.Pages;
 using AppProjectGym.Models;
+using AppProjectGym.Services;
 
 namespace AppProjectGym
 {
     public partial class MainPage : ContentPage
     {
+        private readonly IDataService<Exercise> exerciseDataService;
         private readonly JsonSerializerOptions serializerOptions;
-
         private static List<Exercise> exercises;
         public static List<Exercise> Exercises { get => exercises; set => exercises = value; }
 
-        public MainPage()
+        public MainPage(IDataService<Exercise> dataService)
         {
             InitializeComponent();
 
@@ -24,28 +25,15 @@ namespace AppProjectGym
             };
 
             BindingContext = this;
+            this.exerciseDataService = dataService;
         }
 
         protected async override void OnAppearing()
         {
             base.OnAppearing();
 
-            try
-            {
-                var client = new HttpClient();
-                var response = await client.GetAsync("http://192.168.1.9:5054/api/exercise/basic");
-
-                var body = await response.Content.ReadAsStringAsync();
-                var res = JsonSerializer.Deserialize<List<Exercise>>(body, serializerOptions);
-                res = res.Where(x => x.Images.Any()).ToList(); //TODO: Instead of deleting ones without images push them to the end of the list
-
-                Exercises = res;
-                exerciseCollectionView.ItemsSource = res;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"---> Exception: {ex}");
-            }
+            Exercises = await exerciseDataService.Get();
+            exerciseCollectionView.ItemsSource = Exercises;
         }
 
         private void OnExerciseClicked(object sender, EventArgs e)

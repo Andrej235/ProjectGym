@@ -1,4 +1,6 @@
-﻿using AppProjectGym.Pages;
+﻿using AppProjectGym.Models;
+using AppProjectGym.Pages;
+using AppProjectGym.Services;
 using Microsoft.Extensions.Logging;
 
 namespace AppProjectGym
@@ -21,6 +23,9 @@ namespace AppProjectGym
 #endif
             builder.Services.AddSingleton<MainPage>();
             builder.Services.AddTransient<FullScreenExercise>();
+
+            builder.Services.AddSingleton<IDataService<Exercise>, ExerciseDataService>();
+            builder.Services.AddSingleton<IDataService<Muscle>, MuscleDataService>();
 
             return builder.Build();
         }

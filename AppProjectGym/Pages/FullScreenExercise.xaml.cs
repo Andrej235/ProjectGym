@@ -1,4 +1,5 @@
 using AppProjectGym.Models;
+using AppProjectGym.Services;
 using System.Diagnostics;
 
 namespace AppProjectGym.Pages
@@ -17,6 +18,8 @@ namespace AppProjectGym.Pages
         }
 
         private ExerciseImage mainImage;
+        private readonly MuscleDataService muscleDataService;
+
         public ExerciseImage MainImage
         {
             get => mainImage;
@@ -31,11 +34,12 @@ namespace AppProjectGym.Pages
         public double MaximumImageHeight { get; private set; }
 
 
-        public FullScreenExercise()
+        public FullScreenExercise(MuscleDataService muscleDataService)
         {
             InitializeComponent();
 
             BindingContext = this;
+            this.muscleDataService = muscleDataService;
         }
 
         protected override void OnAppearing()
