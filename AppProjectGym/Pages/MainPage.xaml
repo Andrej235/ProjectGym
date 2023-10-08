@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:ProjectGym="clr-namespace:AppProjectGym"
+             xmlns:ValueConverters="clr-namespace:AppProjectGym.ValueConverters"
              xmlns:Models="clr-namespace:AppProjectGym.Models"
              x:Class="AppProjectGym.MainPage"
              x:DataType="ProjectGym:MainPage"
@@ -24,7 +25,7 @@
             </Setter>
         </Style>
 
-        <ProjectGym:ExerciseImageURLConverter x:Key="exerciseToImage"/>
+        <ValueConverters:ExerciseImageURLConverter x:Key="exerciseToImage"/>
     </ContentPage.Resources>
 
     <Grid RowDefinitions="*, 90"

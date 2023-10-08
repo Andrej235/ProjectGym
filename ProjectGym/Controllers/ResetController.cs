@@ -49,8 +49,8 @@ namespace ProjectGym.Controllers
                 Name = m.Name,
                 Name_en = m.Name_en,
                 IsFront = m.Is_front,
-                ImageUrlMain = m.Image_url_main,
-                ImageUrlSecondary = m.Image_url_secondary,
+                ImageUrlMain = "https://wger.de" + m.Image_url_main,
+                ImageUrlSecondary = "https://wger.de" + m.Image_url_secondary,
             }).ToList();
 
             muscles ??= new();

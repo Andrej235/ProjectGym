@@ -3,9 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:Models="clr-namespace:AppProjectGym.Models"
              xmlns:Pages="clr-namespace:AppProjectGym.Pages"
+             xmlns:ValueConverters="clr-namespace:AppProjectGym.ValueConverters"
              x:Class="AppProjectGym.Pages.FullScreenExercise"
              x:DataType="Pages:FullScreenExercise"
              Title="{Binding Exercise.Name}">
+
+    <ContentPage.Resources>
+        <ValueConverters:MuscleImageConverter x:Key="MuscleIdToImage"/>
+        <ValueConverters:IsMuscleCollectionNotEmptyConverter x:Key="IsMuscleCollectionNotEmpty"/>
+    </ContentPage.Resources>
 
     <ScrollView>
         <VerticalStackLayout>
@@ -20,9 +26,49 @@
                     Margin="5"/>
 
             <Grid RowDefinitions="Auto, Auto" RowSpacing="5" Padding="10">
-                <Label Text="{Binding Exercise.Name}" Grid.Row="0"/>
-                <Label Text="{Binding Exercise.Description}" Grid.Row="1"/>
+                <Label Text="{Binding Exercise.Name}" Grid.Row="0" FontSize="Title"/>
+                <Label Text="{Binding Exercise.Description}" Grid.Row="1" FontSize="Caption"/>
             </Grid>
+
+
+            <VerticalStackLayout Margin="10">
+                <Grid x:Name="primaryMusclesWrapper" RowDefinitions="Auto, Auto" IsVisible="{Binding PrimaryMuscles, Converter={StaticResource IsMuscleCollectionNotEmpty}}">
+                    <Label Text="Primary Muscles:" Grid.Row="0" FontSize="Title"/>
+                    <CollectionView ItemsSource="{Binding PrimaryMuscles}" ItemsLayout="HorizontalList" 
+                                Grid.Row="1">
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="Models:Muscle">
+                                <Border>
+                                    <Grid RowDefinitions="Auto, 400">
+                                        <Label Text="{Binding Name}" HorizontalTextAlignment="Center" Grid.Row="0" FontSize="Subtitle"/>
+                                        <Image Source="{Binding Id, Converter={StaticResource MuscleIdToImage}}" Grid.Row="1" BackgroundColor="Transparent"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+
+                <Grid x:Name="secondaryMusclesWrapper" RowDefinitions="Auto, Auto" IsVisible="{Binding SecondaryMuscles, Converter={StaticResource IsMuscleCollectionNotEmpty}}">
+                    <Label Text="Secondary Muscles:" Grid.Row="0" FontSize="Title"/>
+                    <CollectionView ItemsSource="{Binding SecondaryMuscles}" ItemsLayout="HorizontalList" 
+                                Grid.Row="1">
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="Models:Muscle">
+                                <Border>
+                                    <Grid RowDefinitions="Auto, 400">
+                                        <Label Text="{Binding Name}" HorizontalTextAlignment="Center" Grid.Row="0" FontSize="Subtitle"/>
+                                        <Image Source="{Binding Id, Converter={StaticResource MuscleIdToImage}}" Grid.Row="1" BackgroundColor="Transparent"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+
+            </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

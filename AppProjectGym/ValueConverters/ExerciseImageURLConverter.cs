@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AppProjectGym
+namespace AppProjectGym.ValueConverters
 {
     public class ExerciseImageURLConverter : IValueConverter
     {
@@ -20,9 +20,6 @@ namespace AppProjectGym
             return image.ImageURL;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => null;
     }
 }

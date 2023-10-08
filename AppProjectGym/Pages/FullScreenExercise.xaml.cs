@@ -6,6 +6,20 @@ namespace AppProjectGym.Pages
 {
     public partial class FullScreenExercise : ContentPage, IQueryAttributable
     {
+        private readonly IDataService<Muscle> muscleDataService;
+        private readonly IDataService<Exercise> exerciseDataService;
+
+        public FullScreenExercise(IDataService<Exercise> exerciseDataService, IDataService<Muscle> muscleDataService)
+        {
+            InitializeComponent();
+
+            BindingContext = this;
+            this.exerciseDataService = exerciseDataService;
+            this.muscleDataService = muscleDataService;
+        }
+
+
+
         public Exercise Exercise
         {
             get => exercise;
@@ -28,29 +42,35 @@ namespace AppProjectGym.Pages
         }
         private ExerciseImage mainImage;
 
-        private readonly IDataService<Muscle> muscleDataService;
-        private readonly IDataService<Exercise> exerciseDataService;
-
-        public double ImageWidth { get; private set; }
-        public double MaximumImageHeight { get; private set; }
-
-
-        public FullScreenExercise(IDataService<Exercise> exerciseDataService, IDataService<Muscle> muscleDataService)
+        public List<Muscle> PrimaryMuscles
         {
-            InitializeComponent();
-
-            BindingContext = this;
-            this.exerciseDataService = exerciseDataService;
-            this.muscleDataService = muscleDataService;
+            get => primaryMuscles;
+            set
+            {
+                primaryMuscles = value;
+                OnPropertyChanged();
+            }
         }
+        private List<Muscle> primaryMuscles;
+
+        public List<Muscle> SecondaryMuscles
+        {
+            get => secondaryMuscles;
+            set
+            {
+                secondaryMuscles = value;
+                OnPropertyChanged();
+            }
+        }
+        private List<Muscle> secondaryMuscles;
+
+
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
             Debug.WriteLine("---> ApplyQueryAttributes");
             Exercise = query[nameof(Models.Exercise)] as Exercise;
             MainImage = exercise.Images.FirstOrDefault(i => i.IsMain);
-            ImageWidth = DeviceDisplay.MainDisplayInfo.Width * 0.75;
-            MaximumImageHeight = DeviceDisplay.MainDisplayInfo.Height * 0.5;
             OnOpen();
         }
 
@@ -58,22 +78,13 @@ namespace AppProjectGym.Pages
         {
             Exercise = await exerciseDataService.Get(exercise.Id);
 
-            /*            List<Muscle> primaryMuscles = new();
-                        foreach (var muscleId in exercise.PrimaryMuscleIds)
-                            primaryMuscles.Add(await muscleDataService.Get(muscleId));*/
-
-            List<Muscle> primaryMuscles = (await Task.WhenAll(exercise.PrimaryMuscleIds
+            PrimaryMuscles = (await Task.WhenAll(exercise.PrimaryMuscleIds
                 .Select(muscleId => muscleDataService.Get(muscleId)))
                 .ConfigureAwait(false)).ToList();
 
-            List<Muscle> secondaryMuscles = (await Task.WhenAll(exercise.SecondaryMuscleIds
+            SecondaryMuscles = (await Task.WhenAll(exercise.SecondaryMuscleIds
                 .Select(muscleId => muscleDataService.Get(muscleId)))
                 .ConfigureAwait(false)).ToList();
-
-            foreach (var m in primaryMuscles)
-            {
-                Debug.WriteLine($"---> Primary: {m.Name}");
-            }
         }
     }
 }

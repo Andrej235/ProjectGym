@@ -1,17 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ProjectGym.Data;
 using ProjectGym.Models;
 using ProjectGym.Services;
 
 namespace ProjectGym.Controllers
 {
-    [Route("api/muscle")]
+    [Route("api/category")]
     [ApiController]
-    public class MuscleController : ControllerBase
+    public class CategoryController : ControllerBase
     {
-        private readonly BasicGetDataService<Muscle> getDataService;
-        public MuscleController(BasicGetDataService<Muscle> getDataService)
+        private readonly BasicGetDataService<ExerciseCategory> getDataService;
+        public CategoryController(BasicGetDataService<ExerciseCategory> getDataService)
         {
             this.getDataService = getDataService;
         }
