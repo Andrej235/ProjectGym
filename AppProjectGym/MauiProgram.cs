@@ -26,6 +26,8 @@ namespace AppProjectGym
 
             builder.Services.AddSingleton<IDataService<Exercise>, ExerciseDataService>();
             builder.Services.AddSingleton<IDataService<Muscle>, MuscleDataService>();
+            builder.Services.AddSingleton<IDataService<ExerciseCategory>, ExerciseCategoryDataService>();
+            builder.Services.AddSingleton<IDataService<ExerciseNote>, NotesDataService>();
 
             return builder.Build();
         }

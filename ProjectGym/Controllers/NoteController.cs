@@ -4,12 +4,12 @@ using ProjectGym.Services;
 
 namespace ProjectGym.Controllers
 {
-    [Route("api/muscle")]
+    [Route("api/note")]
     [ApiController]
-    public class MuscleController : ControllerBase
+    public class NoteController : ControllerBase
     {
-        private readonly BasicGetDataService<Muscle> getDataService;
-        public MuscleController(BasicGetDataService<Muscle> getDataService)
+        private readonly BasicGetDataService<ExerciseNote> getDataService;
+        public NoteController(BasicGetDataService<ExerciseNote> getDataService)
         {
             this.getDataService = getDataService;
         }

@@ -1,5 +1,6 @@
 ﻿using AppProjectGym.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -8,13 +9,9 @@ using System.Threading.Tasks;
 
 namespace AppProjectGym.ValueConverters
 {
-    internal class IsMuscleCollectionNotEmptyConverter : IValueConverter
+    internal class IsCollectionNotEmptyConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            IEnumerable<Muscle> collection = value as IEnumerable<Muscle>;
-            return collection is not null && collection.Any();
-        }
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => value is IEnumerable collection ? collection.Cast<object>().Any() : (object)false;
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => null;
     }

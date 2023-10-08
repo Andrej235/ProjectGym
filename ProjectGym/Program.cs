@@ -18,6 +18,8 @@ namespace ProjectGym
             builder.Services.AddTransient<BasicGetDataService<Muscle>>();
             builder.Services.AddTransient<BasicGetDataService<Equipment>>();
             builder.Services.AddTransient<BasicGetDataService<ExerciseCategory>>();
+            builder.Services.AddTransient<BasicGetDataService<ExerciseAlias>>();
+            builder.Services.AddTransient<BasicGetDataService<ExerciseNote>>();
             builder.Services.AddControllers();
 
             var app = builder.Build();

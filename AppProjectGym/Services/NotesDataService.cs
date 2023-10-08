@@ -1,21 +1,21 @@
-﻿using System;
+﻿using AppProjectGym.Models;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using AppProjectGym.Models;
 
 namespace AppProjectGym.Services
 {
-    public class MuscleDataService : IDataService<Muscle>
+    public class NotesDataService : IDataService<ExerciseNote>
     {
         private readonly JsonSerializerOptions serializerOptions;
         private readonly HttpClient httpClient;
         private readonly string baseApiURL;
 
-        public MuscleDataService()
+        public NotesDataService()
         {
             serializerOptions = new JsonSerializerOptions()
             {
@@ -27,7 +27,7 @@ namespace AppProjectGym.Services
 
 
 
-        public Task Create(Muscle newData)
+        public Task Create(ExerciseNote newData)
         {
             throw new NotImplementedException();
         }
@@ -37,13 +37,13 @@ namespace AppProjectGym.Services
             throw new NotImplementedException();
         }
 
-        public async Task<List<Muscle>> Get()
+        public async Task<List<ExerciseNote>> Get()
         {
             try
             {
-                var response = await httpClient.GetAsync($"{baseApiURL}/muscle");
+                var response = await httpClient.GetAsync($"{baseApiURL}/note");
                 var content = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<List<Muscle>>(content, serializerOptions);
+                return JsonSerializer.Deserialize<List<ExerciseNote>>(content, serializerOptions);
             }
             catch (Exception ex)
             {
@@ -52,13 +52,13 @@ namespace AppProjectGym.Services
             }
         }
 
-        public async Task<Muscle> Get(int id)
+        public async Task<ExerciseNote> Get(int id)
         {
             try
             {
-                var response = await httpClient.GetAsync($"{baseApiURL}/muscle/{id}");
+                var response = await httpClient.GetAsync($"{baseApiURL}/note/{id}");
                 var content = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<Muscle>(content, serializerOptions);
+                return JsonSerializer.Deserialize<ExerciseNote>(content, serializerOptions);
             }
             catch (Exception ex)
             {
@@ -67,14 +67,17 @@ namespace AppProjectGym.Services
             }
         }
 
-        public async Task Get(OnDataLoad<Muscle> onDataLoad) => onDataLoad(await Get());
-
-        public Task Update(Muscle updatedData)
+        public Task Get(OnDataLoad<ExerciseNote> onDataLoad)
         {
             throw new NotImplementedException();
         }
 
-        public Task Update(int id, Muscle updatedData)
+        public Task Update(ExerciseNote updatedData)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Update(int id, ExerciseNote updatedData)
         {
             throw new NotImplementedException();
         }

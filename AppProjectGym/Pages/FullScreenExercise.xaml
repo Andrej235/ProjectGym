@@ -10,11 +10,15 @@
 
     <ContentPage.Resources>
         <ValueConverters:MuscleImageConverter x:Key="MuscleIdToImage"/>
-        <ValueConverters:IsMuscleCollectionNotEmptyConverter x:Key="IsMuscleCollectionNotEmpty"/>
+        <ValueConverters:IsCollectionNotEmptyConverter x:Key="IsMuscleCollectionNotEmpty"/>
     </ContentPage.Resources>
 
     <ScrollView>
         <VerticalStackLayout>
+            <Border HorizontalOptions="FillAndExpand" StrokeThickness="3" Margin="10" Padding="5">
+                <Label Text="{Binding Category.Name, StringFormat='Category: {0}'}" HorizontalTextAlignment="Center" FontSize="Subtitle"/>
+            </Border>
+
             <Image Source="{Binding MainImage.ImageURL}"
                    BackgroundColor="#fff"
                    MaximumHeightRequest="500"
@@ -67,8 +71,17 @@
                         </CollectionView.ItemTemplate>
                     </CollectionView>
                 </Grid>
-
             </VerticalStackLayout>
+
+            <ListView ItemsSource="{Binding Notes}">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="Models:ExerciseNote">
+                        <Border HorizontalOptions="FillAndExpand" Padding="5" Margin="10" StrokeThickness="3">
+                            <Label Text="{Binding Comment}" HorizontalTextAlignment="Start"/>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
