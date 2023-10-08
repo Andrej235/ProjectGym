@@ -26,14 +26,20 @@ namespace AppProjectGym
 
             BindingContext = this;
             exerciseDataService = dataService;
+            LoadExercises();
         }
 
-        protected async override void OnAppearing()
+        private async void LoadExercises()
         {
-            base.OnAppearing();
-
             Exercises = await exerciseDataService.Get();
             exerciseCollectionView.ItemsSource = Exercises;
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            if (exerciseCollectionView.ItemsSource is not null)
+                exerciseCollectionView.SelectedItem = null;
         }
 
         private void OnExerciseClicked(object sender, EventArgs e)
@@ -46,6 +52,9 @@ namespace AppProjectGym
 
         private async void OnExerciseSelect(object sender, SelectionChangedEventArgs e)
         {
+            if (e.CurrentSelection is null || !e.CurrentSelection.Any())
+                return;
+
             var exercise = e.CurrentSelection[0] as Exercise;
             Debug.WriteLine($"---> Selected {exercise.Name}");
 

@@ -1,11 +1,5 @@
 ﻿using AppProjectGym.Models;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppProjectGym.ValueConverters
 {
@@ -17,7 +11,7 @@ namespace AppProjectGym.ValueConverters
             Exercise exercise = MainPage.Exercises.FirstOrDefault(e => e.Id == id);
             ExerciseImage image = exercise.Images.FirstOrDefault(i => i.IsMain);
 
-            return image.ImageURL;
+            return image is null || image.ImageURL is null ? "" : image.ImageURL;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => null;

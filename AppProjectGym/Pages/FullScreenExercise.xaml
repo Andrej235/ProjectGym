@@ -10,7 +10,7 @@
 
     <ContentPage.Resources>
         <ValueConverters:MuscleImageConverter x:Key="MuscleIdToImage"/>
-        <ValueConverters:IsCollectionNotEmptyConverter x:Key="IsMuscleCollectionNotEmpty"/>
+        <ValueConverters:IsCollectionNotEmptyConverter x:Key="IsCollectionNotEmpty"/>
     </ContentPage.Resources>
 
     <ScrollView>
@@ -36,7 +36,7 @@
 
 
             <VerticalStackLayout Margin="10">
-                <Grid x:Name="primaryMusclesWrapper" RowDefinitions="Auto, Auto" IsVisible="{Binding PrimaryMuscles, Converter={StaticResource IsMuscleCollectionNotEmpty}}">
+                <Grid x:Name="primaryMusclesWrapper" RowDefinitions="Auto, Auto" IsVisible="{Binding PrimaryMuscles, Converter={StaticResource IsCollectionNotEmpty}}">
                     <Label Text="Primary Muscles:" Grid.Row="0" FontSize="Title"/>
                     <CollectionView ItemsSource="{Binding PrimaryMuscles}" ItemsLayout="HorizontalList" 
                                 Grid.Row="1">
@@ -54,7 +54,7 @@
                     </CollectionView>
                 </Grid>
 
-                <Grid x:Name="secondaryMusclesWrapper" RowDefinitions="Auto, Auto" IsVisible="{Binding SecondaryMuscles, Converter={StaticResource IsMuscleCollectionNotEmpty}}">
+                <Grid x:Name="secondaryMusclesWrapper" RowDefinitions="Auto, Auto" IsVisible="{Binding SecondaryMuscles, Converter={StaticResource IsCollectionNotEmpty}}">
                     <Label Text="Secondary Muscles:" Grid.Row="0" FontSize="Title"/>
                     <CollectionView ItemsSource="{Binding SecondaryMuscles}" ItemsLayout="HorizontalList" 
                                 Grid.Row="1">
@@ -73,15 +73,16 @@
                 </Grid>
             </VerticalStackLayout>
 
-            <ListView ItemsSource="{Binding Notes}">
-                <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="Models:ExerciseNote">
-                        <Border HorizontalOptions="FillAndExpand" Padding="5" Margin="10" StrokeThickness="3">
-                            <Label Text="{Binding Comment}" HorizontalTextAlignment="Start"/>
-                        </Border>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+
+            <Grid Margin="10, 0, 10, 5" RowDefinitions="Auto, Auto" RowSpacing="5" ColumnDefinitions=".05*, *" IsVisible="{Binding Notes, Converter={StaticResource IsCollectionNotEmpty}}">                <Label Text="Notes:" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Subtitle"/>
+                <CollectionView ItemsSource="{Binding Notes}" Grid.Row="1" Grid.Column="1">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="Models:ExerciseNote">
+                            <Label Text="{Binding Comment, StringFormat='*{0}'}" HorizontalTextAlignment="Start" FontSize="Caption"/>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

@@ -126,11 +126,6 @@ namespace AppProjectGym.Pages
 
         private async void LoadCategory() => Category = await categoryDataService.Get(Exercise.CategoryId);
 
-        private async void LoadNotes()
-        {
-            var a = await Task.WhenAll(Exercise.NoteIds.Select(notesDataService.Get));
-
-            Notes = a.ToList();
-        }
+        private async void LoadNotes() => Notes = (await Task.WhenAll(Exercise.NoteIds.Select(notesDataService.Get))).ToList();//Notes = a.ToList();
     }
 }
