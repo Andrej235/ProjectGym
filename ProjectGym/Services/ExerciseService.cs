@@ -2,6 +2,7 @@
 using ProjectGym.Controllers;
 using ProjectGym.Data;
 using ProjectGym.Models;
+using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace ProjectGym.Services
@@ -23,6 +24,69 @@ namespace ProjectGym.Services
 
             return await exercisesQueryable.ToListAsync();
         }
+
+        public async Task<List<Exercise>> Get(IQueryable<Exercise> exercisesQueryable, string? searchQuery, int? offset = 0, int? limit = -1)
+        {
+            if (searchQuery is null)
+                return await Get(exercisesQueryable, offset, limit);
+
+            var keyValuePairsInSearchQuery = searchQuery.Split(';');
+            var criterias = new List<Expression<Func<Exercise, bool>>>();
+            foreach (var keyValuePair in keyValuePairsInSearchQuery)
+            {
+                var keyValue = keyValuePair.Split('=');
+
+                if (keyValue.Length == 2)
+                {
+                    string key = keyValue[0].Trim().ToLower();
+                    string value = keyValue[1].Trim().ToLower();
+
+                    switch (key)
+                    {
+                        case "id":
+                            int id;
+                            if (int.TryParse(value, out id))
+                                criterias.Add(e => e.Id == id);
+                            else
+                                Debug.WriteLine($"---> Invalid search query value. Entered value: {value}");
+                            break;
+                        case "category":
+                            int categoryId;
+                            if (int.TryParse(value, out categoryId))
+                                criterias.Add(e => e.CategoryId == categoryId);
+                            else
+                                Debug.WriteLine($"---> Invalid search query value. Entered value: {value}");
+                            break;
+                        case "primarymuscle":
+                            int primaryMuscleId;
+                            if (int.TryParse(value, out primaryMuscleId))
+                                criterias.Add(e => e.PrimaryMuscles.Any(m => m.Id == primaryMuscleId));
+                            else
+                                Debug.WriteLine($"---> Invalid search query value. Entered value: {value}");
+                            break;
+                        default:
+                            Debug.WriteLine($"---> Invalid search query key. Entered key: {key}");
+                            break;
+                    }
+                }
+                else
+                {
+                    Debug.WriteLine($"---> Invalid search query key value pair parameter. Key value pair: {keyValuePair}");
+                }
+            }
+
+            foreach (var criteria in criterias)
+                exercisesQueryable = exercisesQueryable.Where(criteria);
+
+            exercisesQueryable = exercisesQueryable.Skip(offset ?? 0);
+
+            if (limit != null && limit >= 0)
+                exercisesQueryable = exercisesQueryable.Take(limit ?? 0);
+
+            return await exercisesQueryable.ToListAsync();
+        }
+
+
 
         public async Task<Exercise?> Get(Expression<Func<Exercise, bool>> criteria, IQueryable<Exercise> exercisesQueryable) => await exercisesQueryable.FirstOrDefaultAsync(criteria);
 

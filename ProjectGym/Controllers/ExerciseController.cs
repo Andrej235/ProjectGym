@@ -21,13 +21,13 @@ namespace ProjectGym.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] int? offset, [FromQuery] int? limit, [FromQuery] string? include) =>
+        public async Task<IActionResult> Get([FromQuery] int? offset, [FromQuery] int? limit, [FromQuery] string? include, [FromQuery] string? q) =>
             Ok(
                 exerciseService.TranslateToAdvancedDTO(
-                    exerciseService.TranslateToDTO(await exerciseService.Get(exerciseService.GetIncluded(include), offset, limit)),
-                    include == null ? "/exercise" : $"/exercise?include={include}",
-                    offset ?? 0,
-                    limit ?? -1
+                    values: exerciseService.TranslateToDTO(await exerciseService.Get(exerciseService.GetIncluded(include), q, offset, limit)),
+                    url: include == null ? "/exercise" : $"/exercise?include={include}",
+                    offset: offset ?? 0,
+                    limit: limit ?? -1
                     )
                 );
 
