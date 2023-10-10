@@ -15,15 +15,6 @@ namespace ProjectGym.Services
             this.exerciseContext = exerciseContext;
         }
 
-        public async Task<List<Exercise>> Get(IQueryable<Exercise> exercisesQueryable, int? offset = 0, int? limit = -1)
-        {
-            exercisesQueryable = exercisesQueryable.Skip(offset ?? 0);
-
-            if (limit != null && limit >= 0)
-                exercisesQueryable = exercisesQueryable.Take(limit ?? 0);
-
-            return await exercisesQueryable.ToListAsync();
-        }
 
         public async Task<List<Exercise>> Get(IQueryable<Exercise> exercisesQueryable, string? searchQuery, int? offset = 0, int? limit = -1)
         {
@@ -41,32 +32,46 @@ namespace ProjectGym.Services
                     string key = keyValue[0].Trim().ToLower();
                     string value = keyValue[1].Trim().ToLower();
 
-                    switch (key)
+                    if (key == "name")
                     {
-                        case "id":
-                            int id;
-                            if (int.TryParse(value, out id))
-                                criterias.Add(e => e.Id == id);
-                            else
-                                Debug.WriteLine($"---> Invalid search query value. Entered value: {value}");
-                            break;
-                        case "category":
-                            int categoryId;
-                            if (int.TryParse(value, out categoryId))
-                                criterias.Add(e => e.CategoryId == categoryId);
-                            else
-                                Debug.WriteLine($"---> Invalid search query value. Entered value: {value}");
-                            break;
-                        case "primarymuscle":
-                            int primaryMuscleId;
-                            if (int.TryParse(value, out primaryMuscleId))
-                                criterias.Add(e => e.PrimaryMuscles.Any(m => m.Id == primaryMuscleId));
-                            else
-                                Debug.WriteLine($"---> Invalid search query value. Entered value: {value}");
-                            break;
-                        default:
-                            Debug.WriteLine($"---> Invalid search query key. Entered key: {key}");
-                            break;
+                        criterias.Add(e => e.Name.ToLower().Contains(value.ToLower()) || value.ToLower().Contains(e.Name.ToLower()));
+                    }
+                    else
+                    {
+                        if (int.TryParse(value, out int valueId))
+                        {
+                            try
+                            {
+                                switch (key)
+                                {
+                                    case "id":
+                                        criterias.Add(e => e.Id == valueId);
+                                        break;
+                                    case "category":
+                                        criterias.Add(e => e.CategoryId == valueId);
+                                        break;
+                                    case "primarymuscle":
+                                        criterias.Add(e => e.PrimaryMuscles.Any(m => m.Id == valueId));
+                                        break;
+                                    case "secondarymuscle":
+                                        criterias.Add(e => e.SecondaryMuscles.Any(m => m.Id == valueId));
+                                        break;
+                                    case "equipment":
+                                        criterias.Add(e => e.Equipment.Any(eq => eq.Id == valueId));
+                                        break;
+                                    default:
+                                        throw new NotSupportedException("Invalid key in search query");
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine($"---> Exception occurred: {ex}");
+                            }
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"---> Invalid search query value. Entered value: {value}");
+                        }
                     }
                 }
                 else
@@ -80,38 +85,23 @@ namespace ProjectGym.Services
 
             exercisesQueryable = exercisesQueryable.Skip(offset ?? 0);
 
+            if (limit is not null && limit >= 0)
+                exercisesQueryable = exercisesQueryable.Take(limit ?? 0);
+
+            return await exercisesQueryable.ToListAsync();
+        }
+
+        public async Task<List<Exercise>> Get(IQueryable<Exercise> exercisesQueryable, int? offset = 0, int? limit = -1)
+        {
+            exercisesQueryable = exercisesQueryable.Skip(offset ?? 0);
+
             if (limit != null && limit >= 0)
                 exercisesQueryable = exercisesQueryable.Take(limit ?? 0);
 
             return await exercisesQueryable.ToListAsync();
         }
 
-
-
         public async Task<Exercise?> Get(Expression<Func<Exercise, bool>> criteria, IQueryable<Exercise> exercisesQueryable) => await exercisesQueryable.FirstOrDefaultAsync(criteria);
-
-        public async Task<List<Exercise>> Get(int? offset = 0, int? limit = -1)
-        {
-            var exercises = GetIncluded()
-                .Skip(offset ?? 0);
-
-            if (limit != null && limit >= 0)
-                exercises = exercises.Take(limit ?? 0);
-
-            return await exercises.ToListAsync();
-        }
-
-        public async Task<List<Exercise>> Get(Expression<Func<Exercise, bool>> criteria, int offset = 0, int limit = -1)
-        {
-            var exercises = GetIncluded()
-                .Where(criteria)
-                .Skip(offset);
-
-            if (limit >= 0)
-                exercises = exercises.Take(limit);
-
-            return await exercises.ToListAsync();
-        }
 
 
 
@@ -140,7 +130,7 @@ namespace ProjectGym.Services
 
         public List<ExerciseDTO> TranslateToDTO(List<Exercise> exercises) => exercises.Select(TranslateToDTO).ToList();
 
-        public AdvancedDTO<T> TranslateToAdvancedDTO<T>(List<T> values, string url, int offset, int limit)
+        public AdvancedDTO<T> TranslateToAdvancedDTO<T>(List<T> values, string baseAPIUrl, int offset, int limit)
         {
             AdvancedDTO<T> res = new()
             {
@@ -150,20 +140,21 @@ namespace ProjectGym.Services
                 Values = values,
             };
 
+
+
+            if (limit >= 0 && values.Count >= limit)
+            {
+                var nextOffset = offset + limit;
+                res.NextBatchURLExtension = $"{baseAPIUrl}&offset={nextOffset}&limit={limit}";
+            }
+
             if (offset > 0)
             {
                 var previousOffset = offset - limit;
                 if (previousOffset < 0)
                     previousOffset = 0;
 
-                res.PreviousBatchURLExtension = $"{url}&offset={previousOffset}&limit={limit}";
-            }
-
-            if (limit >= 0 && values.Count >= limit)
-            {
-                var nextOffset = offset + limit;
-
-                res.NextBatchURLExtension = $"{url}&offset={nextOffset}&limit={limit}";
+                res.PreviousBatchURLExtension = $"{baseAPIUrl}&offset={previousOffset}&limit={limit}";
             }
 
             return res;

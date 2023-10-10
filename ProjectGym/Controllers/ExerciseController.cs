@@ -25,7 +25,7 @@ namespace ProjectGym.Controllers
             Ok(
                 exerciseService.TranslateToAdvancedDTO(
                     values: exerciseService.TranslateToDTO(await exerciseService.Get(exerciseService.GetIncluded(include), q, offset, limit)),
-                    url: include == null ? "/exercise" : $"/exercise?include={include}",
+                    baseAPIUrl: "exercise?" + (include != null ? $"&include={include}" : "") + (q != null ? $"&q={q}" : ""),
                     offset: offset ?? 0,
                     limit: limit ?? -1
                     )
