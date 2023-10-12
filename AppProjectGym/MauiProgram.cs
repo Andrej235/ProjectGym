@@ -23,8 +23,11 @@ namespace AppProjectGym
 #endif
             builder.Services.AddSingleton<MainPage>();
             builder.Services.AddTransient<FullScreenExercise>();
+            builder.Services.AddTransient<SearchResultsPage>();
 
             builder.Services.AddSingleton<IDataService<Exercise>, ExerciseDataService>();
+            builder.Services.AddSingleton<IExerciseSearchData, ExerciseDataService>();
+
             builder.Services.AddSingleton<IDataService<Muscle>, MuscleDataService>();
             builder.Services.AddSingleton<IDataService<ExerciseCategory>, ExerciseCategoryDataService>();
             builder.Services.AddSingleton<IDataService<ExerciseNote>, NotesDataService>();

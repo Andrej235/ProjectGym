@@ -16,7 +16,10 @@
     <ScrollView>
         <VerticalStackLayout>
             <Border HorizontalOptions="FillAndExpand" StrokeThickness="3" Margin="10" Padding="5">
-                <Label Text="{Binding Category.Name, StringFormat='Category: {0}'}" HorizontalTextAlignment="Center" FontSize="Subtitle"/>
+                <Grid RowDefinitions="*">
+                    <Label Text="{Binding Category.Name, StringFormat='Category: {0}'}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" FontSize="Subtitle" Grid.Row="0"/>
+                    <Button BackgroundColor="Transparent" Grid.Row="0" BindingContext="{Binding Category}" Clicked="OnCategoryClicked"/>
+                </Grid>
             </Border>
 
             <Image Source="{Binding MainImage.ImageURL}"
@@ -74,7 +77,8 @@
             </VerticalStackLayout>
 
 
-            <Grid Margin="10, 0, 10, 5" RowDefinitions="Auto, Auto" RowSpacing="5" ColumnDefinitions=".05*, *" IsVisible="{Binding Notes, Converter={StaticResource IsCollectionNotEmpty}}">                <Label Text="Notes:" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Subtitle"/>
+            <Grid Margin="10, 0, 10, 5" RowDefinitions="Auto, Auto" RowSpacing="5" ColumnDefinitions=".05*, *" IsVisible="{Binding Notes, Converter={StaticResource IsCollectionNotEmpty}}">
+                <Label Text="Notes:" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Subtitle"/>
                 <CollectionView ItemsSource="{Binding Notes}" Grid.Row="1" Grid.Column="1">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="Models:ExerciseNote">

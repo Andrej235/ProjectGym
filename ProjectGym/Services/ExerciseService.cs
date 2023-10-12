@@ -16,6 +16,7 @@ namespace ProjectGym.Services
         }
 
 
+
         public async Task<List<Exercise>> Get(IQueryable<Exercise> exercisesQueryable, string? searchQuery, int? offset = 0, int? limit = -1)
         {
             if (searchQuery is null)

@@ -60,6 +60,9 @@
 	  <MauiXaml Update="Pages\FullScreenExercise.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Pages\SearchResultsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	</ItemGroup>
 
 	<ProjectExtensions><VisualStudio><UserProperties XamarinHotReloadUnhandledDeviceExceptionAppProjectGymHideInfoBar="True" /></VisualStudio></ProjectExtensions>

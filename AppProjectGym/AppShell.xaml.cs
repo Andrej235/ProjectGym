@@ -9,6 +9,7 @@ namespace AppProjectGym
             InitializeComponent();
 
             Routing.RegisterRoute(nameof(FullScreenExercise), typeof(FullScreenExercise));
+            Routing.RegisterRoute(nameof(SearchResultsPage), typeof(SearchResultsPage));
         }
     }
 }

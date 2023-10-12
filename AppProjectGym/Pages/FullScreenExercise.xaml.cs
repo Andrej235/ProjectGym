@@ -99,7 +99,6 @@ namespace AppProjectGym.Pages
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
-            Debug.WriteLine("---> ApplyQueryAttributes");
             Exercise = query[nameof(Models.Exercise)] as Exercise;
             MainImage = Exercise.Images.FirstOrDefault(i => i.IsMain);
             OnOpen();
@@ -127,5 +126,17 @@ namespace AppProjectGym.Pages
         private async void LoadCategory() => Category = await categoryDataService.Get(Exercise.CategoryId);
 
         private async void LoadNotes() => Notes = (await Task.WhenAll(Exercise.NoteIds.Select(notesDataService.Get))).ToList();//Notes = a.ToList();
+
+        private async void OnCategoryClicked(object sender, EventArgs e)
+        {
+            var category = (sender as Button).BindingContext as ExerciseCategory;
+            Dictionary<string, object> navigationParameter = new()
+            {
+                {"q", $"category={category.Id}"}
+            };
+
+            await Shell.Current.GoToAsync(nameof(SearchResultsPage), navigationParameter);
+            Debug.WriteLine($"---> Category clicked {category.Name}");
+        }
     }
 }
