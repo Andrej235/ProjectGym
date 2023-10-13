@@ -28,14 +28,17 @@
         <ValueConverters:ExerciseImageURLConverter x:Key="exerciseToImage"/>
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="*, 90"
+    <Grid RowDefinitions="50, *, 90"
               ColumnDefinitions="*"
               VerticalOptions="FillAndExpand"
               HorizontalOptions="FillAndExpand">
 
+        <SearchBar Placeholder="Search items..." HorizontalOptions="FillAndExpand" SearchButtonPressed="OnSearch"/>
+
         <CollectionView x:Name="exerciseCollectionView" 
                         SelectionMode="Single"
-                        SelectionChanged="OnExerciseSelect">
+                        SelectionChanged="OnExerciseSelect"
+                        Grid.Row="1">
             <CollectionView.ItemsLayout>
                 <GridItemsLayout Orientation="Vertical" Span="1" />
             </CollectionView.ItemsLayout>
@@ -76,8 +79,7 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-
-        <Grid Grid.Row="1"
+        <Grid Grid.Row="2"
               RowDefinitions="3, *">
 
             <Border Grid.Row="0"

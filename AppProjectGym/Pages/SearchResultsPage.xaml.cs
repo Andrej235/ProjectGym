@@ -1,5 +1,6 @@
 using AppProjectGym.Models;
 using AppProjectGym.Services;
+using System.Diagnostics;
 
 namespace AppProjectGym.Pages;
 
@@ -94,5 +95,25 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
             PageNumber++;
             LoadExercises();
         }
+    }
+
+    private async void OnExerciseSelect(object sender, SelectionChangedEventArgs e)
+    {
+        if (e.CurrentSelection is null || !e.CurrentSelection.Any())
+            return;
+
+        var selectedExerciseDisplay = e.CurrentSelection[0] as ExerciseDisplay;
+        Debug.WriteLine($"---> Selected {selectedExerciseDisplay.Id}");
+
+        var exercise = exercises.FirstOrDefault(e => e.Id == selectedExerciseDisplay.Id);
+        if (exercise is null)
+            return;
+
+        Dictionary<string, object> navigationParameter = new()
+        {
+            {nameof(Exercise), exercise}
+        };
+
+        await Shell.Current.GoToAsync(nameof(FullScreenExercise), navigationParameter);
     }
 }

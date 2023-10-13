@@ -138,5 +138,27 @@ namespace AppProjectGym.Pages
             await Shell.Current.GoToAsync(nameof(SearchResultsPage), navigationParameter);
             Debug.WriteLine($"---> Category clicked {category.Name}");
         }
+
+        private async void OnSelectPrimaryMuscle(object sender, SelectionChangedEventArgs e)
+        {
+            var muscle = e.CurrentSelection[0] as Muscle;
+            Dictionary<string, object> navigationParameter = new()
+            {
+                {"q", $"primarymuscle={muscle.Id}"}
+            };
+
+            await Shell.Current.GoToAsync(nameof(SearchResultsPage), navigationParameter);
+        }
+
+        private async void OnSelectSecondaryMuscle(object sender, SelectionChangedEventArgs e)
+        {
+            var muscle = e.CurrentSelection[0] as Muscle;
+            Dictionary<string, object> navigationParameter = new()
+            {
+                {"q", $"secondarymuscle={muscle.Id}"}
+            };
+
+            await Shell.Current.GoToAsync(nameof(SearchResultsPage), navigationParameter);
+        }
     }
 }

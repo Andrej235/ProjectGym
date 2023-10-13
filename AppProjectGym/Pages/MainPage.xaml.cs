@@ -65,5 +65,18 @@ namespace AppProjectGym
 
             await Shell.Current.GoToAsync(nameof(FullScreenExercise), navigationParameter);
         }
+
+        private async void OnSearch(object sender, EventArgs e)
+        {
+            var searchBar = sender as SearchBar;
+            var searchQuery = searchBar.Text;
+            Dictionary<string, object> navigationParameter = new()
+            {
+                {"q", $"name={searchQuery}"}
+            };
+
+            searchBar.Text = "";
+            await Shell.Current.GoToAsync(nameof(SearchResultsPage), navigationParameter);
+        }
     }
 }

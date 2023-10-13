@@ -41,8 +41,11 @@
             <VerticalStackLayout Margin="10">
                 <Grid x:Name="primaryMusclesWrapper" RowDefinitions="Auto, Auto" IsVisible="{Binding PrimaryMuscles, Converter={StaticResource IsCollectionNotEmpty}}">
                     <Label Text="Primary Muscles:" Grid.Row="0" FontSize="Title"/>
-                    <CollectionView ItemsSource="{Binding PrimaryMuscles}" ItemsLayout="HorizontalList" 
-                                Grid.Row="1">
+                    <CollectionView ItemsSource="{Binding PrimaryMuscles}"
+                                    ItemsLayout="HorizontalList"
+                                    Grid.Row="1"
+                                    SelectionMode="Single"
+                                    SelectionChanged="OnSelectPrimaryMuscle">
 
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="Models:Muscle">
@@ -59,8 +62,11 @@
 
                 <Grid x:Name="secondaryMusclesWrapper" RowDefinitions="Auto, Auto" IsVisible="{Binding SecondaryMuscles, Converter={StaticResource IsCollectionNotEmpty}}">
                     <Label Text="Secondary Muscles:" Grid.Row="0" FontSize="Title"/>
-                    <CollectionView ItemsSource="{Binding SecondaryMuscles}" ItemsLayout="HorizontalList" 
-                                Grid.Row="1">
+                    <CollectionView ItemsSource="{Binding SecondaryMuscles}"
+                                    ItemsLayout="HorizontalList"
+                                    Grid.Row="1"
+                                    SelectionMode="Single"
+                                    SelectionChanged="OnSelectSecondaryMuscle">
 
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="Models:Muscle">

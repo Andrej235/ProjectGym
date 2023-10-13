@@ -14,7 +14,9 @@
 
     <ScrollView x:Name="scrollView">
         <VerticalStackLayout>
-            <CollectionView x:Name="exercisesCollection">
+            <CollectionView x:Name="exercisesCollection"
+                            SelectionMode="Single"
+                            SelectionChanged="OnExerciseSelect">
                 <CollectionView.ItemsLayout>
                     <GridItemsLayout Orientation="Vertical" Span="1" />
                 </CollectionView.ItemsLayout>

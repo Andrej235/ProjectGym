@@ -35,7 +35,10 @@ namespace ProjectGym.Services
 
                     if (key == "name")
                     {
-                        criterias.Add(e => e.Name.ToLower().Contains(value.ToLower()) || value.ToLower().Contains(e.Name.ToLower()));
+                        var ids = exercisesQueryable.AsEnumerable().Where(e => e.Name.IsSimilar(value)).Select(e => e.Id);
+                        criterias.Add(e => ids.Contains(e.Id));
+
+                        //criterias.Add(e => e.Name.Contains(value, StringComparison.OrdinalIgnoreCase));
                     }
                     else
                     {
@@ -160,8 +163,6 @@ namespace ProjectGym.Services
 
             return res;
         }
-
-
 
         public IQueryable<Exercise> GetIncluded(string? include)
         {
