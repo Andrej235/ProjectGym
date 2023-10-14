@@ -2,6 +2,8 @@
 using AppProjectGym.Pages;
 using AppProjectGym.Services;
 using Microsoft.Extensions.Logging;
+using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Core;
 
 namespace AppProjectGym
 {
@@ -12,6 +14,8 @@ namespace AppProjectGym
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseMauiCommunityToolkit()
+                .UseMauiCommunityToolkitCore()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -31,6 +35,7 @@ namespace AppProjectGym
             builder.Services.AddSingleton<IDataService<Muscle>, MuscleDataService>();
             builder.Services.AddSingleton<IDataService<ExerciseCategory>, ExerciseCategoryDataService>();
             builder.Services.AddSingleton<IDataService<ExerciseNote>, NotesDataService>();
+            builder.Services.AddSingleton<IDataService<Equipment>, EquipmentDataService>();
 
             return builder.Build();
         }

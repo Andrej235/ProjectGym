@@ -5,17 +5,35 @@ using System.Text.Json;
 using AppProjectGym.Pages;
 using AppProjectGym.Models;
 using AppProjectGym.Services;
+using Microsoft.Maui.Controls;
 
 namespace AppProjectGym
 {
     public partial class MainPage : ContentPage
     {
         private readonly IDataService<Exercise> exerciseDataService;
+        private readonly IDataService<Muscle> muscleDataService;
         private readonly JsonSerializerOptions serializerOptions;
-        private static List<Exercise> exercises;
         public static List<Exercise> Exercises { get => exercises; set => exercises = value; }
+        private static List<Exercise> exercises;
 
-        public MainPage(IDataService<Exercise> dataService)
+        public List<Muscle> Muscles
+        {
+            get => muscles;
+            set
+            {
+                muscles = value;
+                OnPropertyChanged();
+            }
+        }
+        private List<Muscle> muscles;
+
+
+
+        public MainPage(
+            IDataService<Exercise> exerciseDataService,
+            IDataService<Muscle> muscleDataService
+            )
         {
             InitializeComponent();
 
@@ -25,15 +43,26 @@ namespace AppProjectGym
             };
 
             BindingContext = this;
-            exerciseDataService = dataService;
+            this.exerciseDataService = exerciseDataService;
+            this.muscleDataService = muscleDataService;
             LoadExercises();
+            LoadMuscles();
         }
+
+        private bool areFiltersOpen = false;
+        private bool isPlayingFilterAnimation = false;
 
         private async void LoadExercises()
         {
             Exercises = await exerciseDataService.Get();
             exerciseCollectionView.ItemsSource = Exercises;
         }
+
+        private async void LoadMuscles()
+        {
+            Muscles = await muscleDataService.Get();
+        }
+
 
         protected override void OnAppearing()
         {
@@ -77,6 +106,17 @@ namespace AppProjectGym
 
             searchBar.Text = "";
             await Shell.Current.GoToAsync(nameof(SearchResultsPage), navigationParameter);
+        }
+
+        private async void FiltersButtonClicked(object sender, EventArgs e)
+        {
+            if (isPlayingFilterAnimation)
+                return;
+
+            isPlayingFilterAnimation = true;
+            await filtersWrapper.ScaleYTo(areFiltersOpen ? 0 : 1);
+            areFiltersOpen = !areFiltersOpen;
+            isPlayingFilterAnimation = false;
         }
     }
 }

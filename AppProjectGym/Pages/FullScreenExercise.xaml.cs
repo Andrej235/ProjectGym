@@ -10,12 +10,14 @@ namespace AppProjectGym.Pages
         private readonly IDataService<Exercise> exerciseDataService;
         private readonly IDataService<ExerciseCategory> categoryDataService;
         private readonly IDataService<ExerciseNote> notesDataService;
+        private readonly IDataService<Equipment> equipmentDataService;
 
         public FullScreenExercise(
             IDataService<Exercise> exerciseDataService,
             IDataService<Muscle> muscleDataService,
             IDataService<ExerciseCategory> categoryDataService,
-            IDataService<ExerciseNote> notesDataService
+            IDataService<ExerciseNote> notesDataService,
+            IDataService<Equipment> equipmentDataService
             )
         {
             InitializeComponent();
@@ -25,6 +27,7 @@ namespace AppProjectGym.Pages
             this.muscleDataService = muscleDataService;
             this.categoryDataService = categoryDataService;
             this.notesDataService = notesDataService;
+            this.equipmentDataService = equipmentDataService;
         }
 
 
@@ -73,6 +76,17 @@ namespace AppProjectGym.Pages
         }
         private List<Muscle> secondaryMuscles;
 
+        public List<Equipment> Equipment
+        {
+            get => equipment;
+            set
+            {
+                equipment = value;
+                OnPropertyChanged();
+            }
+        }
+        private List<Equipment> equipment;
+
         public ExerciseCategory Category
         {
             get => category;
@@ -110,6 +124,7 @@ namespace AppProjectGym.Pages
             LoadCategory();
             LoadMuscles();
             LoadNotes();
+            LoadEquipment();
         }
 
         private async void LoadMuscles()
@@ -125,7 +140,11 @@ namespace AppProjectGym.Pages
 
         private async void LoadCategory() => Category = await categoryDataService.Get(Exercise.CategoryId);
 
-        private async void LoadNotes() => Notes = (await Task.WhenAll(Exercise.NoteIds.Select(notesDataService.Get))).ToList();//Notes = a.ToList();
+        private async void LoadNotes() => Notes = (await Task.WhenAll(Exercise.NoteIds.Select(notesDataService.Get))).ToList();
+
+        private async void LoadEquipment() => Equipment = (await Task.WhenAll(Exercise.EquipmentIds.Select(equipmentDataService.Get))).ToList();
+
+
 
         private async void OnCategoryClicked(object sender, EventArgs e)
         {
