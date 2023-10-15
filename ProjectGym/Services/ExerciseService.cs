@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using ProjectGym.Controllers;
 using ProjectGym.Data;
 using ProjectGym.Models;
@@ -22,70 +23,55 @@ namespace ProjectGym.Services
             if (searchQuery is null)
                 return await Get(exercisesQueryable, offset, limit);
 
-            var keyValuePairsInSearchQuery = searchQuery.Split(';');
             var criterias = new List<Expression<Func<Exercise, bool>>>();
-            foreach (var keyValuePair in keyValuePairsInSearchQuery)
+            var keyValuePairsInSearchQuery = searchQuery.Split(';')
+                                                        .Select(sq => sq.Split('=')
+                                                        .Select(x => x.Trim().ToLower())
+                                                        .ToList())
+                                                        .Where(x => x.Count == 2)
+                                                        .ToList();
+
+            List<string>? strictKeyValuePair = keyValuePairsInSearchQuery.FirstOrDefault(kvp => kvp[0] == "strict");
+            bool isStrictModeEnabled = true;
+
+            if (strictKeyValuePair is not null)
             {
-                var keyValue = keyValuePair.Split('=');
+                isStrictModeEnabled = strictKeyValuePair[1] is null || strictKeyValuePair[1] == "true";
+                keyValuePairsInSearchQuery.Remove(strictKeyValuePair);
+            }
 
-                if (keyValue.Length == 2)
+            foreach (var keyValue in keyValuePairsInSearchQuery)
+            {
+                try
                 {
-                    string key = keyValue[0].Trim().ToLower();
-                    string value = keyValue[1].Trim().ToLower();
-
-                    if (key == "name")
-                    {
-                        var ids = exercisesQueryable.AsEnumerable().Where(e => e.Name.IsSimilar(value)).Select(e => e.Id);
-                        criterias.Add(e => ids.Contains(e.Id));
-
-                        //criterias.Add(e => e.Name.Contains(value, StringComparison.OrdinalIgnoreCase));
-                    }
-                    else
-                    {
-                        if (int.TryParse(value, out int valueId))
-                        {
-                            try
-                            {
-                                switch (key)
-                                {
-                                    case "id":
-                                        criterias.Add(e => e.Id == valueId);
-                                        break;
-                                    case "category":
-                                        criterias.Add(e => e.CategoryId == valueId);
-                                        break;
-                                    case "primarymuscle":
-                                        criterias.Add(e => e.PrimaryMuscles.Any(m => m.Id == valueId));
-                                        break;
-                                    case "secondarymuscle":
-                                        criterias.Add(e => e.SecondaryMuscles.Any(m => m.Id == valueId));
-                                        break;
-                                    case "equipment":
-                                        criterias.Add(e => e.Equipment.Any(eq => eq.Id == valueId));
-                                        break;
-                                    default:
-                                        throw new NotSupportedException("Invalid key in search query");
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                Debug.WriteLine($"---> Exception occurred: {ex}");
-                            }
-                        }
-                        else
-                        {
-                            Debug.WriteLine($"---> Invalid search query value. Entered value: {value}");
-                        }
-                    }
+                    criterias.Add(TranslateKeyValueToExpression(keyValue[0], keyValue[1]));
                 }
-                else
+                catch (Exception ex)
                 {
-                    Debug.WriteLine($"---> Invalid search query key value pair parameter. Key value pair: {keyValuePair}");
+                    Debug.WriteLine($"---> Exception occured: {ex}");
                 }
             }
 
-            foreach (var criteria in criterias)
-                exercisesQueryable = exercisesQueryable.Where(criteria);
+            if (isStrictModeEnabled)
+            {
+                foreach (var criteria in criterias)
+                    exercisesQueryable = exercisesQueryable.Where(criteria);
+            }
+            else
+            {
+                var exercises = criterias.Select(x => exercisesQueryable.Where(x))
+                    .SelectMany(q => q)
+                    .GroupBy(e => e.Id)
+                    .OrderByDescending(g => g.Count())
+                    .SelectMany(g => g)
+                    .DistinctBy(e => e.Id)
+                    .Skip(offset ?? 0);
+
+                if (limit is not null && limit >= 0)
+                    exercises = exercises.Take(limit ?? 0);
+
+                return exercises.ToList();
+            }
 
             exercisesQueryable = exercisesQueryable.Skip(offset ?? 0);
 
@@ -94,6 +80,61 @@ namespace ProjectGym.Services
 
             return await exercisesQueryable.ToListAsync();
         }
+        private static Expression<Func<Exercise, bool>> TranslateKeyValueToExpression(string key, string value)
+        {
+            if (key == "name")
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new NullReferenceException("Value in a search query cannot be null or empty.");
+
+                /*                var ids = exercisesQueryable.AsEnumerable().Where(e => e.Name.IsSimilar(value)).Select(e => e.Id);
+                                return e => ids.Contains(e.Id);*/
+
+                return e => e.Name.Contains(value, StringComparison.OrdinalIgnoreCase);
+            }
+            else
+            {
+                if (int.TryParse(value, out int valueId))
+                {
+                    return key switch
+                    {
+                        "id" => e => e.Id == valueId,
+                        "category" => e => e.CategoryId == valueId,
+                        "primarymuscle" => e => e.PrimaryMuscles.Any(m => m.Id == valueId),
+                        "secondarymuscle" => e => e.SecondaryMuscles.Any(m => m.Id == valueId),
+                        "equipment" => e => e.Equipment.Any(eq => eq.Id == valueId),
+                        _ => throw new NotSupportedException($"Invalid key in search query. Entered key: {key}"),
+                    };
+                }
+                else
+                {
+                    if (value.Contains(','))
+                    {
+                        var values = value.Replace(" ", "").Split(',');
+                        List<int> valueIds = new();
+                        foreach (var id in values)
+                        {
+                            if (int.TryParse(id, out int newId))
+                                valueIds.Add(newId);
+                        }
+
+                        return key switch
+                        {
+                            "id" => e => valueIds.Contains(e.Id),
+                            "category" => e => valueIds.Contains(e.CategoryId),
+                            "primarymuscle" => e => e.PrimaryMuscles.Any(m => valueIds.Contains(m.Id)),
+                            "secondarymuscle" => e => e.SecondaryMuscles.Any(m => valueIds.Contains(m.Id)),
+                            "equipment" => e => e.Equipment.Any(eq => valueIds.Contains(eq.Id)),
+                            _ => throw new NotSupportedException($"Invalid key in search query. Entered key: {key}"),
+                        };
+                    }
+
+                    throw new NotSupportedException($"Invalid search query value. Entered value: {value}");
+                }
+            }
+        }
+
+
 
         public async Task<List<Exercise>> Get(IQueryable<Exercise> exercisesQueryable, int? offset = 0, int? limit = -1)
         {
@@ -131,9 +172,7 @@ namespace ProjectGym.Services
             SecondaryMuscleIds = exercise.SecondaryMuscles.Select(a => a.Id),
             VideoIds = exercise.Videos.Select(a => a.Id),
         };
-
         public List<ExerciseDTO> TranslateToDTO(List<Exercise> exercises) => exercises.Select(TranslateToDTO).ToList();
-
         public AdvancedDTO<T> TranslateToAdvancedDTO<T>(List<T> values, string baseAPIUrl, int offset, int limit)
         {
             AdvancedDTO<T> res = new()
@@ -163,6 +202,8 @@ namespace ProjectGym.Services
 
             return res;
         }
+
+
 
         public IQueryable<Exercise> GetIncluded(string? include)
         {

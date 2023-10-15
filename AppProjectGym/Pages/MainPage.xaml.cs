@@ -1,11 +1,8 @@
 ﻿using System.Diagnostics;
-using System.Net.Http;
-using System;
 using System.Text.Json;
 using AppProjectGym.Pages;
 using AppProjectGym.Models;
 using AppProjectGym.Services;
-using Microsoft.Maui.Controls;
 
 namespace AppProjectGym
 {
@@ -97,11 +94,16 @@ namespace AppProjectGym
 
         private async void OnSearch(object sender, EventArgs e)
         {
-            var searchBar = sender as SearchBar;
-            var searchQuery = searchBar.Text;
+            List<Muscle> primaryMusclesSelected = primaryMuscleFilter.SelectedItems.Where(x => x is Muscle).Cast<Muscle>().ToList();
+            List<Muscle> secondaryMusclesSelected = secondaryMuscleFilter.SelectedItems.Where(x => x is Muscle).Cast<Muscle>().ToList();
+
+            string nameQ = searchBar.Text == string.Empty ? string.Empty : $"name={searchBar.Text};";
+            string primaryMusclesQ = $"primarymuscle={string.Join(',', primaryMusclesSelected.Select(m => m.Id))};";
+            string secondaryMusclesQ = $"secondarymuscle={string.Join(',', secondaryMusclesSelected.Select(m => m.Id))};";
+
             Dictionary<string, object> navigationParameter = new()
             {
-                {"q", $"name={searchQuery}"}
+                {"q", $"{nameQ}{primaryMusclesQ}{secondaryMusclesQ};strict=false"}
             };
 
             searchBar.Text = "";
