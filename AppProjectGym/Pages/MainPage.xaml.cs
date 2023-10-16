@@ -10,6 +10,8 @@ namespace AppProjectGym
     {
         private readonly IDataService<Exercise> exerciseDataService;
         private readonly IDataService<Muscle> muscleDataService;
+        private readonly IDataService<ExerciseCategory> categoryDataService;
+        private readonly IDataService<Equipment> equipmentDataService;
         private readonly JsonSerializerOptions serializerOptions;
         public static List<Exercise> Exercises { get => exercises; set => exercises = value; }
         private static List<Exercise> exercises;
@@ -25,11 +27,35 @@ namespace AppProjectGym
         }
         private List<Muscle> muscles;
 
+        public List<ExerciseCategory> Categories
+        {
+            get => categories;
+            set
+            {
+                categories = value;
+                OnPropertyChanged();
+            }
+        }
+        private List<ExerciseCategory> categories;
+
+        public List<Equipment> Equipment
+        {
+            get => equipment;
+            set
+            {
+                equipment = value;
+                OnPropertyChanged();
+            }
+        }
+        private List<Equipment> equipment;
+
 
 
         public MainPage(
             IDataService<Exercise> exerciseDataService,
-            IDataService<Muscle> muscleDataService
+            IDataService<Muscle> muscleDataService,
+            IDataService<ExerciseCategory> categoryDataService,
+            IDataService<Equipment> equipmentDataService
             )
         {
             InitializeComponent();
@@ -42,8 +68,13 @@ namespace AppProjectGym
             BindingContext = this;
             this.exerciseDataService = exerciseDataService;
             this.muscleDataService = muscleDataService;
+            this.categoryDataService = categoryDataService;
+            this.equipmentDataService = equipmentDataService;
+
             LoadExercises();
             LoadMuscles();
+            LoadCategories();
+            LoadEquipment();
         }
 
         private bool areFiltersOpen = false;
@@ -55,11 +86,11 @@ namespace AppProjectGym
             exerciseCollectionView.ItemsSource = Exercises;
         }
 
-        private async void LoadMuscles()
-        {
-            Muscles = await muscleDataService.Get();
-        }
+        private async void LoadMuscles() => Muscles = await muscleDataService.Get();
 
+        private async void LoadCategories() => Categories = await categoryDataService.Get();
+
+        private async void LoadEquipment() => Equipment = await equipmentDataService.Get();
 
         protected override void OnAppearing()
         {
@@ -96,14 +127,18 @@ namespace AppProjectGym
         {
             List<Muscle> primaryMusclesSelected = primaryMuscleFilter.SelectedItems.Where(x => x is Muscle).Cast<Muscle>().ToList();
             List<Muscle> secondaryMusclesSelected = secondaryMuscleFilter.SelectedItems.Where(x => x is Muscle).Cast<Muscle>().ToList();
+            List<ExerciseCategory> categoriesSelected = categoryFilter.SelectedItems.Where(x => x is ExerciseCategory).Cast<ExerciseCategory>().ToList();
+            List<Equipment> equipmentSelected = equipmentFilter.SelectedItems.Where(x => x is Equipment).Cast<Equipment>().ToList();
 
             string nameQ = searchBar.Text == string.Empty ? string.Empty : $"name={searchBar.Text};";
             string primaryMusclesQ = $"primarymuscle={string.Join(',', primaryMusclesSelected.Select(m => m.Id))};";
             string secondaryMusclesQ = $"secondarymuscle={string.Join(',', secondaryMusclesSelected.Select(m => m.Id))};";
+            string categoriesQ = $"category={string.Join(',', categoriesSelected.Select(c => c.Id))};";
+            string equipmentQ = $"equipment={string.Join(',', equipmentSelected.Select(eq => eq.Id))};";
 
             Dictionary<string, object> navigationParameter = new()
             {
-                {"q", $"{nameQ}{primaryMusclesQ}{secondaryMusclesQ};strict=false"}
+                {"q", $"{nameQ}{primaryMusclesQ}{secondaryMusclesQ}{categoriesQ}{equipmentQ};strict=false"}
             };
 
             searchBar.Text = "";
