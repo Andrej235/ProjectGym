@@ -70,17 +70,20 @@
                     </toolkit:Expander.Header>
 
                     <Grid Padding="10"
-                          BackgroundColor="#121212">
+                          BackgroundColor="#121212" 
+                          HorizontalOptions="FillAndExpand">
                         <CollectionView x:Name="categoryFilter"
-                                                ItemsLayout="VerticalList"
-                                                ItemsSource="{Binding Categories}"
-                                                SelectionMode="Multiple"
-                                                Margin="0, 5, 0, 5">
+                                        ItemsLayout="VerticalList"
+                                        ItemsSource="{Binding Categories}"
+                                        SelectionMode="Multiple"
+                                        Margin="0, 5, 0, 5"
+                                        HorizontalOptions="FillAndExpand"
+                                        Background="#fff">
 
                             <CollectionView.ItemTemplate>
                                 <DataTemplate x:DataType="Models:ExerciseCategory">
-                                    <Border Padding="10" StrokeShape="RoundRectangle 10">
-                                        <Grid RowDefinitions="25" ColumnDefinitions="*" HorizontalOptions="FillAndExpand">
+                                    <Border Padding="10" StrokeShape="RoundRectangle 10" MinimumWidthRequest="{Binding Source={RelativeSource AncestorType={x:Type CollectionView}}, Path=WidthRequest}">
+                                        <Grid RowDefinitions="25" ColumnDefinitions="*">
                                             <Label Text="{Binding Name}" 
                                                    VerticalTextAlignment="Center"
                                                    HorizontalTextAlignment="Center"/>
@@ -227,6 +230,8 @@
                         </CollectionView>
                     </Grid>
                 </toolkit:Expander>
+
+                <Button Text="Clear filters" Margin="10" Clicked="OnClearFilters"/>
 
                 <Button Text="Apply" Margin="10" Clicked="OnSearch"/>
             </VerticalStackLayout>

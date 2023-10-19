@@ -138,7 +138,7 @@ namespace AppProjectGym
 
             Dictionary<string, object> navigationParameter = new()
             {
-                {"q", $"{nameQ}{primaryMusclesQ}{secondaryMusclesQ}{categoriesQ}{equipmentQ};strict=false"}
+                {"q", $"{nameQ}{primaryMusclesQ}{secondaryMusclesQ}{categoriesQ}{equipmentQ}strict=false"}
             };
 
             searchBar.Text = "";
@@ -154,6 +154,14 @@ namespace AppProjectGym
             await filtersWrapper.ScaleYTo(areFiltersOpen ? 0 : 1);
             areFiltersOpen = !areFiltersOpen;
             isPlayingFilterAnimation = false;
+        }
+
+        private void OnClearFilters(object sender, EventArgs e)
+        {
+            primaryMuscleFilter.SelectedItems = null;
+            secondaryMuscleFilter.SelectedItems = null;
+            categoryFilter.SelectedItems = null;
+            equipmentFilter.SelectedItems = null;
         }
     }
 }

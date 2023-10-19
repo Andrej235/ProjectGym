@@ -90,7 +90,7 @@ namespace ProjectGym.Services
                 /*                var ids = exercisesQueryable.AsEnumerable().Where(e => e.Name.IsSimilar(value)).Select(e => e.Id);
                                 return e => ids.Contains(e.Id);*/
 
-                return e => e.Name.Contains(value, StringComparison.OrdinalIgnoreCase);
+                return e => e.Name.ToLower().Contains(value.ToLower());
             }
             else
             {
