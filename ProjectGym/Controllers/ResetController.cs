@@ -28,7 +28,7 @@ namespace ProjectGym.Controllers
             this.exerciseContext = exerciseContext;
         }
 
-        [HttpGet("deletedb")]
+        [HttpDelete]
         public async Task<IActionResult> DeleteDB()
         {
             await exerciseContext.Database.EnsureCreatedAsync();
