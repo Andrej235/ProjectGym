@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProjectGym.Data;
 using ProjectGym.Models;
-using System;
-using System.Security.Cryptography;
+using ProjectGym.Services;
 
 namespace ProjectGym.Controllers
 {
@@ -12,83 +10,130 @@ namespace ProjectGym.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly ExerciseContext exerciseContext;
-
-        public UserController(ExerciseContext exerciseContext)
+        private readonly ExerciseContext context;
+        public UserController(ExerciseContext context)
         {
-            this.exerciseContext = exerciseContext;
+            this.context = context;
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateNewUser([FromBody] UserDTO userDTO)
+        public async Task<IActionResult> CreateNewUser([FromBody] RegisterDTO userDTO)
         {
-            if (await exerciseContext.Users.FirstOrDefaultAsync(u => u.Email == userDTO.Email) is not null)
+            if (await context.Users.FirstOrDefaultAsync(u => u.Email == userDTO.Email) is not null)
                 return BadRequest("User already exists");
 
-            byte[] salt = GenerateSalt();
+            byte[] salt = HashingService.GenerateSalt();
             User user = new()
             {
                 Name = userDTO.Name,
                 Email = userDTO.Email,
                 Salt = salt,
-                PasswordHash = HashPassword(userDTO.Password, salt)
+                PasswordHash = HashingService.HashPassword(userDTO.Password, salt)
             };
 
-            await exerciseContext.Users.AddAsync(user);
-            await exerciseContext.SaveChangesAsync();
+            await context.Users.AddAsync(user);
+            await context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(new LoggedInDTO()
+            {
+                ClientGUID = await VerifyClient(userDTO.ClientGUID, user),
+                Name = user.Name,
+                Email = user.Email
+            });
         }
 
         [HttpGet("{guid}")]
-        public async Task<IActionResult> GetUser(Guid guid)
-        {
-            var user = await exerciseContext.Users.FirstOrDefaultAsync(x => x.Id == guid);
-            return Ok(user);
-        }
+        public async Task<IActionResult> GetUser(Guid guid) => Ok(await context.Users.FirstOrDefaultAsync(x => x.Id == guid));
 
         [HttpGet]
-        public async Task<IActionResult> GetUser([FromBody] LoginDTO userDTO)
+        public async Task<IActionResult> Login([FromBody] LoginDTO userDTO)
         {
-            var user = await exerciseContext.Users.FirstOrDefaultAsync(x => x.Email == userDTO.Email);
+            var user = await context.Users.FirstOrDefaultAsync(x => x.Email == userDTO.Email);
             if (user is null)
                 return NotFound("Incorrect email");
 
-            var hash = HashPassword(userDTO.Password, user.Salt);
+            var hash = HashingService.HashPassword(userDTO.Password, user.Salt);
             if (!user.PasswordHash.SequenceEqual(hash))
-                BadRequest("Incorrect password");
+                return BadRequest("Incorrect password");
 
-            return Ok($"Successfully logged in as {user.Name}" + BitConverter.ToString(hash));
+            return Ok(new LoggedInDTO()
+            {
+                ClientGUID = await VerifyClient(userDTO.ClientGUID, user),
+                Email = user.Email,
+                Name = user.Name
+            });
         }
 
-        public static byte[] HashPassword(string password, byte[] salt) => SHA256.HashData(CombineBytes(salt, System.Text.Encoding.UTF8.GetBytes(password)));
-
-        public static byte[] GenerateSalt()
+        [HttpGet("client/{guid}")]
+        public async Task<IActionResult> GetUserFromClient(Guid guid)
         {
-            byte[] salt = new byte[16];
-            RandomNumberGenerator.Create().GetBytes(salt);
-            return salt;
+            var user = (await context.Clients.Include(c => c.User).FirstOrDefaultAsync(c => c.Id == guid))?.User;
+            return Ok(user is null ? null : new LoggedInDTO()
+            {
+                ClientGUID = guid,
+                Name = user.Name,
+                Email = user.Email
+            });
         }
 
-        private static byte[] CombineBytes(byte[] first, byte[] second)
+
+
+        public async Task<Guid> VerifyClient(Guid? clientGuid, User user)
         {
-            byte[] combined = new byte[first.Length + second.Length];
-            Buffer.BlockCopy(first, 0, combined, 0, first.Length);
-            Buffer.BlockCopy(second, 0, combined, first.Length, second.Length);
-            return combined;
+            Guid res;
+            if (clientGuid is not null)
+            {
+                Client? client = await context.Clients.FirstOrDefaultAsync(c => c.Id == clientGuid);
+                if (client is not null)
+                {
+                    client.User = user;
+                    res = (Guid)clientGuid;
+                }
+                else
+                {
+                    Client newClient = new()
+                    {
+                        Id = new Guid(),
+                        User = user
+                    };
+                    await context.Clients.AddAsync(newClient);
+                    res = newClient.Id;
+                }
+            }
+            else
+            {
+                Client newClient = new()
+                {
+                    Id = new Guid(),
+                    User = user
+                };
+                await context.Clients.AddAsync(newClient);
+                res = newClient.Id;
+            }
+            await context.SaveChangesAsync();
+            return res;
         }
 
-        public class UserDTO
+        public class RegisterDTO
         {
             public string Name { get; set; } = null!;
             public string Email { get; set; } = null!;
             public string Password { get; set; } = null!;
+            public Guid? ClientGUID { get; set; }
         }
 
         public class LoginDTO
         {
             public string Email { get; set; } = null!;
             public string Password { get; set; } = null!;
+            public Guid? ClientGUID { get; set; }
+        }
+
+        public class LoggedInDTO
+        {
+            public Guid ClientGUID { get; set; }
+            public string Name { get; set; } = null!;
+            public string Email { get; set; } = null!;
         }
     }
 }
