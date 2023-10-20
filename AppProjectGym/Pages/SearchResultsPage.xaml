@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:Pages="clr-namespace:AppProjectGym.Pages"
+             xmlns:Models="clr-namespace:AppProjectGym.Models"
+             xmlns:ValueConverters="clr-namespace:AppProjectGym.ValueConverters"
+             x:Class="AppProjectGym.Pages.SearchResultsPage"
+             Title="SearchResultsPage"
+             x:DataType="Pages:SearchResultsPage">
+
+    <ContentPage.Resources>
+        <ValueConverters:ExerciseImageURLConverter x:Key="exerciseIdToImage"/>
+    </ContentPage.Resources>
+
+    <ScrollView x:Name="scrollView">
+        <VerticalStackLayout>
+            <CollectionView x:Name="exercisesCollection"
+                            SelectionMode="Single"
+                            SelectionChanged="OnExerciseSelect">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical" Span="1" />
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="Models:ExerciseDisplay">
+                        <Border Stroke="#aaa"
+                            StrokeThickness="7"
+                            Margin="25">
+
+                            <Grid RowDefinitions="*, 125">
+                                <Image Source="{Binding ImageUrl}"
+                                         Aspect="AspectFit"
+                                         BackgroundColor="#fff"/>
+
+                                <Label x:Name="exercises"
+                                   Text="{Binding Name}" 
+                                   TextColor="#3d3d3d"
+                                   FontSize="Title"
+                                   HorizontalTextAlignment="Center"
+                                   VerticalTextAlignment="Center"
+                                   Grid.Row="1">
+
+                                    <Label.Background>
+                                        <LinearGradientBrush EndPoint="0, 1">
+                                            <GradientStop Color="#fff"
+                                                      Offset="0"/>
+
+                                            <GradientStop Color="#aaa"
+                                                      Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Label.Background>
+                                </Label>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <FlexLayout HorizontalOptions="FillAndExpand"
+                        JustifyContent="Center">
+
+                <Button Text="Prev"
+                        Margin="5, 0, 5, 0"
+                        Clicked="LoadPreviousPage"/>
+
+                <Label x:Name="pageNumberLabel"
+                       Margin="5, 0, 5, 0"
+                       VerticalTextAlignment="Center"
+                       HorizontalTextAlignment="Center"/>
+
+                <Button Text="Next"
+                        Margin="5, 0, 5, 0"
+                        Clicked="LoadNextPage"/>
+
+            </FlexLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

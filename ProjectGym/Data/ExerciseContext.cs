@@ -15,6 +15,9 @@ namespace ProjectGym.Data
         public DbSet<ExerciseNote> ExerciseNotes { get; set; }
         public DbSet<ExerciseAlias> ExerciseAliases { get; set; }
 
+        public DbSet<User> Users { get; set; }
+        public DbSet<Client> Clients { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=ProjectGymDB;Integrated Security=True;");
@@ -25,6 +28,7 @@ namespace ProjectGym.Data
         {
             //base.OnModelCreating(modelBuilder);
 
+            #region Exercise
             modelBuilder.Entity<Exercise>()
                 .HasMany(e => e.VariationExercises)
                 .WithMany(e => e.IsVariationOf)
@@ -112,6 +116,15 @@ namespace ProjectGym.Data
                 .WithOne(a => a.Exercise)
                 .HasForeignKey(a => a.ExerciseId)
                 .OnDelete(DeleteBehavior.Cascade);
+            #endregion
+
+            #region User
+            modelBuilder.Entity<Client>()
+                .HasOne(c => c.User)
+                .WithMany()
+                .HasForeignKey(c => c.UserGUID)
+                .OnDelete(DeleteBehavior.NoAction);
+            #endregion
         }
 
         public class PrimaryMuscleExerciseConnection
