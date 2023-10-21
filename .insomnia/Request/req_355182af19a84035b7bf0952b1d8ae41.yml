@@ -1,9 +1,9 @@
 _id: req_355182af19a84035b7bf0952b1d8ae41
 type: Request
 parentId: wrk_ab01935ce80a4ba88ebc31536c46ba2d
-modified: 1696966447278
+modified: 1697625229015
 created: 1696609263219
-url: https://localhost:7015/api/exercise?include=all&q=primarymuscle=1&offset=3&limit=3
+url: https://localhost:7015/api/exercise?include=primarymuscles,secondarymuscles&q=primarymuscle=1;name=curls;strict=false
 name: Get exercises - query
 description: ""
 method: GET

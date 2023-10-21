@@ -1,0 +1,32 @@
+_id: req_7516e778e4fd4e658c98e63a30ded404
+type: Request
+parentId: wrk_ab01935ce80a4ba88ebc31536c46ba2d
+modified: 1697793400259
+created: 1697710104665
+url: https://localhost:7015/api/user
+name: Log In
+description: ""
+method: GET
+body:
+  mimeType: application/json
+  text: |-
+    {
+    	"clientGuid": "467dfdca-e02c-469f-8a38-08dbd14ab79a",
+    	"email": "rwscbs@gmail.com",
+    	"password": "coolpassword123"
+    }
+parameters: []
+headers:
+  - name: Content-Type
+    value: application/json
+  - name: User-Agent
+    value: insomnia/2023.5.8
+authentication: {}
+metaSortKey: -1697710104665
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

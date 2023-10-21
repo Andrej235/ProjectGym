@@ -1,10 +1,10 @@
-_id: req_e4a44815c0cb49a08ad99219fb0d9410
+_id: req_6fca14b618e04330af96d87a45ae9469
 type: Request
 parentId: wrk_ab01935ce80a4ba88ebc31536c46ba2d
-modified: 1697707121103
-created: 1696354059395
-url: https://localhost:7015/api/databasereset
-name: Reset Database
+modified: 1697710934077
+created: 1697708285625
+url: https://localhost:7015/api/user/0704caa6-0075-4e31-453f-08dbd08d1abc
+name: Get user
 description: ""
 method: GET
 body: {}
@@ -13,7 +13,7 @@ headers:
   - name: User-Agent
     value: insomnia/2023.5.8
 authentication: {}
-metaSortKey: -1696354059395
+metaSortKey: -1697708285625
 isPrivate: false
 settingStoreCookies: true
 settingSendCookies: true
