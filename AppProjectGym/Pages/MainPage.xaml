@@ -323,7 +323,7 @@
                         Stroke="#aaa"
                         Margin="7">
 
-                    <Button BackgroundColor="#181818"/>
+                    <Button BackgroundColor="#181818" Clicked="OnOpenProfilePage"/>
                 </Border>
 
             </FlexLayout>

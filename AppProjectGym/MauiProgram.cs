@@ -4,6 +4,7 @@ using AppProjectGym.Services;
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Core;
+using AppProjectGym.Information;
 
 namespace AppProjectGym
 {

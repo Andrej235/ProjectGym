@@ -1,4 +1,5 @@
-﻿using AppProjectGym.Models;
+﻿using AppProjectGym.Information;
+using AppProjectGym.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,6 +8,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using AppInfo = AppProjectGym.Information.AppInfo;
 
 namespace AppProjectGym.Services
 {
@@ -14,7 +16,6 @@ namespace AppProjectGym.Services
     {
         private readonly JsonSerializerOptions serializerOptions;
         private readonly HttpClient httpClient;
-        private readonly string baseApiURL;
 
         public EquipmentDataService()
         {
@@ -23,7 +24,6 @@ namespace AppProjectGym.Services
                 PropertyNameCaseInsensitive = true,
             };
             httpClient = new();
-            baseApiURL = "http://192.168.1.9:5054/api";
         }
 
         public Task Create(Equipment newData)
@@ -40,7 +40,7 @@ namespace AppProjectGym.Services
         {
             try
             {
-                var response = await httpClient.GetAsync($"{baseApiURL}/equipment");
+                var response = await httpClient.GetAsync($"{AppInfo.BaseApiURL}/equipment");
                 var content = await response.Content.ReadAsStringAsync();
                 return JsonSerializer.Deserialize<List<Equipment>>(content, serializerOptions);
             }
@@ -55,7 +55,7 @@ namespace AppProjectGym.Services
         {
             try
             {
-                var response = await httpClient.GetAsync($"{baseApiURL}/equipment/{id}");
+                var response = await httpClient.GetAsync($"{AppInfo.BaseApiURL}/equipment/{id}");
                 var content = await response.Content.ReadAsStringAsync();
                 return JsonSerializer.Deserialize<Equipment>(content, serializerOptions);
             }

@@ -3,6 +3,7 @@ using System.Text.Json;
 using AppProjectGym.Pages;
 using AppProjectGym.Models;
 using AppProjectGym.Services;
+using AppProjectGym.Information;
 
 namespace AppProjectGym
 {
@@ -75,6 +76,18 @@ namespace AppProjectGym
             LoadMuscles();
             LoadCategories();
             LoadEquipment();
+            CheckIfLoggedIn();
+        }
+
+        private static async void CheckIfLoggedIn()
+        {
+            if (!await ClientInfo.SetUser())
+            {
+                Debug.WriteLine("---> Open login page");
+                await Shell.Current.GoToAsync(nameof(LoginPage));
+            }
+
+            Debug.WriteLine($"---> Client guid: {ClientInfo.ClientGuid}");
         }
 
         private bool areFiltersOpen = false;
@@ -162,6 +175,11 @@ namespace AppProjectGym
             secondaryMuscleFilter.SelectedItems = null;
             categoryFilter.SelectedItems = null;
             equipmentFilter.SelectedItems = null;
+        }
+
+        private async void OnOpenProfilePage(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync(nameof(ProfilePage));
         }
     }
 }

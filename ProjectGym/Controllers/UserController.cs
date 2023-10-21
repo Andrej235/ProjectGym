@@ -36,16 +36,19 @@ namespace ProjectGym.Controllers
 
             return Ok(new LoggedInDTO()
             {
-                ClientGUID = await VerifyClient(userDTO.ClientGUID, user),
-                Name = user.Name,
-                Email = user.Email
+                ClientGuid = await VerifyClient(userDTO.ClientGuid, user),
+                User = new()
+                {
+                    Name = user.Name,
+                    Email = user.Email
+                }
             });
         }
 
         [HttpGet("{guid}")]
-        public async Task<IActionResult> GetUser(Guid guid) => Ok(await context.Users.FirstOrDefaultAsync(x => x.Id == guid));
+        public async Task<IActionResult> GetUser(Guid guid) => Ok(TranslateToDTO(await context.Users.FirstOrDefaultAsync(x => x.Id == guid)));
 
-        [HttpGet]
+        [HttpPut("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO userDTO)
         {
             var user = await context.Users.FirstOrDefaultAsync(x => x.Email == userDTO.Email);
@@ -58,25 +61,41 @@ namespace ProjectGym.Controllers
 
             return Ok(new LoggedInDTO()
             {
-                ClientGUID = await VerifyClient(userDTO.ClientGUID, user),
-                Email = user.Email,
-                Name = user.Name
+                ClientGuid = await VerifyClient(userDTO.ClientGuid, user),
+                User = new()
+                {
+                    Name = user.Name,
+                    Email = user.Email
+                }
             });
         }
 
         [HttpGet("client/{guid}")]
         public async Task<IActionResult> GetUserFromClient(Guid guid)
         {
-            var user = (await context.Clients.Include(c => c.User).FirstOrDefaultAsync(c => c.Id == guid))?.User;
-            return Ok(user is null ? null : new LoggedInDTO()
-            {
-                ClientGUID = guid,
-                Name = user.Name,
-                Email = user.Email
-            });
+            Client? client = await context.Clients.Include(c => c.User)
+                .FirstOrDefaultAsync(c => c.Id == guid);
+
+            if(client is null)
+                return NotFound($"Client with {guid} was not found.");
+
+            if (client.User is null)
+                return NotFound($"Client with {guid} is not logged in.");
+
+            return Ok(TranslateToDTO(client.User));
         }
 
-
+        [HttpPost("client")]
+        public async Task<IActionResult> NewClient()
+        {
+            Client client = new()
+            {
+                Id = Guid.NewGuid(),
+            };
+            await context.Clients.AddAsync(client);
+            await context.SaveChangesAsync();
+            return Ok(client.Id);
+        }
 
         public async Task<Guid> VerifyClient(Guid? clientGuid, User user)
         {
@@ -114,24 +133,35 @@ namespace ProjectGym.Controllers
             return res;
         }
 
+        public UserDTO? TranslateToDTO(User? user) => user is null ? null : new()
+        {
+            Name = user.Name,
+            Email = user.Email,
+        };
+
         public class RegisterDTO
         {
             public string Name { get; set; } = null!;
             public string Email { get; set; } = null!;
             public string Password { get; set; } = null!;
-            public Guid? ClientGUID { get; set; }
+            public Guid? ClientGuid { get; set; }
         }
 
         public class LoginDTO
         {
             public string Email { get; set; } = null!;
             public string Password { get; set; } = null!;
-            public Guid? ClientGUID { get; set; }
+            public Guid? ClientGuid { get; set; }
         }
 
         public class LoggedInDTO
         {
-            public Guid ClientGUID { get; set; }
+            public Guid ClientGuid { get; set; }
+            public UserDTO? User { get; set; }
+        }
+
+        public class UserDTO
+        {
             public string Name { get; set; } = null!;
             public string Email { get; set; } = null!;
         }
