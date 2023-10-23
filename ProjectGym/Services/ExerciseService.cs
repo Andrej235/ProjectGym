@@ -2,13 +2,14 @@
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using ProjectGym.Controllers;
 using ProjectGym.Data;
+using ProjectGym.DTOs;
 using ProjectGym.Models;
 using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace ProjectGym.Services
 {
-    public class ExerciseService
+    public class ExerciseService : IReadService<Exercise>
     {
         private readonly ExerciseContext exerciseContext;
         public ExerciseService(ExerciseContext exerciseContext)
@@ -18,13 +19,15 @@ namespace ProjectGym.Services
 
 
 
-        public async Task<List<Exercise>> Get(IQueryable<Exercise> exercisesQueryable, string? searchQuery, int? offset = 0, int? limit = -1)
+        public async Task<List<Exercise>> Get(string? query, int? offset = 0, int? limit = -1, string? include = "all")
         {
-            if (searchQuery is null)
-                return await Get(exercisesQueryable, offset, limit);
+            var exercisesQueryable = GetIncluded(include);
+
+            if (query is null)
+                return await ApplyOffsetAndLimit(exercisesQueryable, offset, limit);
 
             var criterias = new List<Expression<Func<Exercise, bool>>>();
-            var keyValuePairsInSearchQuery = searchQuery.Split(';')
+            var keyValuePairsInSearchQuery = query.Split(';')
                                                         .Select(sq => sq.Split('=')
                                                         .Select(x => x.Trim().ToLower())
                                                         .ToList())
@@ -73,13 +76,50 @@ namespace ProjectGym.Services
                 return exercises.ToList();
             }
 
-            exercisesQueryable = exercisesQueryable.Skip(offset ?? 0);
-
-            if (limit is not null && limit >= 0)
-                exercisesQueryable = exercisesQueryable.Take(limit ?? 0);
-
-            return await exercisesQueryable.ToListAsync();
+            return await ApplyOffsetAndLimit(exercisesQueryable, offset, limit);
         }
+
+        public async Task<Exercise> Get(Expression<Func<Exercise, bool>> criteria, string? include = "all") => await GetIncluded(include).FirstOrDefaultAsync(criteria) ?? throw new NullReferenceException("Item not found");
+
+        public Task<List<Exercise>> Get(Expression<Func<Exercise, bool>> criteria, int? offset = 0, int? limit = -1, string? include = "all")
+        {
+            throw new NotImplementedException();
+        }
+
+
+
+        public AdvancedDTO<T> TranslateToAdvancedDTO<T>(List<T> values, string baseAPIUrl, int offset, int limit)
+        {
+            AdvancedDTO<T> res = new()
+            {
+                BatchSize = values.Count,
+                PreviousBatchURLExtension = null,
+                NextBatchURLExtension = null,
+                Values = values,
+            };
+
+
+
+            if (limit >= 0 && values.Count >= limit)
+            {
+                var nextOffset = offset + limit;
+                res.NextBatchURLExtension = $"{baseAPIUrl}&offset={nextOffset}&limit={limit}";
+            }
+
+            if (offset > 0)
+            {
+                var previousOffset = offset - limit;
+                if (previousOffset < 0)
+                    previousOffset = 0;
+
+                res.PreviousBatchURLExtension = $"{baseAPIUrl}&offset={previousOffset}&limit={limit}";
+            }
+
+            return res;
+        }
+
+
+
         private static Expression<Func<Exercise, bool>> TranslateKeyValueToExpression(string key, string value)
         {
             if (key == "name")
@@ -133,10 +173,7 @@ namespace ProjectGym.Services
                 }
             }
         }
-
-
-
-        public async Task<List<Exercise>> Get(IQueryable<Exercise> exercisesQueryable, int? offset = 0, int? limit = -1)
+        private static async Task<List<Exercise>> ApplyOffsetAndLimit(IQueryable<Exercise> exercisesQueryable, int? offset = 0, int? limit = -1)
         {
             exercisesQueryable = exercisesQueryable.Skip(offset ?? 0);
 
@@ -145,67 +182,7 @@ namespace ProjectGym.Services
 
             return await exercisesQueryable.ToListAsync();
         }
-
-        public async Task<Exercise?> Get(Expression<Func<Exercise, bool>> criteria, IQueryable<Exercise> exercisesQueryable) => await exercisesQueryable.FirstOrDefaultAsync(criteria);
-
-
-
-        public ExerciseDTO TranslateToDTO(Exercise? exercise) => exercise == null ? new() : new()
-        {
-            Id = exercise.Id,
-            Name = exercise.Name,
-            Description = exercise.Description,
-            Images = exercise.Images.Select(i => new ImageDTO()
-            {
-                Id = i.Id,
-                ImageURL = i.ImageURL,
-                IsMain = i.IsMain,
-                Style = i.Style
-            }),
-            AliasIds = exercise.Aliases.Select(a => a.Id),
-            CategoryId = exercise.CategoryId,
-            EquipmentIds = exercise.Equipment.Select(a => a.Id),
-            IsVariationOfIds = exercise.IsVariationOf.Select(a => a.Id),
-            VariationIds = exercise.VariationExercises.Select(a => a.Id),
-            NoteIds = exercise.Notes.Select(a => a.Id),
-            PrimaryMuscleIds = exercise.PrimaryMuscles.Select(a => a.Id),
-            SecondaryMuscleIds = exercise.SecondaryMuscles.Select(a => a.Id),
-            VideoIds = exercise.Videos.Select(a => a.Id),
-        };
-        public List<ExerciseDTO> TranslateToDTO(List<Exercise> exercises) => exercises.Select(TranslateToDTO).ToList();
-        public AdvancedDTO<T> TranslateToAdvancedDTO<T>(List<T> values, string baseAPIUrl, int offset, int limit)
-        {
-            AdvancedDTO<T> res = new()
-            {
-                BatchSize = values.Count,
-                PreviousBatchURLExtension = null,
-                NextBatchURLExtension = null,
-                Values = values,
-            };
-
-
-
-            if (limit >= 0 && values.Count >= limit)
-            {
-                var nextOffset = offset + limit;
-                res.NextBatchURLExtension = $"{baseAPIUrl}&offset={nextOffset}&limit={limit}";
-            }
-
-            if (offset > 0)
-            {
-                var previousOffset = offset - limit;
-                if (previousOffset < 0)
-                    previousOffset = 0;
-
-                res.PreviousBatchURLExtension = $"{baseAPIUrl}&offset={previousOffset}&limit={limit}";
-            }
-
-            return res;
-        }
-
-
-
-        public IQueryable<Exercise> GetIncluded(string? include)
+        private IQueryable<Exercise> GetIncluded(string? include)
         {
             IQueryable<Exercise> exercisesIncluding = exerciseContext.Exercises.AsQueryable();
             if (include == null)
@@ -214,7 +191,17 @@ namespace ProjectGym.Services
             string[] toInclude = include.ToLower().Replace(" ", "").Split(',');
             if (toInclude.Contains("all"))
             {
-                return GetIncluded();
+                return exercisesIncluding
+                    .Include(e => e.VariationExercises)
+                    .Include(e => e.IsVariationOf)
+                    .Include(e => e.Category)
+                    .Include(e => e.PrimaryMuscles)
+                    .Include(e => e.SecondaryMuscles)
+                    .Include(e => e.Equipment)
+                    .Include(e => e.Videos)
+                    .Include(e => e.Aliases)
+                    .Include(e => e.Notes)
+                    .Include(e => e.Images);
             }
             else if (toInclude.Contains("none"))
             {
@@ -242,35 +229,6 @@ namespace ProjectGym.Services
             }
             return exercisesIncluding;
         }
-        public IQueryable<Exercise> GetIncluded() => exerciseContext.Exercises
-            .Include(e => e.VariationExercises)
-            .Include(e => e.IsVariationOf)
-            .Include(e => e.Category)
-            .Include(e => e.PrimaryMuscles)
-            .Include(e => e.SecondaryMuscles)
-            .Include(e => e.Equipment)
-            .Include(e => e.Videos)
-            .Include(e => e.Aliases)
-            .Include(e => e.Notes)
-            .Include(e => e.Images);
-    }
-
-    public class ExerciseDTO
-    {
-        public int Id { get; set; }
-        public string Name { get; set; } = null!;
-        public string Description { get; set; } = null!;
-
-        public int CategoryId { get; set; }
-        public IEnumerable<ImageDTO> Images { get; set; } = null!;
-        public IEnumerable<int> VideoIds { get; set; } = null!;
-        public IEnumerable<int> IsVariationOfIds { get; set; } = null!;
-        public IEnumerable<int> VariationIds { get; set; } = null!;
-        public IEnumerable<int> EquipmentIds { get; set; } = null!;
-        public IEnumerable<int> PrimaryMuscleIds { get; set; } = null!;
-        public IEnumerable<int> SecondaryMuscleIds { get; set; } = null!;
-        public IEnumerable<int> AliasIds { get; set; } = null!;
-        public IEnumerable<int> NoteIds { get; set; } = null!;
     }
 
     public class ImageDTO

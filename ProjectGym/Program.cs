@@ -1,7 +1,10 @@
+using Microsoft.Identity.Client;
 using ProjectGym.Controllers;
 using ProjectGym.Data;
+using ProjectGym.DTOs;
 using ProjectGym.Models;
 using ProjectGym.Services;
+using ProjectGym.Services.Mapping;
 
 namespace ProjectGym
 {
@@ -20,6 +23,11 @@ namespace ProjectGym
             builder.Services.AddTransient<BasicGetDataService<ExerciseCategory>>();
             builder.Services.AddTransient<BasicGetDataService<ExerciseAlias>>();
             builder.Services.AddTransient<BasicGetDataService<ExerciseNote>>();
+
+            builder.Services.AddTransient<IReadService<Exercise>, ExerciseService>();
+
+            builder.Services.AddTransient<IEntityMapper<Exercise, ExerciseDTO>, ExerciseMapper>();
+
             builder.Services.AddControllers();
 
             var app = builder.Build();
