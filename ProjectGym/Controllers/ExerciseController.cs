@@ -5,6 +5,7 @@ using ProjectGym.DTOs;
 using ProjectGym.Models;
 using ProjectGym.Services;
 using ProjectGym.Services.Mapping;
+using ProjectGym.Services.Read;
 using System.Linq.Expressions;
 
 namespace ProjectGym.Controllers
@@ -13,13 +14,11 @@ namespace ProjectGym.Controllers
     [ApiController]
     public class ExerciseController : ControllerBase
     {
-        private readonly ExerciseService exerciseService;
         private readonly IReadService<Exercise> readService;
         private readonly IEntityMapper<Exercise, ExerciseDTO> mapper;
 
-        public ExerciseController(ExerciseService exerciseService, IReadService<Exercise> readService, IEntityMapper<Exercise, ExerciseDTO> mapper)
+        public ExerciseController(IReadService<Exercise> readService, IEntityMapper<Exercise, ExerciseDTO> mapper)
         {
-            this.exerciseService = exerciseService;
             this.readService = readService;
             this.mapper = mapper;
         }
@@ -32,7 +31,7 @@ namespace ProjectGym.Controllers
             var exercises = await readService.Get(q, offset, limit, include);
 
             return Ok(
-                exerciseService.TranslateToAdvancedDTO(
+                AdvancedDTOMapper.TranslateToAdvancedDTO(
                     values: exercises.Select(mapper.MapEntity).ToList(),
                     baseAPIUrl: "exercise?" + (include != null ? $"&include={include}" : "") + (q != null ? $"&q={q}" : ""),
                     offset: offset ?? 0,

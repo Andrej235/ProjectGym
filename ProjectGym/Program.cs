@@ -5,6 +5,7 @@ using ProjectGym.DTOs;
 using ProjectGym.Models;
 using ProjectGym.Services;
 using ProjectGym.Services.Mapping;
+using ProjectGym.Services.Read;
 
 namespace ProjectGym
 {
@@ -14,26 +15,22 @@ namespace ProjectGym
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
             builder.Services.AddTransient<ExerciseContext>();
-            builder.Services.AddTransient<ExerciseService>();
             builder.Services.AddTransient<BasicGetDataService<Muscle>>();
             builder.Services.AddTransient<BasicGetDataService<Equipment>>();
             builder.Services.AddTransient<BasicGetDataService<ExerciseCategory>>();
             builder.Services.AddTransient<BasicGetDataService<ExerciseAlias>>();
             builder.Services.AddTransient<BasicGetDataService<ExerciseNote>>();
 
-            builder.Services.AddTransient<IReadService<Exercise>, ExerciseService>();
-
+            builder.Services.AddTransient<IReadService<Exercise>, ExerciseReadService>();
             builder.Services.AddTransient<IEntityMapper<Exercise, ExerciseDTO>, ExerciseMapper>();
+
+            builder.Services.AddTransient<IReadService<Muscle>, MuscleReadService>();
+            builder.Services.AddTransient<IEntityMapper<Muscle, MuscleDTO>, MuscleMapper>();
 
             builder.Services.AddControllers();
 
             var app = builder.Build();
-
-            // Configure the HTTP request pipeline.
-
             //app.UseHttpsRedirection();
             app.UseAuthorization();
             app.MapControllers();
