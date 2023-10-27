@@ -6,6 +6,6 @@
         /// Adds entity to database
         /// </summary>
         /// <param name="toAdd">Entity to save in the database</param>
-        Task Add(T toAdd);
+        Task<bool> Add(T toAdd);
     }
 }

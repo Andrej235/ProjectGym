@@ -5,11 +5,17 @@ namespace ProjectGym.Services.Mapping
 {
     public class NoteMapper : IEntityMapper<ExerciseNote, NoteDTO>
     {
-        public NoteDTO MapEntity(ExerciseNote entity) => new()
+        public NoteDTO Map(ExerciseNote entity) => new()
         {
             Id = entity.Id,
             Comment = entity.Comment,
             ExerciseId = entity.ExerciseId
+        };
+
+        public ExerciseNote Map(NoteDTO dto) => new()
+        {
+            Comment = dto.Comment,
+            ExerciseId = dto.ExerciseId,
         };
     }
 }

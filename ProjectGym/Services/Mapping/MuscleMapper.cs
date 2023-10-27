@@ -5,7 +5,7 @@ namespace ProjectGym.Services.Mapping
 {
     public class MuscleMapper : IEntityMapper<Muscle, MuscleDTO>
     {
-        public MuscleDTO MapEntity(Muscle entity) => new()
+        public MuscleDTO Map(Muscle entity) => new()
         {
             Id = entity.Id,
             Name = entity.Name,
@@ -16,6 +16,5 @@ namespace ProjectGym.Services.Mapping
             PrimaryInExerciseIds = entity.PrimaryInExercises.Select(x => x.Id),
             SecondaryInExerciseIds = entity.SecondaryInExercises.Select(x => x.Id)
         };
-
     }
 }

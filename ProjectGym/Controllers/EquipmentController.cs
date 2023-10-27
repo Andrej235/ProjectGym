@@ -2,6 +2,7 @@
 using ProjectGym.DTOs;
 using ProjectGym.Models;
 using ProjectGym.Services;
+using ProjectGym.Services.Create;
 using ProjectGym.Services.Mapping;
 using ProjectGym.Services.Read;
 using System.Linq.Expressions;
@@ -10,14 +11,19 @@ namespace ProjectGym.Controllers
 {
     [Route("api/equipment")]
     [ApiController]
-    public class EquipmentController : ControllerBase, IReadController<Equipment, EquipmentDTO>
+    public class EquipmentController : ControllerBase, IReadController<Equipment, EquipmentDTO>, ICreateController<Equipment, EquipmentDTO>
     {
         public IReadService<Equipment> ReadService { get; }
-        public IEntityMapper<Equipment, EquipmentDTO> Mapper { get; }
-        public EquipmentController(IReadService<Equipment> readService, IEntityMapper<Equipment, EquipmentDTO> mapper)
+        public IEntityMapperAsync<Equipment, EquipmentDTO> Mapper { get; }
+        public ICreateService<Equipment> CreateService { get; }
+
+        public EquipmentController(IReadService<Equipment> readService,
+                                   ICreateService<Equipment> createService,
+                                   IEntityMapperAsync<Equipment, EquipmentDTO> mapper)
         {
             ReadService = readService;
             Mapper = mapper;
+            CreateService = createService;
         }
 
         [HttpGet("{id}")]
@@ -25,7 +31,7 @@ namespace ProjectGym.Controllers
         {
             try
             {
-                return Ok(Mapper.MapEntity(await ReadService.Get(p => p.Id == id, include)));
+                return Ok(Mapper.Map(await ReadService.Get(p => p.Id == id, include)));
             }
             catch (NullReferenceException)
             {
@@ -38,6 +44,23 @@ namespace ProjectGym.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] int? offset, [FromQuery] int? limit, [FromQuery] string? include, [FromQuery] string? q) => Ok((await ReadService.Get(q, offset, limit, include)).Select(Mapper.MapEntity));
+        public async Task<IActionResult> Get([FromQuery] int? offset, [FromQuery] int? limit, [FromQuery] string? include, [FromQuery] string? q) => Ok((await ReadService.Get(q, offset, limit, include)).Select(Mapper.Map));
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] EquipmentDTO entityDTO)
+        {
+            try
+            {
+                bool success = await CreateService.Add(await Mapper.Map(entityDTO));
+                if (success)
+                    return Ok("Successfully added entity to database.");
+                else
+                    return BadRequest("Entity already exists.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

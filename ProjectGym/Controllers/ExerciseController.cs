@@ -29,7 +29,7 @@ namespace ProjectGym.Controllers
 
             return Ok(
                 AdvancedDTOMapper.TranslateToAdvancedDTO(
-                    values: exercises.Select(Mapper.MapEntity).ToList(),
+                    values: exercises.Select(Mapper.Map).ToList(),
                     baseAPIUrl: "exercise?" + (include != null ? $"&include={include}" : "") + (q != null ? $"&q={q}" : ""),
                     offset: offset ?? 0,
                     limit: limit ?? -1
@@ -43,7 +43,7 @@ namespace ProjectGym.Controllers
             try
             {
                 var exercise = await ReadService.Get(p => p.Id == id, include);
-                return Ok((ExerciseDTO?)Mapper.MapEntity(exercise));
+                return Ok((ExerciseDTO?)Mapper.Map(exercise));
             }
             catch (NullReferenceException)
             {

@@ -5,7 +5,7 @@ namespace ProjectGym.Services.Mapping
 {
     public class ExerciseMapper : IEntityMapper<Exercise, ExerciseDTO>
     {
-        public ExerciseDTO MapEntity(Exercise entity) => new()
+        public ExerciseDTO Map(Exercise entity) => new()
         {
             Id = entity.Id,
             Name = entity.Name,

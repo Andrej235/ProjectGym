@@ -2,6 +2,6 @@
 {
     public interface IEntityMapper<TEntity, TDTO>
     {
-        TDTO MapEntity(TEntity entity);
+        TDTO Map(TEntity entity);
     }
 }

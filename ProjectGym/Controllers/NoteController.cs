@@ -24,7 +24,7 @@ namespace ProjectGym.Controllers
         {
             try
             {
-                return Ok(Mapper.MapEntity(await ReadService.Get(p => p.Id == id, include)));
+                return Ok(Mapper.Map(await ReadService.Get(p => p.Id == id, include)));
             }
             catch (NullReferenceException)
             {
@@ -37,6 +37,6 @@ namespace ProjectGym.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] int? offset, [FromQuery] int? limit, [FromQuery] string? include, [FromQuery] string? q) => Ok((await ReadService.Get(q, offset, limit, include)).Select(Mapper.MapEntity));
+        public async Task<IActionResult> Get([FromQuery] int? offset, [FromQuery] int? limit, [FromQuery] string? include, [FromQuery] string? q) => Ok((await ReadService.Get(q, offset, limit, include)).Select(Mapper.Map));
     }
 }

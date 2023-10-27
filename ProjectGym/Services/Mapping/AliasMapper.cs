@@ -5,11 +5,17 @@ namespace ProjectGym.Services.Mapping
 {
     public class AliasMapper : IEntityMapper<ExerciseAlias, ExerciseAliasDTO>
     {
-        public ExerciseAliasDTO MapEntity(ExerciseAlias entity) => new()
+        public ExerciseAliasDTO Map(ExerciseAlias entity) => new()
         {
             Id = entity.Id,
             Alias = entity.Alias,
             ExerciseId = entity.ExerciseId,
+        };
+
+        public ExerciseAlias Map(ExerciseAliasDTO dto) => new()
+        {
+            Alias = dto.Alias,
+            ExerciseId = dto.ExerciseId,
         };
     }
 }
