@@ -9,15 +9,14 @@ namespace ProjectGym.Controllers
 {
     [Route("api/muscle")]
     [ApiController]
-    public class MuscleController : ControllerBase
+    public class MuscleController : ControllerBase, IReadController<Muscle, MuscleDTO>
     {
-        private readonly IReadService<Muscle> readService;
-        private readonly IEntityMapper<Muscle, MuscleDTO> mapper;
-
+        public IReadService<Muscle> ReadService { get; }
+        public IEntityMapper<Muscle, MuscleDTO> Mapper { get; }
         public MuscleController(IReadService<Muscle> readService, IEntityMapper<Muscle, MuscleDTO> mapper)
         {
-            this.readService = readService;
-            this.mapper = mapper;
+            ReadService = readService;
+            Mapper = mapper;
         }
 
         [HttpGet("{id}")]
@@ -25,18 +24,22 @@ namespace ProjectGym.Controllers
         {
             try
             {
-                return Ok(mapper.MapEntity(await readService.Get(p => p.Id == id, include)));
+                return Ok(Mapper.MapEntity(await ReadService.Get(p => p.Id == id, include)));
             }
-            catch (Exception)
+            catch (NullReferenceException)
             {
-                return NotFound($"Exercise with id {id} was not found.");
+                return NotFound($"Entity with id {id} was not found.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] int? offset, [FromQuery] int? limit, [FromQuery] string? include, [FromQuery] string? q)
         {
-            return Ok((await readService.Get(q, offset, limit, include)).Select(mapper.MapEntity));
+            return Ok((await ReadService.Get(q, offset, limit, include)).Select(Mapper.MapEntity));
         }
     }
 }

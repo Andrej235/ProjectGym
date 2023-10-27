@@ -1,4 +1,4 @@
-﻿namespace ProjectGym.Services
+﻿namespace ProjectGym.Utilities
 {
     public static class StringExtensions
     {
@@ -17,7 +17,7 @@
             {
                 for (int j = 1; j <= len2; j++)
                 {
-                    int cost = (str1[i - 1] == str2[j - 1]) ? 0 : 1;
+                    int cost = str1[i - 1] == str2[j - 1] ? 0 : 1;
                     matrix[i, j] = Math.Min(
                         Math.Min(matrix[i - 1, j] + 1, matrix[i, j - 1] + 1),
                         matrix[i - 1, j - 1] + cost);
@@ -50,8 +50,8 @@
                     if (word1.Contains(word2) || word2.Contains(word1))
                         similarCount++;
 
-/*                    if (word1.IsSimilar_Levenshtein(word2))
-                        similarCount++;*/
+                    /*                    if (word1.IsSimilar_Levenshtein(word2))
+                                            similarCount++;*/
                 }
             }
 

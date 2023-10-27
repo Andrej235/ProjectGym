@@ -1,4 +1,4 @@
-﻿namespace ProjectGym.Services
+﻿namespace ProjectGym.Services.Create
 {
     public interface ICreateService<T> where T : class
     {

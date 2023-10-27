@@ -12,27 +12,24 @@ namespace ProjectGym.Controllers
 {
     [Route("api/exercise")]
     [ApiController]
-    public class ExerciseController : ControllerBase
+    public class ExerciseController : ControllerBase, IReadController<Exercise, ExerciseDTO>
     {
-        private readonly IReadService<Exercise> readService;
-        private readonly IEntityMapper<Exercise, ExerciseDTO> mapper;
-
+        public IReadService<Exercise> ReadService { get; }
+        public IEntityMapper<Exercise, ExerciseDTO> Mapper { get; }
         public ExerciseController(IReadService<Exercise> readService, IEntityMapper<Exercise, ExerciseDTO> mapper)
         {
-            this.readService = readService;
-            this.mapper = mapper;
+            ReadService = readService;
+            Mapper = mapper;
         }
-
-
 
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] int? offset, [FromQuery] int? limit, [FromQuery] string? include, [FromQuery] string? q)
         {
-            var exercises = await readService.Get(q, offset, limit, include);
+            var exercises = await ReadService.Get(q, offset, limit, include);
 
             return Ok(
                 AdvancedDTOMapper.TranslateToAdvancedDTO(
-                    values: exercises.Select(mapper.MapEntity).ToList(),
+                    values: exercises.Select(Mapper.MapEntity).ToList(),
                     baseAPIUrl: "exercise?" + (include != null ? $"&include={include}" : "") + (q != null ? $"&q={q}" : ""),
                     offset: offset ?? 0,
                     limit: limit ?? -1
@@ -45,12 +42,16 @@ namespace ProjectGym.Controllers
         {
             try
             {
-                var exercise = await readService.Get(p => p.Id == id, include);
-                return Ok((ExerciseDTO?)mapper.MapEntity(exercise));
+                var exercise = await ReadService.Get(p => p.Id == id, include);
+                return Ok((ExerciseDTO?)Mapper.MapEntity(exercise));
             }
-            catch (Exception)
+            catch (NullReferenceException)
             {
-                return NotFound($"Exercise with id {id} was not found.");
+                return NotFound($"Entity with id {id} was not found.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }

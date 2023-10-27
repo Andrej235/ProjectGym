@@ -16,17 +16,24 @@ namespace ProjectGym
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddTransient<ExerciseContext>();
-            builder.Services.AddTransient<BasicGetDataService<Muscle>>();
-            builder.Services.AddTransient<BasicGetDataService<Equipment>>();
-            builder.Services.AddTransient<BasicGetDataService<ExerciseCategory>>();
-            builder.Services.AddTransient<BasicGetDataService<ExerciseAlias>>();
-            builder.Services.AddTransient<BasicGetDataService<ExerciseNote>>();
 
             builder.Services.AddTransient<IReadService<Exercise>, ExerciseReadService>();
             builder.Services.AddTransient<IEntityMapper<Exercise, ExerciseDTO>, ExerciseMapper>();
 
             builder.Services.AddTransient<IReadService<Muscle>, MuscleReadService>();
             builder.Services.AddTransient<IEntityMapper<Muscle, MuscleDTO>, MuscleMapper>();
+            
+            builder.Services.AddTransient<IReadService<Equipment>, EquipmentReadService>();
+            builder.Services.AddTransient<IEntityMapper<Equipment, EquipmentDTO>, EquipmentMapper>();
+
+            builder.Services.AddTransient<IReadService<ExerciseAlias>, AliasReadService>();
+            builder.Services.AddTransient<IEntityMapper<ExerciseAlias, ExerciseAliasDTO>, AliasMapper>();
+
+            builder.Services.AddTransient<IReadService<ExerciseCategory>, CategoryReadService>();
+            builder.Services.AddTransient<IEntityMapper<ExerciseCategory, CategoryDTO>, CategoryMapper>();
+
+            builder.Services.AddTransient<IReadService<ExerciseNote>, NoteReadService>();
+            builder.Services.AddTransient<IEntityMapper<ExerciseNote, NoteDTO>, NoteMapper>();
 
             builder.Services.AddControllers();
 

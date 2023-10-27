@@ -1,4 +1,4 @@
-﻿namespace ProjectGym.Services
+﻿namespace ProjectGym.Services.Update
 {
     public interface IUpdateService<T> where T : class
     {

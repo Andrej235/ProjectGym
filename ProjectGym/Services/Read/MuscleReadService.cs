@@ -27,17 +27,15 @@ namespace ProjectGym.Services.Read
                     .Include(m => m.PrimaryInExercises)
                     .Include(m => m.SecondaryInExercises);
             }
-            else
+
+            foreach (var inc in include)
             {
-                foreach (var inc in include)
+                musclesIncluding = inc switch
                 {
-                    musclesIncluding = inc switch
-                    {
-                        "primaryin" => musclesIncluding.Include(m => m.PrimaryInExercises),
-                        "secondaryin" => musclesIncluding.Include(m => m.SecondaryInExercises),
-                        _ => musclesIncluding
-                    };
-                }
+                    "primaryin" => musclesIncluding.Include(m => m.PrimaryInExercises),
+                    "secondaryin" => musclesIncluding.Include(m => m.SecondaryInExercises),
+                    _ => musclesIncluding
+                };
             }
             return musclesIncluding;
         }

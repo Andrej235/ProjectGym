@@ -1,10 +1,10 @@
 ﻿using System.Security.Cryptography;
 
-namespace ProjectGym.Services
+namespace ProjectGym.Utilities
 {
-    public class HashingService
+    public static class HashingService
     {
-        public static byte[] HashPassword(string password, byte[] salt) => SHA256.HashData(CombineBytes(salt, System.Text.Encoding.UTF8.GetBytes(password)));
+        public static byte[] HashPassword(this string password, byte[] salt) => SHA256.HashData(salt.CombineBytes(System.Text.Encoding.UTF8.GetBytes(password)));
 
         public static byte[] GenerateSalt()
         {
@@ -13,7 +13,7 @@ namespace ProjectGym.Services
             return salt;
         }
 
-        private static byte[] CombineBytes(byte[] first, byte[] second)
+        private static byte[] CombineBytes(this byte[] first, byte[] second)
         {
             byte[] combined = new byte[first.Length + second.Length];
             Buffer.BlockCopy(first, 0, combined, 0, first.Length);

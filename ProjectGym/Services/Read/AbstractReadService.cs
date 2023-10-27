@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 namespace ProjectGym.Services.Read
 {
-    public abstract class AbstractReadService<T, TPrimaryKey> : IReadService<T> where T : class 
+    public abstract class AbstractReadService<T, TPrimaryKey> : IReadService<T> where T : class
     {
         protected abstract Func<T, TPrimaryKey> PrimaryKey { get; }
 

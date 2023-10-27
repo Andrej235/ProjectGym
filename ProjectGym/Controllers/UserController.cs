@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ProjectGym.Data;
 using ProjectGym.Models;
-using ProjectGym.Services;
+using ProjectGym.Utilities;
 
 namespace ProjectGym.Controllers
 {
@@ -28,7 +28,7 @@ namespace ProjectGym.Controllers
                 Name = userDTO.Name,
                 Email = userDTO.Email,
                 Salt = salt,
-                PasswordHash = HashingService.HashPassword(userDTO.Password, salt)
+                PasswordHash = userDTO.Password.HashPassword(salt)
             };
 
             await context.Users.AddAsync(user);
@@ -55,7 +55,7 @@ namespace ProjectGym.Controllers
             if (user is null)
                 return NotFound("Incorrect email");
 
-            var hash = HashingService.HashPassword(userDTO.Password, user.Salt);
+            var hash = userDTO.Password.HashPassword(user.Salt);
             if (!user.PasswordHash.SequenceEqual(hash))
                 return BadRequest("Incorrect password");
 
