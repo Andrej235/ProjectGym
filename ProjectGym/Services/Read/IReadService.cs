@@ -66,7 +66,7 @@ namespace ProjectGym.Services.Read
         /// </param>
         /// <param name="include">
         /// Include string should contain a list of propery names which will be included in the return
-        /// <br/>Each item should be separated with a ; (semicolon)
+        /// <br/>Each item should be separated with a , (comma)
         /// <br/>If one of the items is 'all' every property will be included
         /// <br/>If one of the items is 'none' no property will be included
         /// <br/>Cap insensitive

@@ -3,6 +3,7 @@ using ProjectGym.DTOs;
 using ProjectGym.Models;
 using ProjectGym.Services;
 using ProjectGym.Services.Create;
+using ProjectGym.Services.Delete;
 using ProjectGym.Services.Mapping;
 using ProjectGym.Services.Read;
 using System.Linq.Expressions;
@@ -11,19 +12,25 @@ namespace ProjectGym.Controllers
 {
     [Route("api/equipment")]
     [ApiController]
-    public class EquipmentController : ControllerBase, IReadController<Equipment, EquipmentDTO>, ICreateController<Equipment, EquipmentDTO>
+    public class EquipmentController : ControllerBase,
+        IReadController<Equipment, EquipmentDTO>,
+        ICreateController<Equipment, EquipmentDTO>,
+        IDeleteController<Equipment, int>
     {
         public IReadService<Equipment> ReadService { get; }
         public IEntityMapperAsync<Equipment, EquipmentDTO> Mapper { get; }
         public ICreateService<Equipment> CreateService { get; }
+        public IDeleteService<Equipment> DeleteService { get; }
 
-        public EquipmentController(IReadService<Equipment> readService,
+        public EquipmentController(IEntityMapperAsync<Equipment, EquipmentDTO> mapper,
+                                   IReadService<Equipment> readService,
                                    ICreateService<Equipment> createService,
-                                   IEntityMapperAsync<Equipment, EquipmentDTO> mapper)
+                                   IDeleteService<Equipment> deleteService)
         {
             ReadService = readService;
             Mapper = mapper;
             CreateService = createService;
+            DeleteService = deleteService;
         }
 
         [HttpGet("{id}")]
@@ -60,6 +67,20 @@ namespace ProjectGym.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("{primaryKey}")]
+        public async Task<IActionResult> Delete(int primaryKey)
+        {
+            try
+            {
+                await DeleteService.DeleteFirst(x => x.Id == primaryKey);
+                return Ok($"Entity with primary key {primaryKey} has been successfully deleted.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error occurred: {ex.Message}");
             }
         }
     }

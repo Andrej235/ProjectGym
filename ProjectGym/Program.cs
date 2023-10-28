@@ -5,6 +5,7 @@ using ProjectGym.DTOs;
 using ProjectGym.Models;
 using ProjectGym.Services;
 using ProjectGym.Services.Create;
+using ProjectGym.Services.Delete;
 using ProjectGym.Services.Mapping;
 using ProjectGym.Services.Read;
 
@@ -26,7 +27,7 @@ namespace ProjectGym
             
             builder.Services.AddTransient<IReadService<Equipment>, EquipmentReadService>();
             builder.Services.AddTransient<ICreateService<Equipment>, EquipmentCreateService>();
-            builder.Services.AddTransient<IEntityMapper<Equipment, EquipmentDTO>, EquipmentMapper>();
+            builder.Services.AddTransient<IDeleteService<Equipment>, DeleteService<Equipment>>();
             builder.Services.AddTransient<IEntityMapperAsync<Equipment, EquipmentDTO>, EquipmentMapper>();
 
             builder.Services.AddTransient<IReadService<ExerciseAlias>, AliasReadService>();
