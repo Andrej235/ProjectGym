@@ -8,6 +8,7 @@ using ProjectGym.Services.Create;
 using ProjectGym.Services.Delete;
 using ProjectGym.Services.Mapping;
 using ProjectGym.Services.Read;
+using ProjectGym.Services.Update;
 
 namespace ProjectGym
 {
@@ -27,6 +28,7 @@ namespace ProjectGym
             
             builder.Services.AddTransient<IReadService<Equipment>, EquipmentReadService>();
             builder.Services.AddTransient<ICreateService<Equipment>, EquipmentCreateService>();
+            builder.Services.AddTransient<IUpdateService<Equipment>, EquipmentUpdateService>();
             builder.Services.AddTransient<IDeleteService<Equipment>, DeleteService<Equipment>>();
             builder.Services.AddTransient<IEntityMapperAsync<Equipment, EquipmentDTO>, EquipmentMapper>();
 

@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProjectGym.DTOs;
 using ProjectGym.Models;
-using ProjectGym.Services;
 using ProjectGym.Services.Create;
 using ProjectGym.Services.Delete;
 using ProjectGym.Services.Mapping;
 using ProjectGym.Services.Read;
-using System.Linq.Expressions;
+using ProjectGym.Services.Update;
 
 namespace ProjectGym.Controllers
 {
@@ -15,21 +14,25 @@ namespace ProjectGym.Controllers
     public class EquipmentController : ControllerBase,
         IReadController<Equipment, EquipmentDTO>,
         ICreateController<Equipment, EquipmentDTO>,
+        IUpdateController<Equipment>,
         IDeleteController<Equipment, int>
     {
-        public IReadService<Equipment> ReadService { get; }
         public IEntityMapperAsync<Equipment, EquipmentDTO> Mapper { get; }
+        public IReadService<Equipment> ReadService { get; }
         public ICreateService<Equipment> CreateService { get; }
+        public IUpdateService<Equipment> UpdateService { get; }
         public IDeleteService<Equipment> DeleteService { get; }
 
         public EquipmentController(IEntityMapperAsync<Equipment, EquipmentDTO> mapper,
                                    IReadService<Equipment> readService,
                                    ICreateService<Equipment> createService,
+                                   IUpdateService<Equipment> updateService,
                                    IDeleteService<Equipment> deleteService)
         {
             ReadService = readService;
             Mapper = mapper;
             CreateService = createService;
+            UpdateService = updateService;
             DeleteService = deleteService;
         }
 
@@ -67,6 +70,21 @@ namespace ProjectGym.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Update([FromBody] EquipmentDTO updatedEntity)
+        {
+            try
+            {
+                var entity = await Mapper.Map(updatedEntity);
+                await UpdateService.Update(entity);
+                return Ok("Successfully updated entity");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error occurred: {ex.Message}");
             }
         }
 
