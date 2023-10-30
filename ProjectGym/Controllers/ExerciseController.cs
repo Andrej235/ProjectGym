@@ -4,6 +4,7 @@ using ProjectGym.Data;
 using ProjectGym.DTOs;
 using ProjectGym.Models;
 using ProjectGym.Services;
+using ProjectGym.Services.Delete;
 using ProjectGym.Services.Mapping;
 using ProjectGym.Services.Read;
 using System.Linq.Expressions;
@@ -12,14 +13,17 @@ namespace ProjectGym.Controllers
 {
     [Route("api/exercise")]
     [ApiController]
-    public class ExerciseController : ControllerBase, IReadController<Exercise, ExerciseDTO>
+    public class ExerciseController : ControllerBase, IReadController<Exercise, ExerciseDTO>, IDeleteController<Exercise, int>
     {
         public IReadService<Exercise> ReadService { get; }
         public IEntityMapper<Exercise, ExerciseDTO> Mapper { get; }
-        public ExerciseController(IReadService<Exercise> readService, IEntityMapper<Exercise, ExerciseDTO> mapper)
+        public IDeleteService<Exercise> DeleteService { get; }
+
+        public ExerciseController(IReadService<Exercise> readService, IEntityMapper<Exercise, ExerciseDTO> mapper, IDeleteService<Exercise> deleteService)
         {
             ReadService = readService;
             Mapper = mapper;
+            DeleteService = deleteService;
         }
 
         [HttpGet]
@@ -52,6 +56,20 @@ namespace ProjectGym.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("{primaryKey}")]
+        public async Task<IActionResult> Delete(int primaryKey)
+        {
+            try
+            {
+                await DeleteService.DeleteFirst(x => x.Id == primaryKey);
+                return Ok("Successfully deleted entity.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error occurred: {ex.Message}");
             }
         }
     }

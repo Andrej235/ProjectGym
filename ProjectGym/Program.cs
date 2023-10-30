@@ -21,11 +21,16 @@ namespace ProjectGym
             builder.Services.AddTransient<ExerciseContext>();
 
             builder.Services.AddTransient<IReadService<Exercise>, ExerciseReadService>();
+            builder.Services.AddTransient<IDeleteService<Exercise>, DeleteService<Exercise>>();
             builder.Services.AddTransient<IEntityMapper<Exercise, ExerciseDTO>, ExerciseMapper>();
 
             builder.Services.AddTransient<IReadService<Muscle>, MuscleReadService>();
             builder.Services.AddTransient<IEntityMapper<Muscle, MuscleDTO>, MuscleMapper>();
-            
+
+            builder.Services.AddTransient<IReadService<EquipmentExerciseUsage>, EquipmentExerciseUsageReadService>();
+            builder.Services.AddTransient<ICreateService<EquipmentExerciseUsage>, EquipmentExerciseUsageCreateService>();
+            builder.Services.AddTransient<IDeleteService<EquipmentExerciseUsage>, DeleteService<EquipmentExerciseUsage>>();
+
             builder.Services.AddTransient<IReadService<Equipment>, EquipmentReadService>();
             builder.Services.AddTransient<ICreateService<Equipment>, EquipmentCreateService>();
             builder.Services.AddTransient<IUpdateService<Equipment>, EquipmentUpdateService>();
