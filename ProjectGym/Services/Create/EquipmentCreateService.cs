@@ -1,10 +1,7 @@
-﻿using Azure.Identity;
-using Microsoft.EntityFrameworkCore;
-using ProjectGym.Data;
+﻿using ProjectGym.Data;
 using ProjectGym.Models;
 using ProjectGym.Services.Read;
 using System.Diagnostics;
-using System.Text.Json;
 
 namespace ProjectGym.Services.Create
 {
@@ -12,6 +9,7 @@ namespace ProjectGym.Services.Create
     {
         private readonly ExerciseContext context;
         private readonly IReadService<Equipment> readService;
+
         public EquipmentCreateService(ExerciseContext context, IReadService<Equipment> readService)
         {
             this.context = context;

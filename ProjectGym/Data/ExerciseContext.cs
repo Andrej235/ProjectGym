@@ -66,8 +66,8 @@ namespace ProjectGym.Data
                 .HasMany(e => e.PrimaryMuscles)
                 .WithMany(m => m.PrimaryInExercises)
                 .UsingEntity<PrimaryMuscleExerciseConnection>(
-                    me => me.HasOne<Muscle>().WithMany().HasForeignKey(m => m.MuscleId).OnDelete(DeleteBehavior.NoAction),
-                    me => me.HasOne<Exercise>().WithMany().HasForeignKey(e => e.ExerciseId).OnDelete(DeleteBehavior.NoAction),
+                    me => me.HasOne<Muscle>().WithMany().HasForeignKey(m => m.MuscleId).OnDelete(DeleteBehavior.Cascade),
+                    me => me.HasOne<Exercise>().WithMany().HasForeignKey(e => e.ExerciseId).OnDelete(DeleteBehavior.Cascade),
                     me =>
                     {
                         me.Property(me => me.Id).ValueGeneratedOnAdd();
@@ -79,8 +79,8 @@ namespace ProjectGym.Data
                 .HasMany(e => e.SecondaryMuscles)
                 .WithMany(m => m.SecondaryInExercises)
                 .UsingEntity<SecondaryMuscleExerciseConnection>(
-                    me => me.HasOne<Muscle>().WithMany().HasForeignKey(m => m.MuscleId).OnDelete(DeleteBehavior.NoAction),
-                    me => me.HasOne<Exercise>().WithMany().HasForeignKey(e => e.ExerciseId).OnDelete(DeleteBehavior.NoAction),
+                    me => me.HasOne<Muscle>().WithMany().HasForeignKey(m => m.MuscleId).OnDelete(DeleteBehavior.Cascade),
+                    me => me.HasOne<Exercise>().WithMany().HasForeignKey(e => e.ExerciseId).OnDelete(DeleteBehavior.Cascade),
                     me =>
                     {
                         me.Property(me => me.Id).ValueGeneratedOnAdd();
@@ -235,8 +235,8 @@ namespace ProjectGym.Data
                 .HasMany(u => u.ExerciseBookmarks)
                 .WithMany()
                 .UsingEntity<UserExerciseBookmark>(
-                    j => j.HasOne<Exercise>().WithMany().HasForeignKey(e => e.ExerciseId).OnDelete(DeleteBehavior.NoAction),
-                    j => j.HasOne<User>().WithMany().HasForeignKey(u => u.UserId).OnDelete(DeleteBehavior.NoAction),
+                    j => j.HasOne<Exercise>().WithMany().HasForeignKey(e => e.ExerciseId).OnDelete(DeleteBehavior.Cascade),
+                    j => j.HasOne<User>().WithMany().HasForeignKey(u => u.UserId).OnDelete(DeleteBehavior.Cascade),
                     j =>
                     {
                         j.Property(x => x.Id).ValueGeneratedOnAdd();

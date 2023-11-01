@@ -20,9 +20,13 @@ namespace ProjectGym
 
             builder.Services.AddTransient<ExerciseContext>();
 
+            builder.Services.AddTransient<ICreateService<Exercise>, ExerciseCreateService>();
             builder.Services.AddTransient<IReadService<Exercise>, ExerciseReadService>();
             builder.Services.AddTransient<IDeleteService<Exercise>, DeleteService<Exercise>>();
-            builder.Services.AddTransient<IEntityMapper<Exercise, ExerciseDTO>, ExerciseMapper>();
+            builder.Services.AddTransient<IEntityMapperAsync<Exercise, ExerciseDTO>, ExerciseMapper>();
+
+            builder.Services.AddTransient<IReadService<ExerciseVariation>, ExerciseVariationReadService>();
+            builder.Services.AddTransient<IDeleteService<ExerciseVariation>, DeleteService<ExerciseVariation>>();
 
             builder.Services.AddTransient<IReadService<Muscle>, MuscleReadService>();
             builder.Services.AddTransient<IEntityMapper<Muscle, MuscleDTO>, MuscleMapper>();
@@ -45,6 +49,16 @@ namespace ProjectGym
 
             builder.Services.AddTransient<IReadService<ExerciseNote>, NoteReadService>();
             builder.Services.AddTransient<IEntityMapper<ExerciseNote, NoteDTO>, NoteMapper>();
+
+            builder.Services.AddTransient<IReadService<ExerciseImage>, ImageReadService>();
+
+            builder.Services.AddTransient<IReadService<ExerciseVideo>, VideoReadService>();
+
+            builder.Services.AddTransient<IReadService<PrimaryMuscleExerciseConnection>, PrimaryMuscleExerciseConnectionReadService>();
+            builder.Services.AddTransient<ICreateService<PrimaryMuscleExerciseConnection>, PrimaryMuscleExerciseConnectionCreateService>();
+
+            builder.Services.AddTransient<IReadService<SecondaryMuscleExerciseConnection>, SecondaryMuscleExerciseConnectionReadService>();
+            builder.Services.AddTransient<ICreateService<SecondaryMuscleExerciseConnection>, SecondaryMuscleExerciseConnectionCreateService>();
 
             builder.Services.AddControllers();
 

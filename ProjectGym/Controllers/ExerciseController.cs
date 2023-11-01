@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using ProjectGym.Data;
 using ProjectGym.DTOs;
 using ProjectGym.Models;
 using ProjectGym.Services;
+using ProjectGym.Services.Create;
 using ProjectGym.Services.Delete;
 using ProjectGym.Services.Mapping;
 using ProjectGym.Services.Read;
@@ -13,17 +15,21 @@ namespace ProjectGym.Controllers
 {
     [Route("api/exercise")]
     [ApiController]
-    public class ExerciseController : ControllerBase, IReadController<Exercise, ExerciseDTO>, IDeleteController<Exercise, int>
+    public class ExerciseController : ControllerBase, ICreateController<Exercise, ExerciseDTO>, IReadController<Exercise, ExerciseDTO>, IDeleteController<Exercise, int>
     {
         public IReadService<Exercise> ReadService { get; }
-        public IEntityMapper<Exercise, ExerciseDTO> Mapper { get; }
+        public IEntityMapperAsync<Exercise, ExerciseDTO> Mapper { get; }
         public IDeleteService<Exercise> DeleteService { get; }
+        public IDeleteService<ExerciseVariation> ExerciseVariationDeleteService { get; }
+        public ICreateService<Exercise> CreateService { get; }
 
-        public ExerciseController(IReadService<Exercise> readService, IEntityMapper<Exercise, ExerciseDTO> mapper, IDeleteService<Exercise> deleteService)
+        public ExerciseController(IReadService<Exercise> readService, IEntityMapperAsync<Exercise, ExerciseDTO> mapper, IDeleteService<Exercise> deleteService, IDeleteService<ExerciseVariation> exerciseVariationDeleteService, ICreateService<Exercise> createService)
         {
-            ReadService = readService;
             Mapper = mapper;
+            CreateService = createService;
+            ReadService = readService;
             DeleteService = deleteService;
+            ExerciseVariationDeleteService = exerciseVariationDeleteService;
         }
 
         [HttpGet]
@@ -64,8 +70,24 @@ namespace ProjectGym.Controllers
         {
             try
             {
+                await ExerciseVariationDeleteService.DeleteAll(x => x.Exercise1Id == primaryKey || x.Exercise2Id == primaryKey);
                 await DeleteService.DeleteFirst(x => x.Id == primaryKey);
                 return Ok("Successfully deleted entity.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] ExerciseDTO entityDTO)
+        {
+            try
+            {
+                var entity = await Mapper.Map(entityDTO);
+                bool success = await CreateService.Add(entity);
+                return success ? Ok("Successfully added entity to database") : BadRequest("Entity already exists");
             }
             catch (Exception ex)
             {
