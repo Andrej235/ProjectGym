@@ -22,7 +22,6 @@ namespace ProjectGym.Services.Read
                 return exercisesIncluding;
 
             if (include.Contains("all"))
-            {
                 return exercisesIncluding
                     .Include(e => e.VariationExercises)
                     .Include(e => e.IsVariationOf)
@@ -34,26 +33,23 @@ namespace ProjectGym.Services.Read
                     .Include(e => e.Aliases)
                     .Include(e => e.Notes)
                     .Include(e => e.Images);
-            }
-            else
+
+            foreach (var inc in include)
             {
-                foreach (var inc in include)
+                exercisesIncluding = inc switch
                 {
-                    exercisesIncluding = inc switch
-                    {
-                        "images" => exercisesIncluding.Include(e => e.Images),
-                        "videos" => exercisesIncluding.Include(e => e.Videos),
-                        "variations" => exercisesIncluding.Include(e => e.VariationExercises),
-                        "variationof" => exercisesIncluding.Include(e => e.IsVariationOf),
-                        "category" => exercisesIncluding.Include(e => e.Category),
-                        "primarymuscles" => exercisesIncluding.Include(e => e.PrimaryMuscles),
-                        "secondarymuscles" => exercisesIncluding.Include(e => e.SecondaryMuscles),
-                        "equipment" => exercisesIncluding.Include(e => e.Equipment), //Everything works except equipment, it's not properly connected to exercises
-                        "aliases" => exercisesIncluding.Include(e => e.Aliases),
-                        "notes" => exercisesIncluding.Include(e => e.Notes),
-                        _ => exercisesIncluding
-                    };
-                }
+                    "images" => exercisesIncluding.Include(e => e.Images),
+                    "videos" => exercisesIncluding.Include(e => e.Videos),
+                    "variations" => exercisesIncluding.Include(e => e.VariationExercises),
+                    "variationof" => exercisesIncluding.Include(e => e.IsVariationOf),
+                    "category" => exercisesIncluding.Include(e => e.Category),
+                    "primarymuscles" => exercisesIncluding.Include(e => e.PrimaryMuscles),
+                    "secondarymuscles" => exercisesIncluding.Include(e => e.SecondaryMuscles),
+                    "equipment" => exercisesIncluding.Include(e => e.Equipment),
+                    "aliases" => exercisesIncluding.Include(e => e.Aliases),
+                    "notes" => exercisesIncluding.Include(e => e.Notes),
+                    _ => exercisesIncluding
+                };
             }
             return exercisesIncluding;
         }

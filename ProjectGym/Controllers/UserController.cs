@@ -1,27 +1,38 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProjectGym.Data;
+using ProjectGym.DTOs;
 using ProjectGym.Models;
+using ProjectGym.Services.Create;
+using ProjectGym.Services.Mapping;
+using ProjectGym.Services.Read;
 using ProjectGym.Utilities;
+using System;
+using static ProjectGym.Controllers.UserController;
 
 namespace ProjectGym.Controllers
 {
     [Route("api/user")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : ControllerBase, ICreateController<User, RegisterDTO>
     {
         private readonly ExerciseContext context;
-        public UserController(ExerciseContext context)
+
+        public IReadService<User> ReadService { get; }
+        public IEntityMapper<User, UserDTO> Mapper { get; }
+        public ICreateService<User> CreateService { get; }
+
+        public UserController(ExerciseContext context, IReadService<User> readService, IEntityMapper<User, UserDTO> mapper, ICreateService<User> createService)
         {
             this.context = context;
+            ReadService = readService;
+            Mapper = mapper;
+            CreateService = createService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateNewUser([FromBody] RegisterDTO userDTO)
+        public async Task<IActionResult> Create([FromBody] RegisterDTO userDTO)
         {
-            if (await context.Users.FirstOrDefaultAsync(u => u.Email == userDTO.Email) is not null)
-                return BadRequest("User already exists");
-
             byte[] salt = HashingService.GenerateSalt();
             User user = new()
             {
@@ -31,27 +42,22 @@ namespace ProjectGym.Controllers
                 PasswordHash = userDTO.Password.HashPassword(salt)
             };
 
-            await context.Users.AddAsync(user);
-            await context.SaveChangesAsync();
+            var success = await CreateService.Add(user);
+            if (!success)
+                return BadRequest("User already exists");
 
             return Ok(new LoggedInDTO()
             {
                 ClientGuid = await VerifyClient(userDTO.ClientGuid, user),
-                User = new()
-                {
-                    Name = user.Name,
-                    Email = user.Email
-                }
+                User = Mapper.Map(user)
             });
         }
 
-        [HttpGet("{guid}")]
-        public async Task<IActionResult> GetUser(Guid guid) => Ok(TranslateToDTO(await context.Users.FirstOrDefaultAsync(x => x.Id == guid)));
 
         [HttpPut("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO userDTO)
         {
-            var user = await context.Users.FirstOrDefaultAsync(x => x.Email == userDTO.Email);
+            var user = await ReadService.Get(x => x.Email == userDTO.Email, "none");
             if (user is null)
                 return NotFound("Incorrect email");
 
@@ -62,11 +68,7 @@ namespace ProjectGym.Controllers
             return Ok(new LoggedInDTO()
             {
                 ClientGuid = await VerifyClient(userDTO.ClientGuid, user),
-                User = new()
-                {
-                    Name = user.Name,
-                    Email = user.Email
-                }
+                User = Mapper.Map(user)
             });
         }
 
@@ -76,13 +78,13 @@ namespace ProjectGym.Controllers
             Client? client = await context.Clients.Include(c => c.User)
                 .FirstOrDefaultAsync(c => c.Id == guid);
 
-            if(client is null)
+            if (client is null)
                 return NotFound($"Client with {guid} was not found.");
 
             if (client.User is null)
                 return NotFound($"Client with {guid} is not logged in.");
 
-            return Ok(TranslateToDTO(client.User));
+            return Ok(Mapper.Map(client.User));
         }
 
         [HttpPost("client")]
@@ -133,11 +135,9 @@ namespace ProjectGym.Controllers
             return res;
         }
 
-        public UserDTO? TranslateToDTO(User? user) => user is null ? null : new()
-        {
-            Name = user.Name,
-            Email = user.Email,
-        };
+
+        [HttpGet("{guid}")]
+        public async Task<IActionResult> Get(Guid id, [FromQuery] string? include) => Ok(Mapper.Map(await ReadService.Get(x => x.Id == id, include)));
 
         public class RegisterDTO
         {
@@ -158,12 +158,6 @@ namespace ProjectGym.Controllers
         {
             public Guid ClientGuid { get; set; }
             public UserDTO? User { get; set; }
-        }
-
-        public class UserDTO
-        {
-            public string Name { get; set; } = null!;
-            public string Email { get; set; } = null!;
         }
     }
 }

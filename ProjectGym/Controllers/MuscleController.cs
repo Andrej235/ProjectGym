@@ -9,7 +9,7 @@ namespace ProjectGym.Controllers
 {
     [Route("api/muscle")]
     [ApiController]
-    public class MuscleController : ControllerBase, IReadController<Muscle, MuscleDTO>
+    public class MuscleController : ControllerBase, IReadController<Muscle, MuscleDTO, int>
     {
         public IReadService<Muscle> ReadService { get; }
         public IEntityMapper<Muscle, MuscleDTO> Mapper { get; }

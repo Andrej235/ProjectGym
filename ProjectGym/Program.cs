@@ -25,6 +25,10 @@ namespace ProjectGym
             builder.Services.AddTransient<IDeleteService<Exercise>, DeleteService<Exercise>>();
             builder.Services.AddTransient<IEntityMapperAsync<Exercise, ExerciseDTO>, ExerciseMapper>();
 
+            builder.Services.AddTransient<IReadService<User>, UserReadService>();
+            builder.Services.AddTransient<ICreateService<User>, UserCreateService>();
+            builder.Services.AddTransient<IEntityMapper<User, UserDTO>, UserMapper>();
+
             builder.Services.AddTransient<IReadService<ExerciseVariation>, ExerciseVariationReadService>();
             builder.Services.AddTransient<IDeleteService<ExerciseVariation>, DeleteService<ExerciseVariation>>();
 

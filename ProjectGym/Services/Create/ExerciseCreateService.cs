@@ -62,7 +62,6 @@ namespace ProjectGym.Services.Create
                         await secondaryMuscleExerciseConnectionCreateService.Add(new() { MuscleId = m.Id, ExerciseId = dbEntity.Id });
 
                     await context.SaveChangesAsync();
-
                     return true;
                 }
                 catch (Exception ex)

@@ -15,7 +15,7 @@ namespace ProjectGym.Controllers
 {
     [Route("api/exercise")]
     [ApiController]
-    public class ExerciseController : ControllerBase, ICreateController<Exercise, ExerciseDTO>, IReadController<Exercise, ExerciseDTO>, IDeleteController<Exercise, int>
+    public class ExerciseController : ControllerBase, ICreateController<Exercise, ExerciseDTO>, IReadController<Exercise, ExerciseDTO, int>, IDeleteController<Exercise, int>
     {
         public IReadService<Exercise> ReadService { get; }
         public IEntityMapperAsync<Exercise, ExerciseDTO> Mapper { get; }

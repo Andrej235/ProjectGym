@@ -9,7 +9,7 @@ namespace ProjectGym.Controllers
 {
     [Route("api/note")]
     [ApiController]
-    public class NoteController : ControllerBase, IReadController<ExerciseNote, NoteDTO>
+    public class NoteController : ControllerBase, IReadController<ExerciseNote, NoteDTO, int>
     {
         public NoteController(IReadService<ExerciseNote> readService, IEntityMapper<ExerciseNote, NoteDTO> mapper)
         {

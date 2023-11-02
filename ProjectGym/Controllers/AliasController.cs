@@ -10,7 +10,7 @@ namespace ProjectGym.Controllers
 {
     [Route("api/alias")]
     [ApiController]
-    public class AliasController : ControllerBase, IReadController<ExerciseAlias, ExerciseAliasDTO>
+    public class AliasController : ControllerBase, IReadController<ExerciseAlias, ExerciseAliasDTO, int>
     {
         public IReadService<ExerciseAlias> ReadService { get; }
         public IEntityMapper<ExerciseAlias, ExerciseAliasDTO> Mapper { get; }

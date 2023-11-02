@@ -9,7 +9,7 @@ namespace ProjectGym.Controllers
 {
     [Route("api/category")]
     [ApiController]
-    public class CategoryController : ControllerBase, IReadController<ExerciseCategory, CategoryDTO>
+    public class CategoryController : ControllerBase, IReadController<ExerciseCategory, CategoryDTO, int>
     {
         public CategoryController(IReadService<ExerciseCategory> readService, IEntityMapper<ExerciseCategory, CategoryDTO> mapper)
         {

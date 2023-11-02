@@ -12,7 +12,7 @@ namespace ProjectGym.Controllers
     [Route("api/equipment")]
     [ApiController]
     public class EquipmentController : ControllerBase,
-        IReadController<Equipment, EquipmentDTO>,
+        IReadController<Equipment, EquipmentDTO, int>,
         ICreateController<Equipment, EquipmentDTO>,
         IUpdateController<Equipment>,
         IDeleteController<Equipment, int>
