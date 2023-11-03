@@ -29,6 +29,10 @@ namespace ProjectGym
             builder.Services.AddTransient<ICreateService<User>, UserCreateService>();
             builder.Services.AddTransient<IEntityMapper<User, UserDTO>, UserMapper>();
 
+            builder.Services.AddTransient<IReadService<Client>, ClientReadService>();
+            builder.Services.AddTransient<ICreateService<Client>, ClientCreateService>();
+            builder.Services.AddTransient<IUpdateService<Client>, ClientUpdateService>();
+
             builder.Services.AddTransient<IReadService<ExerciseVariation>, ExerciseVariationReadService>();
             builder.Services.AddTransient<IDeleteService<ExerciseVariation>, DeleteService<ExerciseVariation>>();
 

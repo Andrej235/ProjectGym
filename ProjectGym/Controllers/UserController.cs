@@ -6,8 +6,10 @@ using ProjectGym.Models;
 using ProjectGym.Services.Create;
 using ProjectGym.Services.Mapping;
 using ProjectGym.Services.Read;
+using ProjectGym.Services.Update;
 using ProjectGym.Utilities;
 using System;
+using System.Diagnostics;
 using static ProjectGym.Controllers.UserController;
 
 namespace ProjectGym.Controllers
@@ -16,18 +18,26 @@ namespace ProjectGym.Controllers
     [ApiController]
     public class UserController : ControllerBase, ICreateController<User, RegisterDTO>
     {
-        private readonly ExerciseContext context;
-
         public IReadService<User> ReadService { get; }
+        public IReadService<Client> ClientReadService { get; }
         public IEntityMapper<User, UserDTO> Mapper { get; }
         public ICreateService<User> CreateService { get; }
+        public ICreateService<Client> ClientCreateService { get; }
+        public IUpdateService<Client> ClientUpdateService { get; }
 
-        public UserController(ExerciseContext context, IReadService<User> readService, IEntityMapper<User, UserDTO> mapper, ICreateService<User> createService)
+        public UserController(IReadService<User> readService,
+                              IEntityMapper<User, UserDTO> mapper,
+                              ICreateService<User> createService,
+                              ICreateService<Client> clientCreateService,
+                              IReadService<Client> clientReadService,
+                              IUpdateService<Client> clientUpdateService)
         {
-            this.context = context;
             ReadService = readService;
             Mapper = mapper;
             CreateService = createService;
+            ClientCreateService = clientCreateService;
+            ClientReadService = clientReadService;
+            ClientUpdateService = clientUpdateService;
         }
 
         [HttpPost]
@@ -53,7 +63,6 @@ namespace ProjectGym.Controllers
             });
         }
 
-
         [HttpPut("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO userDTO)
         {
@@ -75,28 +84,23 @@ namespace ProjectGym.Controllers
         [HttpGet("client/{guid}")]
         public async Task<IActionResult> GetUserFromClient(Guid guid)
         {
-            Client? client = await context.Clients.Include(c => c.User)
-                .FirstOrDefaultAsync(c => c.Id == guid);
-
-            if (client is null)
-                return NotFound($"Client with {guid} was not found.");
-
-            if (client.User is null)
-                return NotFound($"Client with {guid} is not logged in.");
-
-            return Ok(Mapper.Map(client.User));
-        }
-
-        [HttpPost("client")]
-        public async Task<IActionResult> NewClient()
-        {
-            Client client = new()
+            try
             {
-                Id = Guid.NewGuid(),
-            };
-            await context.Clients.AddAsync(client);
-            await context.SaveChangesAsync();
-            return Ok(client.Id);
+                Client client = await ClientReadService.Get(c => c.Id == guid, "user");
+
+                if (client.User is null)
+                    return NotFound($"Client with id: {guid} is not logged in.");
+
+                return Ok(Mapper.Map(client.User));
+            }
+            catch (NullReferenceException)
+            {
+                return NotFound($"Client with id: {guid} was not found.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         public async Task<Guid> VerifyClient(Guid? clientGuid, User user)
@@ -104,21 +108,29 @@ namespace ProjectGym.Controllers
             Guid res;
             if (clientGuid is not null)
             {
-                Client? client = await context.Clients.FirstOrDefaultAsync(c => c.Id == clientGuid);
-                if (client is not null)
+                try
                 {
+                    var client = await ClientReadService.Get(c => c.Id == clientGuid, "user");
                     client.User = user;
+                    await ClientUpdateService.Update(client);
                     res = (Guid)clientGuid;
                 }
-                else
+                catch (NullReferenceException)
                 {
                     Client newClient = new()
                     {
                         Id = new Guid(),
-                        User = user
+                        User = user,
+                        UserGUID = user.Id
                     };
-                    await context.Clients.AddAsync(newClient);
+
+                    await ClientCreateService.Add(newClient);
                     res = newClient.Id;
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"---> Error occurred: {ex.Message} \n{ex.InnerException?.Message}");
+                    throw;
                 }
             }
             else
@@ -126,18 +138,19 @@ namespace ProjectGym.Controllers
                 Client newClient = new()
                 {
                     Id = new Guid(),
-                    User = user
+                    User = user,
+                    UserGUID = user.Id
                 };
-                await context.Clients.AddAsync(newClient);
+
+                await ClientCreateService.Add(newClient);
                 res = newClient.Id;
             }
-            await context.SaveChangesAsync();
             return res;
         }
 
+        //public async Task<IActionResult> Get(Guid id, [FromQuery] string? include) => Ok(Mapper.Map(await ReadService.Get(x => x.Id == id, include)));
 
-        [HttpGet("{guid}")]
-        public async Task<IActionResult> Get(Guid id, [FromQuery] string? include) => Ok(Mapper.Map(await ReadService.Get(x => x.Id == id, include)));
+
 
         public class RegisterDTO
         {
