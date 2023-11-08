@@ -9,7 +9,7 @@ namespace AppProjectGym.ValueConverters
         {
             int id = (int)value;
             Exercise exercise = MainPage.Exercises.FirstOrDefault(e => e.Id == id);
-            ExerciseImage image = exercise.Images.FirstOrDefault(i => i.IsMain);
+            Models.Image image = new();// exercise.Images.FirstOrDefault((object i) => i.IsMain);
 
             return image is null || image.ImageURL is null ? "" : image.ImageURL;
         }

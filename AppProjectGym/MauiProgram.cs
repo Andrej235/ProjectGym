@@ -5,6 +5,8 @@ using Microsoft.Extensions.Logging;
 using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Core;
 using AppProjectGym.Information;
+using AppProjectGym.Services.Read;
+using Image = AppProjectGym.Models.Image;
 
 namespace AppProjectGym
 {
@@ -30,13 +32,13 @@ namespace AppProjectGym
             builder.Services.AddTransient<FullScreenExercise>();
             builder.Services.AddTransient<SearchResultsPage>();
 
-            builder.Services.AddSingleton<IDataService<Exercise>, ExerciseDataService>();
-            builder.Services.AddSingleton<IExerciseSearchData, ExerciseDataService>();
-
             builder.Services.AddSingleton<IDataService<Muscle>, MuscleDataService>();
             builder.Services.AddSingleton<IDataService<ExerciseCategory>, ExerciseCategoryDataService>();
             builder.Services.AddSingleton<IDataService<ExerciseNote>, NotesDataService>();
             builder.Services.AddSingleton<IDataService<Equipment>, EquipmentDataService>();
+
+            builder.Services.AddTransient<IReadService<Exercise>, ExerciseReadService>();
+            builder.Services.AddTransient<IReadService<Image>, ImageReadService>();
 
             return builder.Build();
         }

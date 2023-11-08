@@ -1,33 +1,39 @@
 using AppProjectGym.Models;
 using AppProjectGym.Services;
+using AppProjectGym.Services.Read;
 using System.Diagnostics;
+using Image = AppProjectGym.Models.Image;
 
 namespace AppProjectGym.Pages
 {
     public partial class FullScreenExercise : ContentPage, IQueryAttributable
     {
         private readonly IDataService<Muscle> muscleDataService;
-        private readonly IDataService<Exercise> exerciseDataService;
+        //private readonly IDataService<Exercise> exerciseDataService;
         private readonly IDataService<ExerciseCategory> categoryDataService;
         private readonly IDataService<ExerciseNote> notesDataService;
         private readonly IDataService<Equipment> equipmentDataService;
 
+        private readonly IReadService<Exercise> exerciseReadService;
+        private readonly IReadService<Image> imageReadService;
+
         public FullScreenExercise(
-            IDataService<Exercise> exerciseDataService,
             IDataService<Muscle> muscleDataService,
             IDataService<ExerciseCategory> categoryDataService,
             IDataService<ExerciseNote> notesDataService,
-            IDataService<Equipment> equipmentDataService
-            )
+            IDataService<Equipment> equipmentDataService,
+            IReadService<Exercise> exerciseReadService,
+            IReadService<Image> imageReadService)
         {
             InitializeComponent();
 
             BindingContext = this;
-            this.exerciseDataService = exerciseDataService;
             this.muscleDataService = muscleDataService;
             this.categoryDataService = categoryDataService;
             this.notesDataService = notesDataService;
             this.equipmentDataService = equipmentDataService;
+            this.exerciseReadService = exerciseReadService;
+            this.imageReadService = imageReadService;
         }
 
 
@@ -43,7 +49,7 @@ namespace AppProjectGym.Pages
         }
         private Exercise exercise;
 
-        public ExerciseImage MainImage
+        public Models.Image MainImage
         {
             get => mainImage;
             set
@@ -52,7 +58,7 @@ namespace AppProjectGym.Pages
                 OnPropertyChanged();
             }
         }
-        private ExerciseImage mainImage;
+        private Models.Image mainImage;
 
         public List<Muscle> PrimaryMuscles
         {
@@ -111,16 +117,22 @@ namespace AppProjectGym.Pages
 
 
 
-        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        public async void ApplyQueryAttributes(IDictionary<string, object> query)
         {
             Exercise = query[nameof(Models.Exercise)] as Exercise;
-            MainImage = Exercise.Images.FirstOrDefault(i => i.IsMain);
-            OnOpen();
+            Exercise = await exerciseReadService.Get(Exercise.Id.ToString(), "all");
+
+            if (exercise.ImageIds.Any())
+            {
+                var image = await imageReadService.Get(exercise.ImageIds.First().ToString(), "all");
+                MainImage = image;
+            }
+
+            //OnOpen();
         }
 
-        private async void OnOpen()
+        private void OnOpen()
         {
-            Exercise = await exerciseDataService.Get(Exercise.Id);
             LoadCategory();
             LoadMuscles();
             LoadNotes();

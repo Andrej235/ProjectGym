@@ -8,6 +8,6 @@ namespace AppProjectGym.Information
 {
     public static class AppInfo
     {
-        public static string BaseApiURL { get; } = "http://192.168.1.9:5054/api";
+        public static string BaseApiURL { get; } = "http://192.168.1.100:5054/api";
     }
 }

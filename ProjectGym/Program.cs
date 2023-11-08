@@ -59,6 +59,7 @@ namespace ProjectGym
             builder.Services.AddTransient<IEntityMapper<ExerciseNote, NoteDTO>, NoteMapper>();
 
             builder.Services.AddTransient<IReadService<ExerciseImage>, ImageReadService>();
+            builder.Services.AddTransient<IEntityMapper<ExerciseImage, ImageDTO>, ImageMapper>();
 
             builder.Services.AddTransient<IReadService<ExerciseVideo>, VideoReadService>();
 

@@ -1,19 +1,23 @@
 using AppProjectGym.Models;
 using AppProjectGym.Services;
+using AppProjectGym.Services.Read;
 using System.Diagnostics;
+using Image = AppProjectGym.Models.Image;
 
 namespace AppProjectGym.Pages;
 
 public partial class SearchResultsPage : ContentPage, IQueryAttributable
 {
-    public SearchResultsPage(IExerciseSearchData exerciseSearchData)
+    public SearchResultsPage(IReadService<Image> imageReadService, IReadService<Exercise> exerciseReadService)
     {
         InitializeComponent();
         BindingContext = this;
 
-        this.exerciseSearchData = exerciseSearchData;
+        this.imageReadService = imageReadService;
+        this.exerciseReadService = exerciseReadService;
     }
-    private readonly IExerciseSearchData exerciseSearchData;
+    private readonly IReadService<Image> imageReadService;
+    private readonly IReadService<Exercise> exerciseReadService;
 
     public List<Exercise> Exercises
     {
@@ -21,18 +25,39 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
         set
         {
             exercises = value;
-            exerciseDisplays = exercises.Select(e => new ExerciseDisplay()
-            {
-                Id = e.Id,
-                Name = e.Name,
-                ImageUrl = e.Images.FirstOrDefault(i => i.IsMain)?.ImageURL ?? ""
-            }).ToList();
-            OnPropertyChanged();
+            SetExerciseDisplays();
         }
     }
     private List<Exercise> exercises;
     private List<ExerciseDisplay> exerciseDisplays;
 
+    private async void SetExerciseDisplays()
+    {
+        List<ExerciseDisplay> newExerciseDisplays = new();
+        foreach (var e in exercises)
+        {
+            var imgUrl = "";
+            try
+            {
+                var id = e.ImageIds.FirstOrDefault();
+                if (id != 0)
+                    imgUrl = (await imageReadService.Get(id.ToString(), "none")).ImageURL;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"---> Error occurred: {ex.Message}");
+            }
+
+            newExerciseDisplays.Add(new()
+            {
+                Id = e.Id,
+                Name = e.Name,
+                ImageUrl = imgUrl
+            });
+        }
+        exerciseDisplays = newExerciseDisplays;
+        OnPropertyChanged();
+    }
 
     public int PageNumber
     {
@@ -65,7 +90,7 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
             return;
 
         isWaitingForData = true;
-        var exercisesToLoad = await exerciseSearchData.Search(searchQuery, "images", (pageNumber - 1) * exercisesPerPage, exercisesPerPage);
+        var exercisesToLoad = await exerciseReadService.Get(searchQuery, (pageNumber - 1) * exercisesPerPage, exercisesPerPage, "images");
         if (exercisesToLoad is null || !exercisesToLoad.Any())
         {
             PageNumber--;
@@ -105,7 +130,7 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
         var selectedExerciseDisplay = e.CurrentSelection[0] as ExerciseDisplay;
         Debug.WriteLine($"---> Selected {selectedExerciseDisplay.Id}");
 
-        var exercise = exercises.FirstOrDefault(e => e.Id == selectedExerciseDisplay.Id);
+        var exercise = await exerciseReadService.Get(selectedExerciseDisplay.Id.ToString(), "none");// exercises.FirstOrDefault(e => e.Id == selectedExerciseDisplay.Id);
         if (exercise is null)
             return;
 

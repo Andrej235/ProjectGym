@@ -1,4 +1,5 @@
 ﻿using AppProjectGym.Models;
+using AppInfo = AppProjectGym.Information.AppInfo;
 using System.Diagnostics;
 using System.Text.Json;
 
@@ -8,7 +9,6 @@ namespace AppProjectGym.Services
     {
         private readonly JsonSerializerOptions serializerOptions;
         private readonly HttpClient httpClient;
-        private readonly string baseApiURL;
 
         public ExerciseCategoryDataService()
         {
@@ -17,7 +17,6 @@ namespace AppProjectGym.Services
                 PropertyNameCaseInsensitive = true,
             };
             httpClient = new();
-            baseApiURL = "http://192.168.1.9:5054/api";
         }
 
         public Task Create(ExerciseCategory newData)
@@ -34,7 +33,7 @@ namespace AppProjectGym.Services
         {
             try
             {
-                var response = await httpClient.GetAsync($"{baseApiURL}/category");
+                var response = await httpClient.GetAsync($"{AppInfo.BaseApiURL}/category");
                 var content = await response.Content.ReadAsStringAsync();
                 return JsonSerializer.Deserialize<List<ExerciseCategory>>(content, serializerOptions);
             }
@@ -49,7 +48,7 @@ namespace AppProjectGym.Services
         {
             try
             {
-                var response = await httpClient.GetAsync($"{baseApiURL}/category/{id}");
+                var response = await httpClient.GetAsync($"{AppInfo.BaseApiURL}/category/{id}");
                 var content = await response.Content.ReadAsStringAsync();
                 return JsonSerializer.Deserialize<ExerciseCategory>(content, serializerOptions);
             }

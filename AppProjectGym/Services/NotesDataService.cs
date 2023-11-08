@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using AppInfo = AppProjectGym.Information.AppInfo;
 
 namespace AppProjectGym.Services
 {
@@ -13,7 +14,6 @@ namespace AppProjectGym.Services
     {
         private readonly JsonSerializerOptions serializerOptions;
         private readonly HttpClient httpClient;
-        private readonly string baseApiURL;
 
         public NotesDataService()
         {
@@ -22,7 +22,6 @@ namespace AppProjectGym.Services
                 PropertyNameCaseInsensitive = true,
             };
             httpClient = new();
-            baseApiURL = "http://192.168.1.9:5054/api";
         }
 
 
@@ -41,7 +40,7 @@ namespace AppProjectGym.Services
         {
             try
             {
-                var response = await httpClient.GetAsync($"{baseApiURL}/note");
+                var response = await httpClient.GetAsync($"{AppInfo.BaseApiURL}/note");
                 var content = await response.Content.ReadAsStringAsync();
                 return JsonSerializer.Deserialize<List<ExerciseNote>>(content, serializerOptions);
             }
@@ -56,7 +55,7 @@ namespace AppProjectGym.Services
         {
             try
             {
-                var response = await httpClient.GetAsync($"{baseApiURL}/note/{id}");
+                var response = await httpClient.GetAsync($"{AppInfo.BaseApiURL}/note/{id}");
                 var content = await response.Content.ReadAsStringAsync();
                 return JsonSerializer.Deserialize<ExerciseNote>(content, serializerOptions);
             }

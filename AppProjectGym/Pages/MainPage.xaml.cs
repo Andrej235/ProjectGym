@@ -4,15 +4,19 @@ using AppProjectGym.Pages;
 using AppProjectGym.Models;
 using AppProjectGym.Services;
 using AppProjectGym.Information;
+using AppProjectGym.Services.Read;
 
 namespace AppProjectGym
 {
     public partial class MainPage : ContentPage
     {
-        private readonly IDataService<Exercise> exerciseDataService;
+        //private readonly IDataService<Exercise> exerciseDataService;
         private readonly IDataService<Muscle> muscleDataService;
         private readonly IDataService<ExerciseCategory> categoryDataService;
         private readonly IDataService<Equipment> equipmentDataService;
+
+        private readonly IReadService<Exercise> exerciseReadService;
+
         private readonly JsonSerializerOptions serializerOptions;
         public static List<Exercise> Exercises { get => exercises; set => exercises = value; }
         private static List<Exercise> exercises;
@@ -53,11 +57,11 @@ namespace AppProjectGym
 
 
         public MainPage(
-            IDataService<Exercise> exerciseDataService,
             IDataService<Muscle> muscleDataService,
             IDataService<ExerciseCategory> categoryDataService,
             IDataService<Equipment> equipmentDataService
-            )
+,
+            IReadService<Exercise> exerciseReadService)
         {
             InitializeComponent();
 
@@ -67,7 +71,7 @@ namespace AppProjectGym
             };
 
             BindingContext = this;
-            this.exerciseDataService = exerciseDataService;
+            this.exerciseReadService = exerciseReadService;
             this.muscleDataService = muscleDataService;
             this.categoryDataService = categoryDataService;
             this.equipmentDataService = equipmentDataService;
@@ -95,7 +99,7 @@ namespace AppProjectGym
 
         private async void LoadExercises()
         {
-            Exercises = await exerciseDataService.Get();
+            Exercises = await exerciseReadService.Get("", 0, -1, "none");
             exerciseCollectionView.ItemsSource = Exercises;
         }
 

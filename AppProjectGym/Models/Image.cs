@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AppProjectGym.Models
 {
-    public class ExerciseImage
+    public class Image
     {
         public int Id { get; set; }
         public string ImageURL { get; set; } = null!;

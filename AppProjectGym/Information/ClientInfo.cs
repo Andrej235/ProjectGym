@@ -91,6 +91,7 @@ namespace AppProjectGym.Information
             {
                 var client = new HttpClient();
                 var response = await client.GetAsync($"{AppInfo.BaseApiURL}/user/client/{ClientGuid}");
+                response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync();
                 User user = JsonSerializer.Deserialize<User>(content, jsonSerializerOptions);
 
