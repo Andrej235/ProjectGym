@@ -1,12 +1,5 @@
-﻿using AppProjectGym.Information;
-using AppProjectGym.Models;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
+﻿using System.Diagnostics;
 using System.Text.Json;
-using System.Threading.Tasks;
 using AppInfo = AppProjectGym.Information.AppInfo;
 
 namespace AppProjectGym.Services.Read
@@ -14,13 +7,21 @@ namespace AppProjectGym.Services.Read
     public abstract class AbstractReadService<T> : IReadService<T> where T : class
     {
         private readonly HttpClient client;
+        /// <summary>
+        /// Initializes a new instance of the AbstractReadService class with an HttpClient.
+        /// </summary>
+        /// <param name="client">The HttpClient instance used for making HTTP requests.</param>
         protected AbstractReadService(HttpClient client)
         {
             this.client = client;
         }
 
+        /// <summary>
+        /// Gets the URL extension for the specific service.
+        /// </summary>
         protected abstract string URLExtension { get; }
 
+        ///<inheritdoc cref="IReadService{T}.Get(string, string)"/>
         public virtual async Task<T> Get(string primaryKey, string include = "all")
         {
             try
@@ -39,6 +40,7 @@ namespace AppProjectGym.Services.Read
             }
         }
 
+        ///<inheritdoc cref="IReadService{T}.Get(string, int?, int?, string)"/>
         public virtual async Task<List<T>> Get(string query, int? offset = 0, int? limit = -1, string include = "all")
         {
             try

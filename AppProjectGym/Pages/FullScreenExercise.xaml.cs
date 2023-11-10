@@ -8,31 +8,28 @@ namespace AppProjectGym.Pages
 {
     public partial class FullScreenExercise : ContentPage, IQueryAttributable
     {
-        private readonly IDataService<Muscle> muscleDataService;
-        private readonly IDataService<ExerciseCategory> categoryDataService;
-        private readonly IDataService<ExerciseNote> notesDataService;
-        private readonly IDataService<Equipment> equipmentDataService;
-
         private readonly IReadService<Exercise> exerciseReadService;
         private readonly IReadService<Image> imageReadService;
+        private readonly IReadService<Muscle> muscleReadService;
+        private readonly IReadService<ExerciseCategory> categoryReadService;
+        private readonly IReadService<ExerciseNote> notesReadService;
+        private readonly IReadService<Equipment> equipmentReadService;
 
-        public FullScreenExercise(
-            IDataService<Muscle> muscleDataService,
-            IDataService<ExerciseCategory> categoryDataService,
-            IDataService<ExerciseNote> notesDataService,
-            IDataService<Equipment> equipmentDataService,
-            IReadService<Exercise> exerciseReadService,
-            IReadService<Image> imageReadService)
+        public FullScreenExercise(IReadService<Exercise> exerciseReadService,
+                                  IReadService<Image> imageReadService,
+                                  IReadService<Muscle> muscleReadService,
+                                  IReadService<ExerciseCategory> categoryReadService,
+                                  IReadService<ExerciseNote> notesReadService,
+                                  IReadService<Equipment> equipmentReadService)
         {
             InitializeComponent();
-
             BindingContext = this;
-            this.muscleDataService = muscleDataService;
-            this.categoryDataService = categoryDataService;
-            this.notesDataService = notesDataService;
-            this.equipmentDataService = equipmentDataService;
             this.exerciseReadService = exerciseReadService;
             this.imageReadService = imageReadService;
+            this.muscleReadService = muscleReadService;
+            this.categoryReadService = categoryReadService;
+            this.notesReadService = notesReadService;
+            this.equipmentReadService = equipmentReadService;
         }
 
 
@@ -126,37 +123,31 @@ namespace AppProjectGym.Pages
                 var image = await imageReadService.Get(exercise.ImageIds.First().ToString(), "all");
                 MainImage = image;
             }
-            //OnOpen();
+            OnOpen();
         }
 
         private void OnOpen()
         {
+            LoadPrimaryMuscles();
+            LoadSecondaryMuscles();
             LoadCategory();
-            LoadMuscles();
             LoadNotes();
             LoadEquipment();
         }
 
-        private async void LoadMuscles()
-        {
-            PrimaryMuscles = (await Task.WhenAll(Exercise.PrimaryMuscleIds
-                .Select(muscleDataService.Get))
-                .ConfigureAwait(false)).ToList();
+        private async void LoadPrimaryMuscles() => PrimaryMuscles = (await Task.WhenAll(Exercise.PrimaryMuscleIds.Select(x => muscleReadService.Get(x.ToString(), "none"))).ConfigureAwait(false)).ToList();
 
-            SecondaryMuscles = (await Task.WhenAll(Exercise.SecondaryMuscleIds
-                .Select(muscleDataService.Get))
-                .ConfigureAwait(false)).ToList();
-        }
+        private async void LoadSecondaryMuscles() => SecondaryMuscles = (await Task.WhenAll(Exercise.SecondaryMuscleIds.Select(x => muscleReadService.Get(x.ToString(), "none"))).ConfigureAwait(false)).ToList();
 
-        private async void LoadCategory() => Category = await categoryDataService.Get(Exercise.CategoryId);
+        private async void LoadCategory() => Category = await categoryReadService.Get(Exercise.CategoryId.ToString(), "none");
 
-        private async void LoadNotes() => Notes = (await Task.WhenAll(Exercise.NoteIds.Select(notesDataService.Get))).ToList();
+        private async void LoadNotes() => Notes = (await Task.WhenAll(Exercise.NoteIds.Select(x => notesReadService.Get(x.ToString(), "none")))).ToList();
 
-        private async void LoadEquipment() => Equipment = (await Task.WhenAll(Exercise.EquipmentIds.Select(equipmentDataService.Get))).ToList();
+        private async void LoadEquipment() => Equipment = (await Task.WhenAll(Exercise.EquipmentIds.Select(x => equipmentReadService.Get(x.ToString(), "none")))).ToList();
 
 
 
-        private async void OnCategoryClicked(object sender, EventArgs e)
+        private async void OnCategorySearch(object sender, EventArgs e)
         {
             var category = (sender as Button).BindingContext as ExerciseCategory;
             Dictionary<string, object> navigationParameter = new()
@@ -168,7 +159,7 @@ namespace AppProjectGym.Pages
             Debug.WriteLine($"---> Category clicked {category.Name}");
         }
 
-        private async void OnSelectPrimaryMuscle(object sender, SelectionChangedEventArgs e)
+        private async void OnPrimaryMuscleSearch(object sender, SelectionChangedEventArgs e)
         {
             var muscle = e.CurrentSelection[0] as Muscle;
             Dictionary<string, object> navigationParameter = new()
@@ -179,7 +170,7 @@ namespace AppProjectGym.Pages
             await Shell.Current.GoToAsync(nameof(SearchResultsPage), navigationParameter);
         }
 
-        private async void OnSelectSecondaryMuscle(object sender, SelectionChangedEventArgs e)
+        private async void OnSecondaryMuscleSearch(object sender, SelectionChangedEventArgs e)
         {
             var muscle = e.CurrentSelection[0] as Muscle;
             Dictionary<string, object> navigationParameter = new()

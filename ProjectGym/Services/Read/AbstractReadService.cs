@@ -29,7 +29,7 @@ namespace ProjectGym.Services.Read
                                                         .ToList();
 
             List<string>? strictKeyValuePair = keyValuePairsInSearchQuery.FirstOrDefault(kvp => kvp[0] == "strict");
-            bool isStrictModeEnabled = true;
+            bool isStrictModeEnabled = false;
 
             if (strictKeyValuePair is not null)
             {

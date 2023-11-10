@@ -18,7 +18,7 @@
             <Border HorizontalOptions="FillAndExpand" StrokeThickness="3" Margin="10" Padding="5">
                 <Grid RowDefinitions="*">
                     <Label Text="{Binding Category.Name, StringFormat='Category: {0}'}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" FontSize="Subtitle" Grid.Row="0"/>
-                    <Button BackgroundColor="Transparent" Grid.Row="0" BindingContext="{Binding Category}" Clicked="OnCategoryClicked"/>
+                    <Button BackgroundColor="Transparent" Grid.Row="0" BindingContext="{Binding Category}" Clicked="OnCategorySearch"/>
                 </Grid>
             </Border>
 
@@ -44,7 +44,7 @@
                                     ItemsLayout="HorizontalList"
                                     Grid.Row="1"
                                     SelectionMode="Single"
-                                    SelectionChanged="OnSelectPrimaryMuscle">
+                                    SelectionChanged="OnPrimaryMuscleSearch">
 
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="Models:Muscle">
@@ -65,7 +65,7 @@
                                     ItemsLayout="HorizontalList"
                                     Grid.Row="1"
                                     SelectionMode="Single"
-                                    SelectionChanged="OnSelectSecondaryMuscle">
+                                    SelectionChanged="OnSecondaryMuscleSearch">
 
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="Models:Muscle">

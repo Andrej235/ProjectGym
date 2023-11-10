@@ -43,12 +43,10 @@
         <VerticalStackLayout Grid.Row="1"
                              ZIndex="10" 
                              x:Name="filtersWrapper"
-                             CascadeInputTransparent="True"
-                             InputTransparent="True"
-                             IsVisible="True"
                              Padding="10, 5, 10, 20"
                              AnchorY="0" 
                              ScaleY="0"
+                             IsVisible="False"
                              Background="#121212">
             <toolkit:Expander x:Name="categoryFilterExpander">
                 <toolkit:Expander.Header>

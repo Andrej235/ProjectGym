@@ -10,10 +10,6 @@ namespace AppProjectGym
 {
     public partial class MainPage : ContentPage
     {
-        //private readonly IDataService<Muscle> muscleDataService;
-        //private readonly IDataService<ExerciseCategory> categoryDataService;
-        //private readonly IDataService<Equipment> equipmentDataService;
-
         private readonly IReadService<Exercise> exerciseReadService;
         private readonly IReadService<Muscle> muscleReadService;
         private readonly IReadService<ExerciseCategory> categoryReadService;
@@ -61,9 +57,6 @@ namespace AppProjectGym
 
         public MainPage(
             ExerciseDisplayMapper exerciseDisplayMapper,
-            //IDataService<Muscle> muscleDataService,
-            //IDataService<ExerciseCategory> categoryDataService,
-            //IDataService<Equipment> equipmentDataService,
             IReadService<Exercise> exerciseReadService,
             IReadService<Muscle> muscleReadService,
             IReadService<ExerciseCategory> categoryReadService,
@@ -78,10 +71,6 @@ namespace AppProjectGym
 
             BindingContext = this;
             this.exerciseReadService = exerciseReadService;
-            //this.muscleDataService = muscleDataService;
-            //this.categoryDataService = categoryDataService;
-            //this.equipmentDataService = equipmentDataService;
-
             this.exerciseDisplayMapper = exerciseDisplayMapper;
             this.muscleReadService = muscleReadService;
             this.categoryReadService = categoryReadService;
@@ -133,14 +122,6 @@ namespace AppProjectGym
                 exerciseCollectionView.SelectedItem = null;
         }
 
-/*        private void OnExerciseClicked(object sender, EventArgs e)
-        {
-            if ((sender as ImageButton).BindingContext is not Exercise exercise)
-                return;
-
-            Debug.WriteLine(exercise.Name);
-        }*/
-
         private async void OnExerciseSelect(object sender, SelectionChangedEventArgs e)
         {
             if (e.CurrentSelection is null || !e.CurrentSelection.Any())
@@ -186,13 +167,18 @@ namespace AppProjectGym
 
             isPlayingFilterAnimation = true;
 
-            await filtersWrapper.ScaleYTo(areFiltersOpen ? 0 : 1);
-            filtersWrapper.CascadeInputTransparent = areFiltersOpen;
-            //filtersWrapper.IsVisible = areFiltersOpen;
+            if (areFiltersOpen)
+            {
+                await filtersWrapper.ScaleYTo(0);
+                filtersWrapper.IsVisible = false;
+            }
+            else
+            {
+                filtersWrapper.IsVisible = true;
+                await filtersWrapper.ScaleYTo(1);
+            }
 
             areFiltersOpen = !areFiltersOpen;
-
-
             isPlayingFilterAnimation = false;
         }
 

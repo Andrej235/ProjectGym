@@ -32,11 +32,6 @@ namespace AppProjectGym
             builder.Services.AddTransient<FullScreenExercise>();
             builder.Services.AddTransient<SearchResultsPage>();
 
-            builder.Services.AddSingleton<IDataService<Muscle>, MuscleDataService>();
-            builder.Services.AddSingleton<IDataService<ExerciseCategory>, ExerciseCategoryDataService>();
-            builder.Services.AddSingleton<IDataService<ExerciseNote>, NotesDataService>();
-            builder.Services.AddSingleton<IDataService<Equipment>, EquipmentDataService>();
-
             builder.Services.AddTransient<IReadService<Exercise>, ExerciseReadService>();
             builder.Services.AddTransient<IReadService<Image>, ImageReadService>();
             builder.Services.AddTransient<IReadService<ExerciseNote>, NotesReadService>();
