@@ -8,16 +8,18 @@ namespace AppProjectGym.Pages;
 
 public partial class SearchResultsPage : ContentPage, IQueryAttributable
 {
-    public SearchResultsPage(IReadService<Image> imageReadService, IReadService<Exercise> exerciseReadService)
+    public SearchResultsPage(IReadService<Image> imageReadService, IReadService<Exercise> exerciseReadService, ExerciseDisplayMapper exerciseDisplayMapper)
     {
         InitializeComponent();
         BindingContext = this;
 
         this.imageReadService = imageReadService;
         this.exerciseReadService = exerciseReadService;
+        this.exerciseDisplayMapper = exerciseDisplayMapper;
     }
     private readonly IReadService<Image> imageReadService;
     private readonly IReadService<Exercise> exerciseReadService;
+    private readonly ExerciseDisplayMapper exerciseDisplayMapper;
 
     public List<Exercise> Exercises
     {
@@ -35,28 +37,12 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
     {
         List<ExerciseDisplay> newExerciseDisplays = new();
         foreach (var e in exercises)
-        {
-            var imgUrl = "";
-            try
-            {
-                var id = e.ImageIds.FirstOrDefault();
-                if (id != 0)
-                    imgUrl = (await imageReadService.Get(id.ToString(), "none")).ImageURL;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"---> Error occurred: {ex.Message}");
-            }
+            newExerciseDisplays.Add(await exerciseDisplayMapper.Map(e));
 
-            newExerciseDisplays.Add(new()
-            {
-                Id = e.Id,
-                Name = e.Name,
-                ImageUrl = imgUrl
-            });
-        }
         exerciseDisplays = newExerciseDisplays;
-        OnPropertyChanged();
+        exercisesCollection.ItemsSource = null;
+        exercisesCollection.ItemsSource = exerciseDisplays;
+        isWaitingForData = false;
     }
 
     public int PageNumber
@@ -98,10 +84,7 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
         }
 
         Exercises = exercisesToLoad;
-        exercisesCollection.ItemsSource = null;
-        exercisesCollection.ItemsSource = exerciseDisplays;
         await scrollView.ScrollToAsync(0, 0, true);
-        isWaitingForData = false;
     }
 
     private void LoadPreviousPage(object sender, EventArgs e)
@@ -128,15 +111,11 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
             return;
 
         var selectedExerciseDisplay = e.CurrentSelection[0] as ExerciseDisplay;
-        Debug.WriteLine($"---> Selected {selectedExerciseDisplay.Id}");
-
-        var exercise = await exerciseReadService.Get(selectedExerciseDisplay.Id.ToString(), "none");// exercises.FirstOrDefault(e => e.Id == selectedExerciseDisplay.Id);
-        if (exercise is null)
-            return;
+        Debug.WriteLine($"---> Selected {selectedExerciseDisplay.Name}");
 
         Dictionary<string, object> navigationParameter = new()
         {
-            {nameof(Exercise), exercise}
+            {"id", selectedExerciseDisplay.Id}
         };
 
         await Shell.Current.GoToAsync(nameof(FullScreenExercise), navigationParameter);

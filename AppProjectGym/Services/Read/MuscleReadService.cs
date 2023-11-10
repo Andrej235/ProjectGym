@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AppProjectGym.Models;
 
 namespace AppProjectGym.Services.Read
 {
-    public class MuscleReadService
+    public class MuscleReadService : AbstractReadService<Muscle>
     {
+        public MuscleReadService(HttpClient client) : base(client) { }
+
+        protected override string URLExtension => "muscle";
     }
 }

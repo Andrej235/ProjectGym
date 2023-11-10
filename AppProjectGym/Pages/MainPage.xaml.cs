@@ -10,12 +10,15 @@ namespace AppProjectGym
 {
     public partial class MainPage : ContentPage
     {
-        //private readonly IDataService<Exercise> exerciseDataService;
-        private readonly IDataService<Muscle> muscleDataService;
-        private readonly IDataService<ExerciseCategory> categoryDataService;
-        private readonly IDataService<Equipment> equipmentDataService;
+        //private readonly IDataService<Muscle> muscleDataService;
+        //private readonly IDataService<ExerciseCategory> categoryDataService;
+        //private readonly IDataService<Equipment> equipmentDataService;
 
         private readonly IReadService<Exercise> exerciseReadService;
+        private readonly IReadService<Muscle> muscleReadService;
+        private readonly IReadService<ExerciseCategory> categoryReadService;
+        private readonly IReadService<Equipment> equipmentReadService;
+        private readonly ExerciseDisplayMapper exerciseDisplayMapper;
 
         private readonly JsonSerializerOptions serializerOptions;
         public static List<Exercise> Exercises { get => exercises; set => exercises = value; }
@@ -54,14 +57,17 @@ namespace AppProjectGym
         }
         private List<Equipment> equipment;
 
-
+        private List<ExerciseDisplay> exerciseDisplays;
 
         public MainPage(
-            IDataService<Muscle> muscleDataService,
-            IDataService<ExerciseCategory> categoryDataService,
-            IDataService<Equipment> equipmentDataService
-,
-            IReadService<Exercise> exerciseReadService)
+            ExerciseDisplayMapper exerciseDisplayMapper,
+            //IDataService<Muscle> muscleDataService,
+            //IDataService<ExerciseCategory> categoryDataService,
+            //IDataService<Equipment> equipmentDataService,
+            IReadService<Exercise> exerciseReadService,
+            IReadService<Muscle> muscleReadService,
+            IReadService<ExerciseCategory> categoryReadService,
+            IReadService<Equipment> equipmentReadService)
         {
             InitializeComponent();
 
@@ -72,9 +78,14 @@ namespace AppProjectGym
 
             BindingContext = this;
             this.exerciseReadService = exerciseReadService;
-            this.muscleDataService = muscleDataService;
-            this.categoryDataService = categoryDataService;
-            this.equipmentDataService = equipmentDataService;
+            //this.muscleDataService = muscleDataService;
+            //this.categoryDataService = categoryDataService;
+            //this.equipmentDataService = equipmentDataService;
+
+            this.exerciseDisplayMapper = exerciseDisplayMapper;
+            this.muscleReadService = muscleReadService;
+            this.categoryReadService = categoryReadService;
+            this.equipmentReadService = equipmentReadService;
 
             LoadExercises();
             LoadMuscles();
@@ -99,15 +110,21 @@ namespace AppProjectGym
 
         private async void LoadExercises()
         {
-            Exercises = await exerciseReadService.Get("", 0, -1, "none");
-            exerciseCollectionView.ItemsSource = Exercises;
+            Exercises = await exerciseReadService.Get("", 0, 25, "images");
+
+            var newExerciseDisplays = new List<ExerciseDisplay>();
+            foreach (var e in Exercises)
+                newExerciseDisplays.Add(await exerciseDisplayMapper.Map(e));
+
+            exerciseDisplays = newExerciseDisplays.OrderByDescending(x => x.ImageUrl != "").ToList();
+            exerciseCollectionView.ItemsSource = exerciseDisplays;
         }
 
-        private async void LoadMuscles() => Muscles = await muscleDataService.Get();
+        private async void LoadMuscles() => Muscles = await muscleReadService.Get("", 0, -1, "none");
 
-        private async void LoadCategories() => Categories = await categoryDataService.Get();
+        private async void LoadCategories() => Categories = await categoryReadService.Get("", 0, -1, "none");
 
-        private async void LoadEquipment() => Equipment = await equipmentDataService.Get();
+        private async void LoadEquipment() => Equipment = await equipmentReadService.Get("", 0, -1, "none");
 
         protected override void OnAppearing()
         {
@@ -116,25 +133,25 @@ namespace AppProjectGym
                 exerciseCollectionView.SelectedItem = null;
         }
 
-        private void OnExerciseClicked(object sender, EventArgs e)
+/*        private void OnExerciseClicked(object sender, EventArgs e)
         {
             if ((sender as ImageButton).BindingContext is not Exercise exercise)
                 return;
 
             Debug.WriteLine(exercise.Name);
-        }
+        }*/
 
         private async void OnExerciseSelect(object sender, SelectionChangedEventArgs e)
         {
             if (e.CurrentSelection is null || !e.CurrentSelection.Any())
                 return;
 
-            var exercise = e.CurrentSelection[0] as Exercise;
+            var exercise = e.CurrentSelection[0] as ExerciseDisplay;
             Debug.WriteLine($"---> Selected {exercise.Name}");
 
             Dictionary<string, object> navigationParameter = new()
             {
-                {nameof(Exercise), exercise }
+                {"id", exercise.Id}
             };
 
             await Shell.Current.GoToAsync(nameof(FullScreenExercise), navigationParameter);
@@ -168,8 +185,14 @@ namespace AppProjectGym
                 return;
 
             isPlayingFilterAnimation = true;
+
             await filtersWrapper.ScaleYTo(areFiltersOpen ? 0 : 1);
+            filtersWrapper.CascadeInputTransparent = areFiltersOpen;
+            //filtersWrapper.IsVisible = areFiltersOpen;
+
             areFiltersOpen = !areFiltersOpen;
+
+
             isPlayingFilterAnimation = false;
         }
 
@@ -184,6 +207,16 @@ namespace AppProjectGym
         private async void OnOpenProfilePage(object sender, EventArgs e)
         {
             await Shell.Current.GoToAsync(nameof(ProfilePage));
+        }
+
+        private void LoadNextPage(object sender, EventArgs e)
+        {
+
+        }
+
+        private void LoadPreviousPage(object sender, EventArgs e)
+        {
+
         }
     }
 }

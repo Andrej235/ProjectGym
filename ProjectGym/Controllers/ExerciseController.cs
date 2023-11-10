@@ -37,14 +37,7 @@ namespace ProjectGym.Controllers
         {
             var exercises = await ReadService.Get(q, offset, limit, include);
 
-            return Ok(
-                AdvancedDTOMapper.TranslateToAdvancedDTO(
-                    values: exercises.Select(Mapper.Map).ToList(),
-                    baseAPIUrl: "exercise?" + (include != null ? $"&include={include}" : "") + (q != null ? $"&q={q}" : ""),
-                    offset: offset ?? 0,
-                    limit: limit ?? -1
-                    )
-                );
+            return Ok(exercises.Select(Mapper.Map).ToList());
         }
 
         [HttpGet("{id}")]

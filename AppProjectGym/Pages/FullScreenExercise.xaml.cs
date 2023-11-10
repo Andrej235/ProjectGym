@@ -9,7 +9,6 @@ namespace AppProjectGym.Pages
     public partial class FullScreenExercise : ContentPage, IQueryAttributable
     {
         private readonly IDataService<Muscle> muscleDataService;
-        //private readonly IDataService<Exercise> exerciseDataService;
         private readonly IDataService<ExerciseCategory> categoryDataService;
         private readonly IDataService<ExerciseNote> notesDataService;
         private readonly IDataService<Equipment> equipmentDataService;
@@ -119,15 +118,14 @@ namespace AppProjectGym.Pages
 
         public async void ApplyQueryAttributes(IDictionary<string, object> query)
         {
-            Exercise = query[nameof(Models.Exercise)] as Exercise;
-            Exercise = await exerciseReadService.Get(Exercise.Id.ToString(), "all");
+            int id = Convert.ToInt32(query["id"]);
+            Exercise = await exerciseReadService.Get(id.ToString(), "all");
 
             if (exercise.ImageIds.Any())
             {
                 var image = await imageReadService.Get(exercise.ImageIds.First().ToString(), "all");
                 MainImage = image;
             }
-
             //OnOpen();
         }
 
