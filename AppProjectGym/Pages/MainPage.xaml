@@ -237,7 +237,8 @@
 
         <ScrollView Grid.Row="1"
                     Grid.RowSpan="2"
-                    VerticalScrollBarVisibility="Always">
+                    VerticalScrollBarVisibility="Always"
+                    x:Name="exerciseCollectionScrollView">
 
             <Grid RowDefinitions="*, Auto">
                 <CollectionView x:Name="exerciseCollectionView" 
@@ -288,7 +289,7 @@
 
                     <Button Text="Prev"
                         Margin="5, 0, 5, 0"
-                        Clicked="LoadNextPage"/>
+                        Clicked="LoadPreviousPage"/>
 
                     <Label x:Name="pageNumberLabel"
                        Margin="5, 0, 5, 0"
@@ -297,7 +298,7 @@
 
                     <Button Text="Next"
                         Margin="5, 0, 5, 0"
-                        Clicked="LoadPreviousPage"/>
+                        Clicked="LoadNextPage"/>
 
                 </FlexLayout>
             </Grid>
@@ -350,6 +351,18 @@
 
             </FlexLayout>
         </Grid>
+
+        <Border StrokeThickness="3"
+                StrokeShape="RoundRectangle 25"
+                WidthRequest="65"
+                HeightRequest="65"
+                Margin="315, 1175, 0, 0"
+                Padding="15">
+            <ImageButton HorizontalOptions="Center"
+                         VerticalOptions="Center"
+                         Source="plus.png"
+                         Clicked="OnAddButtonPressed"/>
+        </Border>
     </Grid>
 
 </ContentPage>

@@ -39,7 +39,7 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
         foreach (var e in exercises)
             newExerciseDisplays.Add(await exerciseDisplayMapper.Map(e));
 
-        exerciseDisplays = newExerciseDisplays;
+        exerciseDisplays = newExerciseDisplays.OrderBy(x => x.ImageUrl == "").ToList();
         exercisesCollection.ItemsSource = null;
         exercisesCollection.ItemsSource = exerciseDisplays;
         isWaitingForData = false;
@@ -80,6 +80,7 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
         if (exercisesToLoad is null || !exercisesToLoad.Any())
         {
             PageNumber--;
+            isWaitingForData = false;
             return;
         }
 

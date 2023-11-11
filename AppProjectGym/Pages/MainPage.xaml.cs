@@ -20,6 +20,20 @@ namespace AppProjectGym
         public static List<Exercise> Exercises { get => exercises; set => exercises = value; }
         private static List<Exercise> exercises;
 
+        public int PageNumber
+        {
+            get => pageNumber;
+            set
+            {
+                pageNumber = value;
+                pageNumberLabel.Text = null;
+                pageNumberLabel.Text = pageNumber.ToString();
+            }
+        }
+        private int pageNumber;
+        private readonly int exercisesPerPage;
+        private bool isWaitingForExerciseData;
+
         public List<Muscle> Muscles
         {
             get => muscles;
@@ -76,6 +90,9 @@ namespace AppProjectGym
             this.categoryReadService = categoryReadService;
             this.equipmentReadService = equipmentReadService;
 
+            PageNumber = 1;
+            exercisesPerPage = 15;
+
             LoadExercises();
             LoadMuscles();
             LoadCategories();
@@ -99,14 +116,28 @@ namespace AppProjectGym
 
         private async void LoadExercises()
         {
-            Exercises = await exerciseReadService.Get("", 0, 25, "images");
+            if (isWaitingForExerciseData)
+                return;
 
+            isWaitingForExerciseData = true;
+            var loadedExercises = await exerciseReadService.Get("", (pageNumber - 1) * exercisesPerPage, exercisesPerPage, "images");
+            if (loadedExercises is null || !loadedExercises.Any())
+            {
+                PageNumber--; //If the page number is 1 the previous button can't even be pressed / won't invoke this method
+                isWaitingForExerciseData = false;
+                return;
+            }
+
+            Exercises = loadedExercises;
             var newExerciseDisplays = new List<ExerciseDisplay>();
             foreach (var e in Exercises)
                 newExerciseDisplays.Add(await exerciseDisplayMapper.Map(e));
 
             exerciseDisplays = newExerciseDisplays.OrderByDescending(x => x.ImageUrl != "").ToList();
+            exerciseCollectionView.ItemsSource = null;
             exerciseCollectionView.ItemsSource = exerciseDisplays;
+            await exerciseCollectionScrollView.ScrollToAsync(0, 0, true);
+            isWaitingForExerciseData = false;
         }
 
         private async void LoadMuscles() => Muscles = await muscleReadService.Get("", 0, -1, "none");
@@ -195,14 +226,26 @@ namespace AppProjectGym
             await Shell.Current.GoToAsync(nameof(ProfilePage));
         }
 
-        private void LoadNextPage(object sender, EventArgs e)
-        {
 
-        }
 
         private void LoadPreviousPage(object sender, EventArgs e)
         {
-
+            if (PageNumber > 1 && !isWaitingForExerciseData)
+            {
+                PageNumber--;
+                LoadExercises();
+            }
         }
+
+        private void LoadNextPage(object sender, EventArgs e)
+        {
+            if (!isWaitingForExerciseData)
+            {
+                PageNumber++;
+                LoadExercises();
+            }
+        }
+
+        private async void OnAddButtonPressed(object sender, EventArgs e) => await Shell.Current.GoToAsync(nameof(ExerciseCreationPage));
     }
 }

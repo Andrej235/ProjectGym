@@ -16,5 +16,11 @@ namespace AppProjectGym.Information
         {
             PropertyNameCaseInsensitive = true
         };
+
+        public static JsonSerializerOptions SerializerOptions => serializerOptions;
+        private static readonly JsonSerializerOptions serializerOptions = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        };
     }
 }

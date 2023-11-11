@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:Pages="clr-namespace:AppProjectGym.Pages"
+             xmlns:Models="clr-namespace:AppProjectGym.Models"
+             xmlns:ValueConverters="clr-namespace:AppProjectGym.ValueConverters"
+             x:Class="AppProjectGym.Pages.ExerciseCreationPage"
+             Title="ExerciseCreationPage"
+             x:DataType="Pages:ExerciseCreationPage">
+
+    <ContentPage.Resources>
+        <ValueConverters:MuscleImageConverter x:Key="muscleIdToImage"/>
+    </ContentPage.Resources>
+    
+    <ScrollView>
+        <VerticalStackLayout Margin="15">
+            <Entry x:Name="nameInput" Placeholder="Name" Margin="0, 10, 0, 0"/>
+            <Editor x:Name="descriptionInput" Placeholder="Description" AutoSize="TextChanges" Margin="0, 10, 0, 0"></Editor>
+
+            <Grid RowDefinitions="Auto, Auto" Margin="0, 10, 0, 0">
+                <Label Text="Category:" FontSize="Subtitle"/>
+
+                <Grid Margin="15, 0, 0, 0" Grid.Row="1">
+                    <CollectionView x:Name="categorySelector"
+                                    ItemsLayout="VerticalList"
+                                    ItemsSource="{Binding Categories}"
+                                    SelectionMode="Single"
+                                    Margin="0, 5, 0, 5">
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="Models:ExerciseCategory">
+                                <Border Padding="10" StrokeShape="RoundRectangle 10">
+                                    <Grid RowDefinitions="25" ColumnDefinitions="*" HorizontalOptions="FillAndExpand">
+                                        <Label Text="{Binding Name}" 
+                                               VerticalTextAlignment="Center"
+                                               HorizontalTextAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </Grid>
+
+            <Grid RowDefinitions="Auto, Auto" Margin="0, 10, 0, 0">
+                <Label Text="Equipment:" FontSize="Subtitle"/>
+
+                <Grid Margin="15, 0, 0, 0" Grid.Row="1">
+                    <CollectionView x:Name="equipmentSelector"
+                                    ItemsLayout="VerticalList"
+                                    ItemsSource="{Binding Equipment}"
+                                    SelectionMode="Multiple"
+                                    Margin="0, 5, 0, 5">
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="Models:Equipment">
+                                <Border Padding="10" StrokeShape="RoundRectangle 10">
+                                    <Grid RowDefinitions="25" ColumnDefinitions="*" HorizontalOptions="FillAndExpand">
+                                        <Label Text="{Binding Name}" 
+                                               VerticalTextAlignment="Center"
+                                               HorizontalTextAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </Grid>
+
+            <Grid RowDefinitions="Auto, Auto" Margin="0, 10, 0, 0">
+                <Label Text="Primary Muscles:" FontSize="Subtitle"/>
+
+                <Grid Margin="15, 0, 0, 0" Grid.Row="1">
+                    <CollectionView x:Name="primaryMuscleSelector"
+                                                ItemsLayout="HorizontalList"
+                                                ItemsSource="{Binding Muscles}"
+                                                SelectionMode="Multiple"
+                                                Margin="0, 5, 0, 5">
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="Models:Muscle">
+                                <Border Padding="10">
+                                    <Grid RowDefinitions="300, 50" >
+                                        <Image Source="{Binding Id, Converter={StaticResource muscleIdToImage}}" Grid.Row="0"/>
+                                        <Label Text="{Binding Name}" 
+                                                       Grid.Row="1"
+                                                       HorizontalTextAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </Grid>
+
+            <Grid RowDefinitions="Auto, Auto" Margin="0, 10, 0, 0">
+                <Label Text="Secondary Muscles:" FontSize="Subtitle"/>
+
+                <Grid Margin="15, 0, 0, 0" Grid.Row="1">
+                    <CollectionView x:Name="secondaryMuscleSelector"
+                                                ItemsLayout="HorizontalList"
+                                                ItemsSource="{Binding Muscles}"
+                                                SelectionMode="Multiple"
+                                                Margin="0, 5, 0, 5">
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="Models:Muscle">
+                                <Border Padding="10">
+                                    <Grid RowDefinitions="300, 50" >
+                                        <Image Source="{Binding Id, Converter={StaticResource muscleIdToImage}}" Grid.Row="0"/>
+                                        <Label Text="{Binding Name}" 
+                                                       Grid.Row="1"
+                                                       HorizontalTextAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </Grid>
+
+            <Button Text="Create" Margin="15, 10, 10, 10" Clicked="OnCreateExercise"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

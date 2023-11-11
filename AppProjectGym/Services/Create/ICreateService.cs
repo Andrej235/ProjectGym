@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace AppProjectGym.Services.Create
 {
-    internal interface ICreateService<T> where T : class
+    public interface ICreateService<T> where T : class
     {
+        Task<bool> Add(T entityToAdd);
     }
 }
