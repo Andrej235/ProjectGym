@@ -16,19 +16,19 @@ namespace ProjectGym.Controllers
 {
     [Route("api/user")]
     [ApiController]
-    public class UserController : ControllerBase, ICreateController<User, RegisterDTO>
+    public class UserController : ControllerBase, ICreateController<User, RegisterDTO, Guid>
     {
         public IReadService<User> ReadService { get; }
         public IReadService<Client> ClientReadService { get; }
         public IEntityMapper<User, UserDTO> Mapper { get; }
-        public ICreateService<User> CreateService { get; }
-        public ICreateService<Client> ClientCreateService { get; }
+        public ICreateService<User, Guid> CreateService { get; }
+        public ICreateService<Client, Guid> ClientCreateService { get; }
         public IUpdateService<Client> ClientUpdateService { get; }
 
         public UserController(IReadService<User> readService,
                               IEntityMapper<User, UserDTO> mapper,
-                              ICreateService<User> createService,
-                              ICreateService<Client> clientCreateService,
+                              ICreateService<User, Guid> createService,
+                              ICreateService<Client, Guid> clientCreateService,
                               IReadService<Client> clientReadService,
                               IUpdateService<Client> clientUpdateService)
         {
@@ -52,8 +52,8 @@ namespace ProjectGym.Controllers
                 PasswordHash = userDTO.Password.HashPassword(salt)
             };
 
-            var success = await CreateService.Add(user);
-            if (!success)
+            var newEntityId = await CreateService.Add(user);
+            if (newEntityId == default)
                 return BadRequest("User already exists");
 
             return Ok(new LoggedInDTO()

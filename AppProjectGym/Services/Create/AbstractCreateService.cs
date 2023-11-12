@@ -5,7 +5,7 @@ using AppInfo = AppProjectGym.Information.AppInfo;
 
 namespace AppProjectGym.Services.Create
 {
-    public abstract class AbstractCreateService<T> : ICreateService<T> where T : class
+    public abstract class AbstractCreateService<TEntity, TPK> : ICreateService<TEntity, TPK> where TEntity : class
     {
         private readonly HttpClient client;
         /// <summary>
@@ -22,8 +22,10 @@ namespace AppProjectGym.Services.Create
         /// </summary>
         protected abstract string URLExtension { get; }
 
-        ///<inheritdoc cref="ICreateService{T}.Add(T)"/>
-        public async Task<bool> Add(T entityToAdd)
+        protected abstract Func<string, TPK> ParsePrimaryKey { get; }
+
+        ///<inheritdoc cref="ICreateService{TEntity ,TPK}.Add(TEntity)"/>
+        public async Task<TPK> Add(TEntity entityToAdd)
         {
             try
             {
@@ -43,12 +45,23 @@ namespace AppProjectGym.Services.Create
 
                 var response = await client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
-                return true;
+                var content = await response.Content.ReadAsStringAsync();
+
+                try
+                {
+                    var newEntityId = ParsePrimaryKey(content);
+                    return newEntityId;
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"---> Error occurred while parsing primary key: {ex.Message}");
+                    return default;
+                }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"---> Error occurred: {ex.Message}");
-                return false;
+                return default;
             }
         }
     }

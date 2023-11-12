@@ -5,15 +5,15 @@ using System.Diagnostics;
 
 namespace ProjectGym.Services.Create
 {
-    public class ExerciseCreateService : ICreateService<Exercise>
+    public class ExerciseCreateService : ICreateService<Exercise, int>
     {
         private readonly ExerciseContext context;
         private readonly IReadService<Exercise> readService;
-        private readonly ICreateService<EquipmentExerciseUsage> equipmentExerciseUsageCreateService;
-        private readonly ICreateService<PrimaryMuscleExerciseConnection> primaryMuscleExerciseConnectionCreateService;
-        private readonly ICreateService<SecondaryMuscleExerciseConnection> secondaryMuscleExerciseConnectionCreateService;
+        private readonly ICreateService<EquipmentExerciseUsage, int> equipmentExerciseUsageCreateService;
+        private readonly ICreateService<PrimaryMuscleExerciseConnection, int> primaryMuscleExerciseConnectionCreateService;
+        private readonly ICreateService<SecondaryMuscleExerciseConnection, int> secondaryMuscleExerciseConnectionCreateService;
 
-        public ExerciseCreateService(ExerciseContext context, IReadService<Exercise> readService, ICreateService<EquipmentExerciseUsage> equipmentExerciseUsageCreateService, ICreateService<PrimaryMuscleExerciseConnection> primaryMuscleExerciseConnectionCreateService, ICreateService<SecondaryMuscleExerciseConnection> secondaryMuscleExerciseConnectionCreateService)
+        public ExerciseCreateService(ExerciseContext context, IReadService<Exercise> readService, ICreateService<EquipmentExerciseUsage, int> equipmentExerciseUsageCreateService, ICreateService<PrimaryMuscleExerciseConnection, int> primaryMuscleExerciseConnectionCreateService, ICreateService<SecondaryMuscleExerciseConnection, int> secondaryMuscleExerciseConnectionCreateService)
         {
             this.context = context;
             this.readService = readService;
@@ -22,12 +22,12 @@ namespace ProjectGym.Services.Create
             this.secondaryMuscleExerciseConnectionCreateService = secondaryMuscleExerciseConnectionCreateService;
         }
 
-        public async Task<bool> Add(Exercise toAdd)
+        public async Task<int> Add(Exercise toAdd)
         {
             try
             {
                 await readService.Get(x => x.Name.ToLower() == toAdd.Name.ToLower(), "none");
-                return false;
+                return default;
             }
             catch (NullReferenceException)
             {
@@ -62,18 +62,18 @@ namespace ProjectGym.Services.Create
                         await secondaryMuscleExerciseConnectionCreateService.Add(new() { MuscleId = m.Id, ExerciseId = dbEntity.Id });
 
                     await context.SaveChangesAsync();
-                    return true;
+                    return dbEntity.Id;
                 }
                 catch (Exception ex)
                 {
                     Debug.WriteLine($"---> Error occurred: {ex.Message} \n{ex.InnerException?.Message}");
-                    return false;
+                    return default;
                 }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"---> Error occurred: {ex.Message} \n{ex.InnerException?.Message}");
-                return false;
+                return default;
             }
         }
     }

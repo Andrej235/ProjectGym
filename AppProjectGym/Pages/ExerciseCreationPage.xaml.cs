@@ -2,6 +2,7 @@ using AppProjectGym.Models;
 using AppProjectGym.Services.Create;
 using AppProjectGym.Services.Read;
 using System.Diagnostics;
+using Image = AppProjectGym.Models.Image;
 
 namespace AppProjectGym.Pages;
 
@@ -10,9 +11,10 @@ public partial class ExerciseCreationPage : ContentPage
     private readonly IReadService<Muscle> muscleReadService;
     private readonly IReadService<ExerciseCategory> categoryReadService;
     private readonly IReadService<Equipment> equipmentReadService;
-    private readonly ICreateService<Exercise> createService;
+    private readonly ICreateService<Exercise, int> exerciseCreateService;
+    private readonly ICreateService<Image, int> imageCreateService;
 
-    public ExerciseCreationPage(IReadService<Muscle> muscleReadService, IReadService<ExerciseCategory> categoryReadService, IReadService<Equipment> equipmentReadService, ICreateService<Exercise> createService)
+    public ExerciseCreationPage(IReadService<Muscle> muscleReadService, IReadService<ExerciseCategory> categoryReadService, IReadService<Equipment> equipmentReadService, ICreateService<Exercise, int> exerciseCreateService, ICreateService<Image, int> imageCreateService)
     {
         InitializeComponent();
         BindingContext = this;
@@ -21,8 +23,9 @@ public partial class ExerciseCreationPage : ContentPage
         this.categoryReadService = categoryReadService;
         this.equipmentReadService = equipmentReadService;
 
+        this.exerciseCreateService = exerciseCreateService;
+        this.imageCreateService = imageCreateService;
         OnOpen();
-        this.createService = createService;
     }
 
     private async void OnOpen()
@@ -65,15 +68,18 @@ public partial class ExerciseCreationPage : ContentPage
     }
     private List<ExerciseCategory> categories;
 
-    private void OnCreateExercise(object sender, EventArgs e)
+    private async void OnCreateExercise(object sender, EventArgs e)
     {
         var name = nameInput.Text;
         var description = descriptionInput.Text;
+        var imageURL = imageURLInput.Text;
 
         if (name is null ||
             name == "" ||
             description is null ||
             description == "" ||
+            imageURL is null ||
+            imageURL == "" ||
             categorySelector.SelectedItem is null ||
             equipmentSelector.SelectedItems is null ||
             primaryMuscleSelector.SelectedItems is null)
@@ -92,8 +98,17 @@ public partial class ExerciseCreationPage : ContentPage
             VideoIds = new List<int>(),
             IsVariationOfIds = new List<int>(),
             VariationIds = new List<int>(),
-            NoteIds = new List<int>(),//ctrl k d
+            NoteIds = new List<int>(),
         };
-        createService.Add(exercise);
+
+        var exerciseId = await exerciseCreateService.Add(exercise);
+
+        await imageCreateService.Add(new()
+        {
+            ImageURL = imageURL,
+            ExerciseId = exerciseId, //can't get id - restructuring required
+            IsMain = true,
+            Style = "idk"
+        });
     }
 }

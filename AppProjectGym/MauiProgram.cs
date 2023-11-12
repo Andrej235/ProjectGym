@@ -4,7 +4,6 @@ using AppProjectGym.Services;
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Core;
-using AppProjectGym.Information;
 using AppProjectGym.Services.Read;
 using Image = AppProjectGym.Models.Image;
 using AppProjectGym.Services.Create;
@@ -43,7 +42,8 @@ namespace AppProjectGym
             builder.Services.AddTransient<IReadService<ExerciseCategory>, CategoryReadService>();
             builder.Services.AddTransient<IReadService<Muscle>, MuscleReadService>();
 
-            builder.Services.AddTransient<ICreateService<Exercise>, ExerciseCreateService>();
+            builder.Services.AddTransient<ICreateService<Exercise, int>, ExerciseCreateService>();
+            builder.Services.AddTransient<ICreateService<Image, int>, ImageCreateService>();
 
             builder.Services.AddTransient<ExerciseDisplayMapper>();
 

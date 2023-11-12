@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace ProjectGym.Services.Create
 {
-    public class EquipmentExerciseUsageCreateService : ICreateService<EquipmentExerciseUsage>
+    public class EquipmentExerciseUsageCreateService : ICreateService<EquipmentExerciseUsage, int>
     {
         private readonly ExerciseContext context;
         private readonly IReadService<EquipmentExerciseUsage> readService;
@@ -15,12 +15,12 @@ namespace ProjectGym.Services.Create
             this.readService = readService;
         }
 
-        public async Task<bool> Add(EquipmentExerciseUsage toAdd)
+        public async Task<int> Add(EquipmentExerciseUsage toAdd)
         {
             try
             {
                 await readService.Get(x => x.EquipmentId == toAdd.EquipmentId && x.ExerciseId == toAdd.ExerciseId, "none");
-                return false;
+                return default;
             }
             catch (NullReferenceException)
             {
@@ -28,18 +28,18 @@ namespace ProjectGym.Services.Create
                 {
                     await context.EquipmentExerciseUsages.AddAsync(toAdd);
                     await context.SaveChangesAsync();
-                    return true;
+                    return toAdd.Id;
                 }
                 catch (Exception ex)
                 {
                     Debug.WriteLine($"Error occured while trying to add EquipmentExerciseUsage: {ex.Message}");
-                    return false;
+                    return default;
                 }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error occured while trying to add EquipmentExerciseUsage: {ex.Message}");
-                return false;
+                return default;
             }
         }
     }

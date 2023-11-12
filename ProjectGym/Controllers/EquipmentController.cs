@@ -13,19 +13,19 @@ namespace ProjectGym.Controllers
     [ApiController]
     public class EquipmentController : ControllerBase,
         IReadController<Equipment, EquipmentDTO, int>,
-        ICreateController<Equipment, EquipmentDTO>,
+        ICreateController<Equipment, EquipmentDTO, int>,
         IUpdateController<Equipment>,
         IDeleteController<Equipment, int>
     {
         public IEntityMapperAsync<Equipment, EquipmentDTO> Mapper { get; }
         public IReadService<Equipment> ReadService { get; }
-        public ICreateService<Equipment> CreateService { get; }
+        public ICreateService<Equipment, int> CreateService { get; }
         public IUpdateService<Equipment> UpdateService { get; }
         public IDeleteService<Equipment> DeleteService { get; }
 
         public EquipmentController(IEntityMapperAsync<Equipment, EquipmentDTO> mapper,
                                    IReadService<Equipment> readService,
-                                   ICreateService<Equipment> createService,
+                                   ICreateService<Equipment, int> createService,
                                    IUpdateService<Equipment> updateService,
                                    IDeleteService<Equipment> deleteService)
         {
@@ -61,9 +61,9 @@ namespace ProjectGym.Controllers
         {
             try
             {
-                bool success = await CreateService.Add(await Mapper.Map(entityDTO));
-                if (success)
-                    return Ok("Successfully added entity to database.");
+                int newEntityId = await CreateService.Add(await Mapper.Map(entityDTO));
+                if (newEntityId != default)
+                    return Ok(newEntityId);
                 else
                     return BadRequest("Entity already exists.");
             }

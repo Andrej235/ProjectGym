@@ -12,8 +12,8 @@ namespace ProjectGym.Services.Update
         private readonly ExerciseContext context;
         private readonly IReadService<Equipment> readService;
         private readonly IDeleteService<EquipmentExerciseUsage> equipmentExerciseUsageDeleteService;
-        private readonly ICreateService<EquipmentExerciseUsage> equipmentExerciseUsageCreateService;
-        public EquipmentUpdateService(ExerciseContext context, IReadService<Equipment> readService, IDeleteService<EquipmentExerciseUsage> equipmentExerciseUsageDeleteService, ICreateService<EquipmentExerciseUsage> equipmentExerciseUsageCreateService)
+        private readonly ICreateService<EquipmentExerciseUsage, int> equipmentExerciseUsageCreateService;
+        public EquipmentUpdateService(ExerciseContext context, IReadService<Equipment> readService, IDeleteService<EquipmentExerciseUsage> equipmentExerciseUsageDeleteService, ICreateService<EquipmentExerciseUsage, int> equipmentExerciseUsageCreateService)
         {
             this.context = context;
             this.readService = readService;

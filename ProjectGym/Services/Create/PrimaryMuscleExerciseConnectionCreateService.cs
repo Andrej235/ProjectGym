@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace ProjectGym.Services.Create
 {
-    public class PrimaryMuscleExerciseConnectionCreateService : ICreateService<PrimaryMuscleExerciseConnection>
+    public class PrimaryMuscleExerciseConnectionCreateService : ICreateService<PrimaryMuscleExerciseConnection, int>
     {
         private readonly ExerciseContext context;
         private readonly IReadService<PrimaryMuscleExerciseConnection> readService;
@@ -15,12 +15,12 @@ namespace ProjectGym.Services.Create
             this.readService = readService;
         }
 
-        public async Task<bool> Add(PrimaryMuscleExerciseConnection toAdd)
+        public async Task<int> Add(PrimaryMuscleExerciseConnection toAdd)
         {
             try
             {
                 await readService.Get(x => x.MuscleId == toAdd.MuscleId && x.ExerciseId == toAdd.ExerciseId, "none");
-                return false;
+                return default;
             }
             catch (NullReferenceException)
             {
@@ -28,18 +28,18 @@ namespace ProjectGym.Services.Create
                 {
                     await context.PrimaryMuscleExerciseConnections.AddAsync(toAdd);
                     await context.SaveChangesAsync();
-                    return true;
+                    return toAdd.Id;
                 }
                 catch (Exception ex)
                 {
                     Debug.WriteLine($"Error occured while trying to add PrimaryMuscleExerciseConnection: {ex.Message}");
-                    return false;
+                    return default;
                 }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error occured while trying to add PrimaryMuscleExerciseConnection: {ex.Message}");
-                return false;
+                return default;
             }
         }
     }

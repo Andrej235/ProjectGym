@@ -4,9 +4,9 @@ using ProjectGym.Services.Read;
 
 namespace ProjectGym.Controllers
 {
-    public interface ICreateController<TEntity, TDTO> where TEntity : class where TDTO : class
+    public interface ICreateController<TEntity, TDTO, TPK> where TEntity : class where TDTO : class
     {
-        ICreateService<TEntity> CreateService { get; }
+        ICreateService<TEntity, TPK> CreateService { get; }
 
         Task<IActionResult> Create([FromBody] TDTO entityDTO);
     }

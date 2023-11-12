@@ -16,6 +16,7 @@
         <VerticalStackLayout Margin="15">
             <Entry x:Name="nameInput" Placeholder="Name" Margin="0, 10, 0, 0"/>
             <Editor x:Name="descriptionInput" Placeholder="Description" AutoSize="TextChanges" Margin="0, 10, 0, 0"></Editor>
+            <Entry x:Name="imageURLInput" Placeholder="Image URL" Margin="0, 10, 0, 0"/>
 
             <Grid RowDefinitions="Auto, Auto" Margin="0, 10, 0, 0">
                 <Label Text="Category:" FontSize="Subtitle"/>

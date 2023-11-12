@@ -15,15 +15,15 @@ namespace ProjectGym.Controllers
 {
     [Route("api/exercise")]
     [ApiController]
-    public class ExerciseController : ControllerBase, ICreateController<Exercise, ExerciseDTO>, IReadController<Exercise, ExerciseDTO, int>, IDeleteController<Exercise, int>
+    public class ExerciseController : ControllerBase, ICreateController<Exercise, ExerciseDTO, int>, IReadController<Exercise, ExerciseDTO, int>, IDeleteController<Exercise, int>
     {
         public IReadService<Exercise> ReadService { get; }
         public IEntityMapperAsync<Exercise, ExerciseDTO> Mapper { get; }
         public IDeleteService<Exercise> DeleteService { get; }
         public IDeleteService<ExerciseVariation> ExerciseVariationDeleteService { get; }
-        public ICreateService<Exercise> CreateService { get; }
+        public ICreateService<Exercise, int> CreateService { get; }
 
-        public ExerciseController(IReadService<Exercise> readService, IEntityMapperAsync<Exercise, ExerciseDTO> mapper, IDeleteService<Exercise> deleteService, IDeleteService<ExerciseVariation> exerciseVariationDeleteService, ICreateService<Exercise> createService)
+        public ExerciseController(IReadService<Exercise> readService, IEntityMapperAsync<Exercise, ExerciseDTO> mapper, IDeleteService<Exercise> deleteService, IDeleteService<ExerciseVariation> exerciseVariationDeleteService, ICreateService<Exercise, int> createService)
         {
             Mapper = mapper;
             CreateService = createService;
@@ -79,8 +79,8 @@ namespace ProjectGym.Controllers
             try
             {
                 var entity = await Mapper.Map(entityDTO);
-                bool success = await CreateService.Add(entity);
-                return success ? Ok("Successfully added entity to database") : BadRequest("Entity already exists");
+                int newId = await CreateService.Add(entity);
+                return newId != default ? Ok(newId) : BadRequest("Entity already exists");
             }
             catch (Exception ex)
             {

@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace ProjectGym.Services.Create
 {
-    public class ClientCreateService : ICreateService<Client>
+    public class ClientCreateService : ICreateService<Client, Guid>
     {
         private readonly ExerciseContext context;
 
@@ -14,7 +14,7 @@ namespace ProjectGym.Services.Create
             this.context = context;
         }
 
-        public async Task<bool> Add(Client toAdd)
+        public async Task<Guid> Add(Client toAdd)
         {
             try
             {
@@ -23,12 +23,12 @@ namespace ProjectGym.Services.Create
 
                 await context.Clients.AddAsync(toAdd);
                 await context.SaveChangesAsync();
-                return true;
+                return toAdd.Id;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"---> Error occurred: {ex.Message} \n{ex.InnerException?.Message}");
-                return false;
+                return default;
             }
         }
     }
