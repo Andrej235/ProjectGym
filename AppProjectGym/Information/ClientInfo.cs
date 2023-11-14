@@ -106,15 +106,7 @@ namespace AppProjectGym.Information
         }
 
 
-        /*        private static async Task<Guid> CreateClientAsync()
-                {
-                    HttpClient client = new();
-                    var response = await client.PostAsync(AppInfo.BaseApiURL + "/user/client", null);
-                    if (Guid.TryParse(await response.Content.ReadAsStringAsync(), out Guid res))
-                        return res;
-                    else
-                        throw new NullReferenceException("Server created a bad Guid?");
-                }*/
+
         private class LoginDTO
         {
             public Guid? ClientGuid { get; set; }

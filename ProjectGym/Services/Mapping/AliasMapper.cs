@@ -3,7 +3,7 @@ using ProjectGym.Models;
 
 namespace ProjectGym.Services.Mapping
 {
-    public class AliasMapper : IEntityMapper<ExerciseAlias, ExerciseAliasDTO>
+    public class AliasMapper : IEntityMapperSync<ExerciseAlias, ExerciseAliasDTO>
     {
         public ExerciseAliasDTO Map(ExerciseAlias entity) => new()
         {

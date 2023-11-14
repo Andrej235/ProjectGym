@@ -37,7 +37,6 @@ namespace ProjectGym.Services.Mapping
 
             return new()
             {
-                Id = dto.Id,
                 Name = dto.Name,
                 UsedInExercises = usedInExercises
             };
