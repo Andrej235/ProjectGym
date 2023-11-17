@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace ProjectGym.Services.Create
 {
-    public class ImageCreateService : ICreateService<ExerciseImage, int>
+    public class ImageCreateService : ICreateService<Image, int>
     {
         private readonly ExerciseContext context;
         private readonly IReadService<Exercise> exerciseReadService;
@@ -15,7 +15,7 @@ namespace ProjectGym.Services.Create
             this.context = context;
         }
 
-        public async Task<int> Add(ExerciseImage toAdd)
+        public async Task<int> Add(Image toAdd)
         {
             if (toAdd.ExerciseId < 1)
                 return default;
@@ -24,7 +24,7 @@ namespace ProjectGym.Services.Create
             {
                 await exerciseReadService.Get(x => x.Id == toAdd.ExerciseId, "none");
 
-                await context.ExerciseImages.AddAsync(toAdd);
+                await context.Images.AddAsync(toAdd);
                 await context.SaveChangesAsync();
 
                 return toAdd.Id;

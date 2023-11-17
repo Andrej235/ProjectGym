@@ -21,22 +21,12 @@ namespace ProjectGym.Services.Read
             if (include is null || !include.Any() || include.Contains("none"))
                 return musclesIncluding;
 
-            if (include.Contains("all"))
+            if (include.Contains("all") || include.Contains("musclegroup"))
             {
                 return musclesIncluding
-                    .Include(m => m.PrimaryInExercises)
-                    .Include(m => m.SecondaryInExercises);
+                    .Include(x => x.MuscleGroup);
             }
 
-            foreach (var inc in include)
-            {
-                musclesIncluding = inc switch
-                {
-                    "primaryin" => musclesIncluding.Include(m => m.PrimaryInExercises),
-                    "secondaryin" => musclesIncluding.Include(m => m.SecondaryInExercises),
-                    _ => musclesIncluding
-                };
-            }
             return musclesIncluding;
         }
 

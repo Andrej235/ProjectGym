@@ -11,9 +11,9 @@ namespace ProjectGym.Services.Update
     {
         private readonly ExerciseContext context;
         private readonly IReadService<Equipment> readService;
-        private readonly IDeleteService<EquipmentExerciseUsage> equipmentExerciseUsageDeleteService;
-        private readonly ICreateService<EquipmentExerciseUsage, int> equipmentExerciseUsageCreateService;
-        public EquipmentUpdateService(ExerciseContext context, IReadService<Equipment> readService, IDeleteService<EquipmentExerciseUsage> equipmentExerciseUsageDeleteService, ICreateService<EquipmentExerciseUsage, int> equipmentExerciseUsageCreateService)
+        private readonly IDeleteService<EquipmentUsage> equipmentExerciseUsageDeleteService;
+        private readonly ICreateService<EquipmentUsage, int> equipmentExerciseUsageCreateService;
+        public EquipmentUpdateService(ExerciseContext context, IReadService<Equipment> readService, IDeleteService<EquipmentUsage> equipmentExerciseUsageDeleteService, ICreateService<EquipmentUsage, int> equipmentExerciseUsageCreateService)
         {
             this.context = context;
             this.readService = readService;
@@ -28,7 +28,7 @@ namespace ProjectGym.Services.Update
             entity.Name = updatedEntity.Name;
 
             await equipmentExerciseUsageDeleteService.DeleteAll(eeu => eeu.EquipmentId == entity.Id);
-            var newUsages = updatedEntity.UsedInExercises.Select(e => new EquipmentExerciseUsage()
+            var newUsages = updatedEntity.UsedInExercises.Select(e => new EquipmentUsage()
             {
                 EquipmentId = entity.Id,
                 ExerciseId = e.Id

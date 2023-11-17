@@ -3,25 +3,17 @@
     public class Exercise
     {
         public int Id { get; set; }
-        public string UUID { get; set; } = null!;
         public string Name { get; set; } = null!;
         public string Description { get; set; } = null!;
 
-        public IEnumerable<Exercise> VariationExercises { get; set; } = new List<Exercise>();
-        public IEnumerable<Exercise> IsVariationOf { get; set; } = new List<Exercise>();
-
-        public ExerciseCategory Category { get; set; } = null!;
-        public int CategoryId { get; set; }
-
-        public IEnumerable<Muscle> PrimaryMuscles { get; set; } = new List<Muscle>();
-        public IEnumerable<Muscle> SecondaryMuscles { get; set; } = new List<Muscle>();
+        public IEnumerable<MuscleGroup> PrimaryMuscleGroups { get; set; } = new List<MuscleGroup>();
+        public IEnumerable<MuscleGroup> SecondaryMuscleGroups { get; set; } = new List<MuscleGroup>();
         public IEnumerable<Equipment> Equipment { get; set; } = new List<Equipment>();
 
-        public IEnumerable<ExerciseImage> Images { get; set; } = new List<ExerciseImage>();
-        public IEnumerable<ExerciseVideo> Videos { get; set; } = new List<ExerciseVideo>();
+        public IEnumerable<Image> Images { get; set; } = new List<Image>();
 
-        public IEnumerable<ExerciseComment> Comments { get; set; } = new List<ExerciseComment>();
-        public IEnumerable<ExerciseNote> Notes { get; set; } = new List<ExerciseNote>();
-        public IEnumerable<ExerciseAlias> Aliases { get; set; } = new List<ExerciseAlias>();
+        public IEnumerable<Comment> Comments { get; set; } = new List<Comment>();
+        public IEnumerable<Note> Notes { get; set; } = new List<Note>();
+        public IEnumerable<Alias> Aliases { get; set; } = new List<Alias>();
     }
 }

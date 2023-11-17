@@ -11,13 +11,13 @@ namespace ProjectGym.Models
         public byte[] PasswordHash { get; set; } = null!;
         public byte[] Salt { get; set; } = null!;
 
-        public IEnumerable<UserExerciseWeight> Weights { get; set; } = new List<UserExerciseWeight>();
+        public IEnumerable<PersonalExerciseWeight> Weights { get; set; } = new List<PersonalExerciseWeight>();
         public IEnumerable<Workout> CreatedWorkouts { get; set; } = new List<Workout>();
         public IEnumerable<Set> CreatedExerciseSets { get; set; } = new List<Set>();
 
-        public IEnumerable<ExerciseComment> ExerciseComments { get; set; } = new List<ExerciseComment>();
-        public IEnumerable<ExerciseComment> ExerciseCommentUpvotes { get; set; } = new List<ExerciseComment>();
-        public IEnumerable<ExerciseComment> ExerciseCommentDownvotes { get; set; } = new List<ExerciseComment>();
-        public IEnumerable<Exercise> ExerciseBookmarks { get; set; } = new List<Exercise>();
+        public IEnumerable<Comment> Comments { get; set; } = new List<Comment>();
+        public IEnumerable<Comment> CommentUpvotes { get; set; } = new List<Comment>();
+        public IEnumerable<Comment> CommentDownvotes { get; set; } = new List<Comment>();
+        public IEnumerable<Exercise> Bookmarks { get; set; } = new List<Exercise>();
     }
 }

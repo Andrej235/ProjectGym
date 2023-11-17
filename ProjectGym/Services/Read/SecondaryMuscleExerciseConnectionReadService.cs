@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace ProjectGym.Services.Read
 {
-    public class SecondaryMuscleExerciseConnectionReadService : AbstractReadService<SecondaryMuscleExerciseConnection, int>
+    public class SecondaryMuscleExerciseConnectionReadService : AbstractReadService<SecondaryMuscleGroupInExercise, int>
     {
         private readonly ExerciseContext context;
         public SecondaryMuscleExerciseConnectionReadService(ExerciseContext context)
@@ -12,17 +12,17 @@ namespace ProjectGym.Services.Read
             this.context = context;
         }
 
-        protected override Func<SecondaryMuscleExerciseConnection, int> PrimaryKey => x => x.Id;
+        protected override Func<SecondaryMuscleGroupInExercise, int> PrimaryKey => x => x.Id;
 
-        protected override IQueryable<SecondaryMuscleExerciseConnection> GetIncluded(IEnumerable<string>? include) => context.SecondaryMuscleExerciseConnections.AsQueryable();
+        protected override IQueryable<SecondaryMuscleGroupInExercise> GetIncluded(IEnumerable<string>? include) => context.SecondaryMuscleGroups.AsQueryable();
 
-        protected override Expression<Func<SecondaryMuscleExerciseConnection, bool>> TranslateKeyValueToExpression(string key, string value)
+        protected override Expression<Func<SecondaryMuscleGroupInExercise, bool>> TranslateKeyValueToExpression(string key, string value)
         {
             if (int.TryParse(value, out int valueId))
             {
                 return key switch
                 {
-                    "muscle" => x => x.MuscleId == valueId,
+                    "muscle" => x => x.MuscleGroupId == valueId,
                     "exercise" => x => x.ExerciseId == valueId,
                     _ => throw new NotSupportedException($"Invalid key in search query. Entered key: {key}"),
                 };

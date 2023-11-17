@@ -5,28 +5,28 @@ using System.Diagnostics;
 
 namespace ProjectGym.Services.Create
 {
-    public class PrimaryMuscleExerciseConnectionCreateService : ICreateService<PrimaryMuscleExerciseConnection, int>
+    public class PrimaryMuscleExerciseConnectionCreateService : ICreateService<PrimaryMuscleGroupInExercise, int>
     {
         private readonly ExerciseContext context;
-        private readonly IReadService<PrimaryMuscleExerciseConnection> readService;
-        public PrimaryMuscleExerciseConnectionCreateService(ExerciseContext context, IReadService<PrimaryMuscleExerciseConnection> readService)
+        private readonly IReadService<PrimaryMuscleGroupInExercise> readService;
+        public PrimaryMuscleExerciseConnectionCreateService(ExerciseContext context, IReadService<PrimaryMuscleGroupInExercise> readService)
         {
             this.context = context;
             this.readService = readService;
         }
 
-        public async Task<int> Add(PrimaryMuscleExerciseConnection toAdd)
+        public async Task<int> Add(PrimaryMuscleGroupInExercise toAdd)
         {
             try
             {
-                await readService.Get(x => x.MuscleId == toAdd.MuscleId && x.ExerciseId == toAdd.ExerciseId, "none");
+                await readService.Get(x => x.MuscleGroupId == toAdd.MuscleGroupId && x.ExerciseId == toAdd.ExerciseId, "none");
                 return default;
             }
             catch (NullReferenceException)
             {
                 try
                 {
-                    await context.PrimaryMuscleExerciseConnections.AddAsync(toAdd);
+                    await context.PrimaryMuscleGroups.AddAsync(toAdd);
                     await context.SaveChangesAsync();
                     return toAdd.Id;
                 }

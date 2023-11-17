@@ -26,10 +26,10 @@ namespace ProjectGym.Services.Read
                     .Include(u => u.Weights)
                     .Include(u => u.CreatedWorkouts)
                     .Include(u => u.CreatedExerciseSets)
-                    .Include(u => u.ExerciseComments)
-                    .Include(u => u.ExerciseCommentUpvotes)
-                    .Include(u => u.ExerciseCommentDownvotes)
-                    .Include(u => u.ExerciseBookmarks);
+                    .Include(u => u.Comments)
+                    .Include(u => u.CommentUpvotes)
+                    .Include(u => u.CommentDownvotes)
+                    .Include(u => u.Bookmarks);
 
             foreach (var inc in include)
             {
@@ -38,10 +38,10 @@ namespace ProjectGym.Services.Read
                     "weights" => usersIncluding.Include(u => u.Weights),
                     "workouts" => usersIncluding.Include(u => u.CreatedWorkouts),
                     "sets" => usersIncluding.Include(u => u.CreatedExerciseSets),
-                    "comments" => usersIncluding.Include(u => u.ExerciseComments),
-                    "upvotes" => usersIncluding.Include(u => u.ExerciseCommentUpvotes),
-                    "downvotes" => usersIncluding.Include(u => u.ExerciseCommentDownvotes),
-                    "bookmarks" => usersIncluding.Include(u => u.ExerciseBookmarks),
+                    "comments" => usersIncluding.Include(u => u.Comments),
+                    "upvotes" => usersIncluding.Include(u => u.CommentUpvotes),
+                    "downvotes" => usersIncluding.Include(u => u.CommentDownvotes),
+                    "bookmarks" => usersIncluding.Include(u => u.Bookmarks),
                     _ => usersIncluding,
                 };
             }

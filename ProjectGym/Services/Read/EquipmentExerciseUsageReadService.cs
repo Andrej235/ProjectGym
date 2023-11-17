@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace ProjectGym.Services.Read
 {
-    public class EquipmentExerciseUsageReadService : AbstractReadService<EquipmentExerciseUsage, int>
+    public class EquipmentExerciseUsageReadService : AbstractReadService<EquipmentUsage, int>
     {
         private readonly ExerciseContext context;
         public EquipmentExerciseUsageReadService(ExerciseContext context)
@@ -12,11 +12,11 @@ namespace ProjectGym.Services.Read
             this.context = context;
         }
 
-        protected override Func<EquipmentExerciseUsage, int> PrimaryKey => x => x.Id;
+        protected override Func<EquipmentUsage, int> PrimaryKey => x => x.Id;
 
-        protected override IQueryable<EquipmentExerciseUsage> GetIncluded(IEnumerable<string>? include) => context.EquipmentExerciseUsages.AsQueryable();
+        protected override IQueryable<EquipmentUsage> GetIncluded(IEnumerable<string>? include) => context.EquipmentUsages.AsQueryable();
 
-        protected override Expression<Func<EquipmentExerciseUsage, bool>> TranslateKeyValueToExpression(string key, string value)
+        protected override Expression<Func<EquipmentUsage, bool>> TranslateKeyValueToExpression(string key, string value)
         {
             if (int.TryParse(value, out int valueId))
             {

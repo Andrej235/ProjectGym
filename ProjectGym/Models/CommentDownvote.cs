@@ -1,6 +1,6 @@
 ﻿namespace ProjectGym.Models
 {
-    public class CommentUserDownvote
+    public class CommentDownvote
     {
         public int Id { get; set; }
         public int CommentId { get; set; }

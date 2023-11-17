@@ -5,28 +5,28 @@ using System.Diagnostics;
 
 namespace ProjectGym.Services.Create
 {
-    public class SecondaryMuscleExerciseConnectionCreateService : ICreateService<SecondaryMuscleExerciseConnection, int>
+    public class SecondaryMuscleExerciseConnectionCreateService : ICreateService<SecondaryMuscleGroupInExercise, int>
     {
         private readonly ExerciseContext context;
-        private readonly IReadService<SecondaryMuscleExerciseConnection> readService;
-        public SecondaryMuscleExerciseConnectionCreateService(ExerciseContext context, IReadService<SecondaryMuscleExerciseConnection> readService)
+        private readonly IReadService<SecondaryMuscleGroupInExercise> readService;
+        public SecondaryMuscleExerciseConnectionCreateService(ExerciseContext context, IReadService<SecondaryMuscleGroupInExercise> readService)
         {
             this.context = context;
             this.readService = readService;
         }
 
-        public async Task<int> Add(SecondaryMuscleExerciseConnection toAdd)
+        public async Task<int> Add(SecondaryMuscleGroupInExercise toAdd)
         {
             try
             {
-                await readService.Get(x => x.MuscleId == toAdd.MuscleId&& x.ExerciseId == toAdd.ExerciseId, "none");
+                await readService.Get(x => x.MuscleGroupId == toAdd.MuscleGroupId&& x.ExerciseId == toAdd.ExerciseId, "none");
                 return default;
             }
             catch (NullReferenceException)
             {
                 try
                 {
-                    await context.SecondaryMuscleExerciseConnections.AddAsync(toAdd);
+                    await context.SecondaryMuscleGroups.AddAsync(toAdd);
                     await context.SaveChangesAsync();
                     return toAdd.Id;
                 }

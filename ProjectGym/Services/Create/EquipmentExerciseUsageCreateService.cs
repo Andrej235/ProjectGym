@@ -5,17 +5,17 @@ using System.Diagnostics;
 
 namespace ProjectGym.Services.Create
 {
-    public class EquipmentExerciseUsageCreateService : ICreateService<EquipmentExerciseUsage, int>
+    public class EquipmentExerciseUsageCreateService : ICreateService<EquipmentUsage, int>
     {
         private readonly ExerciseContext context;
-        private readonly IReadService<EquipmentExerciseUsage> readService;
-        public EquipmentExerciseUsageCreateService(ExerciseContext context, IReadService<EquipmentExerciseUsage> readService)
+        private readonly IReadService<EquipmentUsage> readService;
+        public EquipmentExerciseUsageCreateService(ExerciseContext context, IReadService<EquipmentUsage> readService)
         {
             this.context = context;
             this.readService = readService;
         }
 
-        public async Task<int> Add(EquipmentExerciseUsage toAdd)
+        public async Task<int> Add(EquipmentUsage toAdd)
         {
             try
             {
@@ -26,7 +26,7 @@ namespace ProjectGym.Services.Create
             {
                 try
                 {
-                    await context.EquipmentExerciseUsages.AddAsync(toAdd);
+                    await context.EquipmentUsages.AddAsync(toAdd);
                     await context.SaveChangesAsync();
                     return toAdd.Id;
                 }

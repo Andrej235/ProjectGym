@@ -9,15 +9,15 @@ namespace ProjectGym.Controllers
 {
     [Route("api/note")]
     [ApiController]
-    public class NoteController : ControllerBase, IReadController<ExerciseNote, NoteDTO, int>
+    public class NoteController : ControllerBase, IReadController<Note, NoteDTO, int>
     {
-        public NoteController(IReadService<ExerciseNote> readService, IEntityMapper<ExerciseNote, NoteDTO> mapper)
+        public NoteController(IReadService<Note> readService, IEntityMapper<Note, NoteDTO> mapper)
         {
             ReadService = readService;
             Mapper = mapper;
         }
-        public IReadService<ExerciseNote> ReadService { get; }
-        public IEntityMapper<ExerciseNote, NoteDTO> Mapper { get; }
+        public IReadService<Note> ReadService { get; }
+        public IEntityMapper<Note, NoteDTO> Mapper { get; }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id, [FromQuery] string? include)

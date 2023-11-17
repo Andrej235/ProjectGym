@@ -13,10 +13,10 @@ namespace ProjectGym.Services.Mapping
             WeightIds = entity.Weights.Select(x => x.Id),
             CreatedWorkoutIds = entity.CreatedWorkouts.Select(x => x.Id),
             CreatedExerciseSetIds = entity.CreatedExerciseSets.Select(x => x.Id),
-            ExerciseCommentIds = entity.ExerciseComments.Select(x => x.Id),
-            ExerciseCommentUpvoteIds = entity.ExerciseCommentUpvotes.Select(x => x.Id),
-            ExerciseCommentDownvoteIds = entity.ExerciseCommentDownvotes.Select(x => x.Id),
-            ExerciseBookmarkIds = entity.ExerciseBookmarks.Select(x => x.Id),
+            ExerciseCommentIds = entity.Comments.Select(x => x.Id),
+            ExerciseCommentUpvoteIds = entity.CommentUpvotes.Select(x => x.Id),
+            ExerciseCommentDownvoteIds = entity.CommentDownvotes.Select(x => x.Id),
+            ExerciseBookmarkIds = entity.Bookmarks.Select(x => x.Id),
         };
     }
 }

@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace ProjectGym.Services.Read
 {
-    public class NoteReadService : AbstractReadService<ExerciseNote, int>
+    public class NoteReadService : AbstractReadService<Note, int>
     {
         private readonly ExerciseContext context;
         public NoteReadService(ExerciseContext context)
@@ -13,11 +13,11 @@ namespace ProjectGym.Services.Read
             this.context = context;
         }
 
-        protected override Func<ExerciseNote, int> PrimaryKey => n => n.Id;
+        protected override Func<Note, int> PrimaryKey => n => n.Id;
 
-        protected override IQueryable<ExerciseNote> GetIncluded(IEnumerable<string>? include)
+        protected override IQueryable<Note> GetIncluded(IEnumerable<string>? include)
         {
-            var entitiesIncluding = context.ExerciseNotes.AsQueryable();
+            var entitiesIncluding = context.Notes.AsQueryable();
             if (include is null || !include.Any() || include.Contains("none"))
                 return entitiesIncluding;
 
@@ -27,14 +27,14 @@ namespace ProjectGym.Services.Read
             return entitiesIncluding;
         }
 
-        protected override Expression<Func<ExerciseNote, bool>> TranslateKeyValueToExpression(string key, string value)
+        protected override Expression<Func<Note, bool>> TranslateKeyValueToExpression(string key, string value)
         {
             if (key == "name")
             {
                 if (string.IsNullOrWhiteSpace(value))
                     throw new NullReferenceException("Value in a search query cannot be null or empty.");
 
-                return x => x.Comment.ToLower().Contains(value.ToLower());
+                return x => x.NoteText.ToLower().Contains(value.ToLower());
             }
             throw new NotSupportedException($"Invalid key in search query. Entered key: {key}");
         }

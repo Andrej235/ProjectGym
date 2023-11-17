@@ -12,8 +12,8 @@ using ProjectGym.Data;
 namespace ProjectGym.Migrations
 {
     [DbContext(typeof(ExerciseContext))]
-    [Migration("20231028171528_Changed relationship exercise equipment")]
-    partial class Changedrelationshipexerciseequipment
+    [Migration("20231117213923_EntireNewDatabase")]
+    partial class EntireNewDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,28 @@ namespace ProjectGym.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("ProjectGym.Models.Alias", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AliasName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ExerciseId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExerciseId");
+
+                    b.ToTable("Aliases");
+                });
 
             modelBuilder.Entity("ProjectGym.Models.Client", b =>
                 {
@@ -41,7 +63,7 @@ namespace ProjectGym.Migrations
                     b.ToTable("Clients");
                 });
 
-            modelBuilder.Entity("ProjectGym.Models.CommentUserDownvote", b =>
+            modelBuilder.Entity("ProjectGym.Models.Comment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -49,22 +71,26 @@ namespace ProjectGym.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CommentId")
-                        .HasColumnType("int");
+                    b.Property<string>("CommentText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid>("CreatorId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ExerciseId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CommentId");
+                    b.HasIndex("CreatorId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ExerciseId");
 
-                    b.ToTable("CommentUserDownvotes");
+                    b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("ProjectGym.Models.CommentUserUpvote", b =>
+            modelBuilder.Entity("ProjectGym.Models.CommentDownvote", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -84,7 +110,30 @@ namespace ProjectGym.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CommentUserUpvotes");
+                    b.ToTable("CommentDownvotes");
+                });
+
+            modelBuilder.Entity("ProjectGym.Models.CommentUpvote", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CommentId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CommentId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CommentUpvotes");
                 });
 
             modelBuilder.Entity("ProjectGym.Models.Equipment", b =>
@@ -104,7 +153,7 @@ namespace ProjectGym.Migrations
                     b.ToTable("Equipment");
                 });
 
-            modelBuilder.Entity("ProjectGym.Models.EquipmentExerciseUsage", b =>
+            modelBuilder.Entity("ProjectGym.Models.EquipmentUsage", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -124,7 +173,7 @@ namespace ProjectGym.Migrations
 
                     b.HasIndex("ExerciseId");
 
-                    b.ToTable("EquipmentExerciseUsages");
+                    b.ToTable("EquipmentUsages");
                 });
 
             modelBuilder.Entity("ProjectGym.Models.Exercise", b =>
@@ -135,9 +184,6 @@ namespace ProjectGym.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -146,84 +192,35 @@ namespace ProjectGym.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UUID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
 
                     b.ToTable("Exercises");
                 });
 
-            modelBuilder.Entity("ProjectGym.Models.ExerciseAlias", b =>
+            modelBuilder.Entity("ProjectGym.Models.ExerciseBookmark", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Alias")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ExerciseId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExerciseId");
-
-                    b.ToTable("ExerciseAliases");
-                });
-
-            modelBuilder.Entity("ProjectGym.Models.ExerciseCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ExerciseCategories");
-                });
-
-            modelBuilder.Entity("ProjectGym.Models.ExerciseComment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("CreatorId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ExerciseId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("CreatorId");
 
                     b.HasIndex("ExerciseId");
 
-                    b.ToTable("ExerciseComments");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ExerciseBookmarks");
                 });
 
-            modelBuilder.Entity("ProjectGym.Models.ExerciseImage", b =>
+            modelBuilder.Entity("ProjectGym.Models.Image", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -238,117 +235,11 @@ namespace ProjectGym.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsMain")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Style")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UUID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ExerciseId");
 
-                    b.ToTable("ExerciseImages");
-                });
-
-            modelBuilder.Entity("ProjectGym.Models.ExerciseNote", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ExerciseId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExerciseId");
-
-                    b.ToTable("ExerciseNotes");
-                });
-
-            modelBuilder.Entity("ProjectGym.Models.ExerciseVariation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Exercise1Id")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Exercise2Id")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Exercise1Id");
-
-                    b.HasIndex("Exercise2Id");
-
-                    b.ToTable("ExerciseVariations");
-                });
-
-            modelBuilder.Entity("ProjectGym.Models.ExerciseVideo", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Codec")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CodecLong")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Duration")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ExerciseId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Height")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsMain")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("Size")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UUID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("VideoUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Width")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExerciseId");
-
-                    b.ToTable("ExerciseVideos");
+                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("ProjectGym.Models.Muscle", b =>
@@ -359,31 +250,42 @@ namespace ProjectGym.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ImageUrlMain")
+                    b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ImageUrlSecondary")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsFront")
-                        .HasColumnType("bit");
+                    b.Property<int>("MuscleGroupId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name_en")
+                    b.HasKey("Id");
+
+                    b.HasIndex("MuscleGroupId");
+
+                    b.ToTable("Muscles");
+                });
+
+            modelBuilder.Entity("ProjectGym.Models.MuscleGroup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Muscles");
+                    b.ToTable("MuscleGroups");
                 });
 
-            modelBuilder.Entity("ProjectGym.Models.PrimaryMuscleExerciseConnection", b =>
+            modelBuilder.Entity("ProjectGym.Models.Note", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -394,19 +296,48 @@ namespace ProjectGym.Migrations
                     b.Property<int>("ExerciseId")
                         .HasColumnType("int");
 
-                    b.Property<int>("MuscleId")
+                    b.Property<string>("NoteText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExerciseId");
+
+                    b.ToTable("Notes");
+                });
+
+            modelBuilder.Entity("ProjectGym.Models.PersonalExerciseWeight", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DateOfAchieving")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ExerciseId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsCurrent")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Weight")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ExerciseId");
 
-                    b.HasIndex("MuscleId");
+                    b.HasIndex("UserId");
 
-                    b.ToTable("PrimaryMuscleExerciseConnections");
+                    b.ToTable("Weights");
                 });
 
-            modelBuilder.Entity("ProjectGym.Models.SecondaryMuscleExerciseConnection", b =>
+            modelBuilder.Entity("ProjectGym.Models.PrimaryMuscleGroupInExercise", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -417,16 +348,39 @@ namespace ProjectGym.Migrations
                     b.Property<int>("ExerciseId")
                         .HasColumnType("int");
 
-                    b.Property<int>("MuscleId")
+                    b.Property<int>("MuscleGroupId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ExerciseId");
 
-                    b.HasIndex("MuscleId");
+                    b.HasIndex("MuscleGroupId");
 
-                    b.ToTable("SecondaryMuscleExerciseConnections");
+                    b.ToTable("PrimaryMuscleGroups");
+                });
+
+            modelBuilder.Entity("ProjectGym.Models.SecondaryMuscleGroupInExercise", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ExerciseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MuscleGroupId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExerciseId");
+
+                    b.HasIndex("MuscleGroupId");
+
+                    b.ToTable("SecondaryMuscleGroups");
                 });
 
             modelBuilder.Entity("ProjectGym.Models.Set", b =>
@@ -511,59 +465,6 @@ namespace ProjectGym.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("ProjectGym.Models.UserExerciseBookmark", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ExerciseId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExerciseId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserExerciseBookmarks");
-                });
-
-            modelBuilder.Entity("ProjectGym.Models.UserExerciseWeight", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("DateOfAchieving")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ExerciseId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsCurrent")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Weight")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExerciseId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserExerciseWeights");
-                });
-
             modelBuilder.Entity("ProjectGym.Models.Workout", b =>
                 {
                     b.Property<Guid>("Id")
@@ -615,73 +516,7 @@ namespace ProjectGym.Migrations
                     b.ToTable("WorkoutSets");
                 });
 
-            modelBuilder.Entity("ProjectGym.Models.Client", b =>
-                {
-                    b.HasOne("ProjectGym.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserGUID")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ProjectGym.Models.CommentUserDownvote", b =>
-                {
-                    b.HasOne("ProjectGym.Models.ExerciseComment", null)
-                        .WithMany()
-                        .HasForeignKey("CommentId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("ProjectGym.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ProjectGym.Models.CommentUserUpvote", b =>
-                {
-                    b.HasOne("ProjectGym.Models.ExerciseComment", null)
-                        .WithMany()
-                        .HasForeignKey("CommentId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("ProjectGym.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ProjectGym.Models.EquipmentExerciseUsage", b =>
-                {
-                    b.HasOne("ProjectGym.Models.Equipment", null)
-                        .WithMany()
-                        .HasForeignKey("EquipmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ProjectGym.Models.Exercise", null)
-                        .WithMany()
-                        .HasForeignKey("ExerciseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ProjectGym.Models.Exercise", b =>
-                {
-                    b.HasOne("ProjectGym.Models.ExerciseCategory", "Category")
-                        .WithMany("Exercises")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("ProjectGym.Models.ExerciseAlias", b =>
+            modelBuilder.Entity("ProjectGym.Models.Alias", b =>
                 {
                     b.HasOne("ProjectGym.Models.Exercise", "Exercise")
                         .WithMany("Aliases")
@@ -692,10 +527,20 @@ namespace ProjectGym.Migrations
                     b.Navigation("Exercise");
                 });
 
-            modelBuilder.Entity("ProjectGym.Models.ExerciseComment", b =>
+            modelBuilder.Entity("ProjectGym.Models.Client", b =>
+                {
+                    b.HasOne("ProjectGym.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserGUID")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ProjectGym.Models.Comment", b =>
                 {
                     b.HasOne("ProjectGym.Models.User", "Creator")
-                        .WithMany("ExerciseComments")
+                        .WithMany("Comments")
                         .HasForeignKey("CreatorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -711,7 +556,67 @@ namespace ProjectGym.Migrations
                     b.Navigation("Exercise");
                 });
 
-            modelBuilder.Entity("ProjectGym.Models.ExerciseImage", b =>
+            modelBuilder.Entity("ProjectGym.Models.CommentDownvote", b =>
+                {
+                    b.HasOne("ProjectGym.Models.Comment", null)
+                        .WithMany()
+                        .HasForeignKey("CommentId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("ProjectGym.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ProjectGym.Models.CommentUpvote", b =>
+                {
+                    b.HasOne("ProjectGym.Models.Comment", null)
+                        .WithMany()
+                        .HasForeignKey("CommentId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("ProjectGym.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ProjectGym.Models.EquipmentUsage", b =>
+                {
+                    b.HasOne("ProjectGym.Models.Equipment", null)
+                        .WithMany()
+                        .HasForeignKey("EquipmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ProjectGym.Models.Exercise", null)
+                        .WithMany()
+                        .HasForeignKey("ExerciseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ProjectGym.Models.ExerciseBookmark", b =>
+                {
+                    b.HasOne("ProjectGym.Models.Exercise", null)
+                        .WithMany()
+                        .HasForeignKey("ExerciseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ProjectGym.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ProjectGym.Models.Image", b =>
                 {
                     b.HasOne("ProjectGym.Models.Exercise", "Exercise")
                         .WithMany("Images")
@@ -722,7 +627,18 @@ namespace ProjectGym.Migrations
                     b.Navigation("Exercise");
                 });
 
-            modelBuilder.Entity("ProjectGym.Models.ExerciseNote", b =>
+            modelBuilder.Entity("ProjectGym.Models.Muscle", b =>
+                {
+                    b.HasOne("ProjectGym.Models.MuscleGroup", "MuscleGroup")
+                        .WithMany("Muscles")
+                        .HasForeignKey("MuscleGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MuscleGroup");
+                });
+
+            modelBuilder.Entity("ProjectGym.Models.Note", b =>
                 {
                     b.HasOne("ProjectGym.Models.Exercise", "Exercise")
                         .WithMany("Notes")
@@ -733,59 +649,52 @@ namespace ProjectGym.Migrations
                     b.Navigation("Exercise");
                 });
 
-            modelBuilder.Entity("ProjectGym.Models.ExerciseVariation", b =>
-                {
-                    b.HasOne("ProjectGym.Models.Exercise", null)
-                        .WithMany()
-                        .HasForeignKey("Exercise1Id")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("ProjectGym.Models.Exercise", null)
-                        .WithMany()
-                        .HasForeignKey("Exercise2Id")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ProjectGym.Models.ExerciseVideo", b =>
+            modelBuilder.Entity("ProjectGym.Models.PersonalExerciseWeight", b =>
                 {
                     b.HasOne("ProjectGym.Models.Exercise", "Exercise")
-                        .WithMany("Videos")
+                        .WithMany()
                         .HasForeignKey("ExerciseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ProjectGym.Models.User", "User")
+                        .WithMany("Weights")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Exercise");
+
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ProjectGym.Models.PrimaryMuscleExerciseConnection", b =>
+            modelBuilder.Entity("ProjectGym.Models.PrimaryMuscleGroupInExercise", b =>
                 {
                     b.HasOne("ProjectGym.Models.Exercise", null)
                         .WithMany()
                         .HasForeignKey("ExerciseId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ProjectGym.Models.Muscle", null)
+                    b.HasOne("ProjectGym.Models.MuscleGroup", null)
                         .WithMany()
-                        .HasForeignKey("MuscleId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasForeignKey("MuscleGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ProjectGym.Models.SecondaryMuscleExerciseConnection", b =>
+            modelBuilder.Entity("ProjectGym.Models.SecondaryMuscleGroupInExercise", b =>
                 {
                     b.HasOne("ProjectGym.Models.Exercise", null)
                         .WithMany()
                         .HasForeignKey("ExerciseId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ProjectGym.Models.Muscle", null)
+                    b.HasOne("ProjectGym.Models.MuscleGroup", null)
                         .WithMany()
-                        .HasForeignKey("MuscleId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasForeignKey("MuscleGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -819,46 +728,12 @@ namespace ProjectGym.Migrations
                     b.Navigation("Set");
                 });
 
-            modelBuilder.Entity("ProjectGym.Models.UserExerciseBookmark", b =>
-                {
-                    b.HasOne("ProjectGym.Models.Exercise", null)
-                        .WithMany()
-                        .HasForeignKey("ExerciseId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("ProjectGym.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ProjectGym.Models.UserExerciseWeight", b =>
-                {
-                    b.HasOne("ProjectGym.Models.Exercise", "Exercise")
-                        .WithMany()
-                        .HasForeignKey("ExerciseId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("ProjectGym.Models.User", "User")
-                        .WithMany("Weights")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Exercise");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("ProjectGym.Models.Workout", b =>
                 {
                     b.HasOne("ProjectGym.Models.User", "Creator")
                         .WithMany("CreatedWorkouts")
                         .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Creator");
@@ -880,7 +755,7 @@ namespace ProjectGym.Migrations
                     b.HasOne("ProjectGym.Models.Workout", "Workout")
                         .WithMany("WorkoutSets")
                         .HasForeignKey("WorkoutId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Set");
@@ -899,22 +774,20 @@ namespace ProjectGym.Migrations
                     b.Navigation("Images");
 
                     b.Navigation("Notes");
-
-                    b.Navigation("Videos");
                 });
 
-            modelBuilder.Entity("ProjectGym.Models.ExerciseCategory", b =>
+            modelBuilder.Entity("ProjectGym.Models.MuscleGroup", b =>
                 {
-                    b.Navigation("Exercises");
+                    b.Navigation("Muscles");
                 });
 
             modelBuilder.Entity("ProjectGym.Models.User", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("CreatedExerciseSets");
 
                     b.Navigation("CreatedWorkouts");
-
-                    b.Navigation("ExerciseComments");
 
                     b.Navigation("Weights");
                 });

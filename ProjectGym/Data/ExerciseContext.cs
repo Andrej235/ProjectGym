@@ -6,27 +6,25 @@ namespace ProjectGym.Data
     public class ExerciseContext : DbContext
     {
         public DbSet<Exercise> Exercises { get; set; }
-        public DbSet<ExerciseCategory> ExerciseCategories { get; set; }
+        public DbSet<MuscleGroup> MuscleGroups { get; set; }
         public DbSet<Muscle> Muscles { get; set; }
         public DbSet<Equipment> Equipment { get; set; }
-        public DbSet<ExerciseComment> ExerciseComments { get; set; }
-        public DbSet<ExerciseImage> ExerciseImages { get; set; }
-        public DbSet<ExerciseVideo> ExerciseVideos { get; set; }
-        public DbSet<ExerciseNote> ExerciseNotes { get; set; }
-        public DbSet<ExerciseAlias> ExerciseAliases { get; set; }
-        public DbSet<PrimaryMuscleExerciseConnection> PrimaryMuscleExerciseConnections { get; set; }
-        public DbSet<SecondaryMuscleExerciseConnection> SecondaryMuscleExerciseConnections { get; set; }
-        public DbSet<ExerciseVariation> ExerciseVariations { get; set; }
-        public DbSet<EquipmentExerciseUsage> EquipmentExerciseUsages { get; set; }
+        public DbSet<Comment> Comments { get; set; }
+        public DbSet<Image> Images { get; set; }
+        public DbSet<Note> Notes { get; set; }
+        public DbSet<Alias> Aliases { get; set; }
+        public DbSet<PrimaryMuscleGroupInExercise> PrimaryMuscleGroups { get; set; }
+        public DbSet<SecondaryMuscleGroupInExercise> SecondaryMuscleGroups { get; set; }
+        public DbSet<EquipmentUsage> EquipmentUsages { get; set; }
 
         public DbSet<User> Users { get; set; }
         public DbSet<Client> Clients { get; set; }
-        public DbSet<CommentUserUpvote> CommentUserUpvotes { get; set; }
-        public DbSet<CommentUserDownvote> CommentUserDownvotes { get; set; }
-        public DbSet<UserExerciseBookmark> UserExerciseBookmarks { get; set; }
+        public DbSet<CommentUpvote> CommentUpvotes { get; set; }
+        public DbSet<CommentDownvote> CommentDownvotes { get; set; }
+        public DbSet<ExerciseBookmark> ExerciseBookmarks { get; set; }
         public DbSet<Set> Sets { get; set; }
         public DbSet<Superset> Supersets { get; set; }
-        public DbSet<UserExerciseWeight> UserExerciseWeights { get; set; }
+        public DbSet<PersonalExerciseWeight> Weights { get; set; }
         public DbSet<Workout> Workouts { get; set; }
         public DbSet<WorkoutSet> WorkoutSets { get; set; }
 
@@ -44,60 +42,41 @@ namespace ProjectGym.Data
 
             #region Exercise
             modelBuilder.Entity<Exercise>()
-                .HasMany(e => e.VariationExercises)
-                .WithMany(e => e.IsVariationOf)
-                .UsingEntity<ExerciseVariation>(
-                    v => v.HasOne<Exercise>().WithMany().HasForeignKey(v => v.Exercise1Id).OnDelete(DeleteBehavior.NoAction),
-                    v => v.HasOne<Exercise>().WithMany().HasForeignKey(v => v.Exercise2Id).OnDelete(DeleteBehavior.NoAction),
-                    v =>
-                    {
-                        v.Property(v => v.Id).ValueGeneratedOnAdd();
-                        v.HasKey(v => v.Id);
-                    }
-                );
-
-            modelBuilder.Entity<Exercise>()
-                .HasOne(e => e.Category)
-                .WithMany(c => c.Exercises)
-                .HasForeignKey(e => e.CategoryId)
-                .OnDelete(DeleteBehavior.NoAction);
-
-            modelBuilder.Entity<Exercise>()
-                .HasMany(e => e.PrimaryMuscles)
+                .HasMany(e => e.PrimaryMuscleGroups)
                 .WithMany(m => m.PrimaryInExercises)
-                .UsingEntity<PrimaryMuscleExerciseConnection>(
-                    me => me.HasOne<Muscle>().WithMany().HasForeignKey(m => m.MuscleId).OnDelete(DeleteBehavior.Cascade),
-                    me => me.HasOne<Exercise>().WithMany().HasForeignKey(e => e.ExerciseId).OnDelete(DeleteBehavior.Cascade),
-                    me =>
+                .UsingEntity<PrimaryMuscleGroupInExercise>(
+                    j => j.HasOne<MuscleGroup>().WithMany().HasForeignKey(m => m.MuscleGroupId).OnDelete(DeleteBehavior.Cascade),
+                    j => j.HasOne<Exercise>().WithMany().HasForeignKey(e => e.ExerciseId).OnDelete(DeleteBehavior.Cascade),
+                    j =>
                     {
-                        me.Property(me => me.Id).ValueGeneratedOnAdd();
-                        me.HasKey(me => me.Id);
+                        j.Property(me => me.Id).ValueGeneratedOnAdd();
+                        j.HasKey(me => me.Id);
                     }
                 );
 
             modelBuilder.Entity<Exercise>()
-                .HasMany(e => e.SecondaryMuscles)
+                .HasMany(e => e.SecondaryMuscleGroups)
                 .WithMany(m => m.SecondaryInExercises)
-                .UsingEntity<SecondaryMuscleExerciseConnection>(
-                    me => me.HasOne<Muscle>().WithMany().HasForeignKey(m => m.MuscleId).OnDelete(DeleteBehavior.Cascade),
-                    me => me.HasOne<Exercise>().WithMany().HasForeignKey(e => e.ExerciseId).OnDelete(DeleteBehavior.Cascade),
-                    me =>
+                .UsingEntity<SecondaryMuscleGroupInExercise>(
+                    j => j.HasOne<MuscleGroup>().WithMany().HasForeignKey(m => m.MuscleGroupId).OnDelete(DeleteBehavior.Cascade),
+                    j => j.HasOne<Exercise>().WithMany().HasForeignKey(e => e.ExerciseId).OnDelete(DeleteBehavior.Cascade),
+                    j =>
                     {
-                        me.Property(me => me.Id).ValueGeneratedOnAdd();
-                        me.HasKey(me => me.Id);
+                        j.Property(me => me.Id).ValueGeneratedOnAdd();
+                        j.HasKey(me => me.Id);
                     }
                 );
 
             modelBuilder.Entity<Exercise>()
                 .HasMany(e => e.Equipment)
                 .WithMany(e => e.UsedInExercises)
-                .UsingEntity<EquipmentExerciseUsage>(
-                    ee => ee.HasOne<Equipment>().WithMany().HasForeignKey(e => e.EquipmentId).OnDelete(DeleteBehavior.Cascade),
-                    ee => ee.HasOne<Exercise>().WithMany().HasForeignKey(e => e.ExerciseId).OnDelete(DeleteBehavior.Cascade),
-                    ee =>
+                .UsingEntity<EquipmentUsage>(
+                    j => j.HasOne<Equipment>().WithMany().HasForeignKey(e => e.EquipmentId).OnDelete(DeleteBehavior.Cascade),
+                    j => j.HasOne<Exercise>().WithMany().HasForeignKey(e => e.ExerciseId).OnDelete(DeleteBehavior.Cascade),
+                    j =>
                     {
-                        ee.Property(ee => ee.Id).ValueGeneratedOnAdd();
-                        ee.HasKey(ee => ee.Id);
+                        j.Property(ee => ee.Id).ValueGeneratedOnAdd();
+                        j.HasKey(ee => ee.Id);
                     }
                 );
 
@@ -105,12 +84,6 @@ namespace ProjectGym.Data
                 .HasMany(e => e.Images)
                 .WithOne(i => i.Exercise)
                 .HasForeignKey(i => i.ExerciseId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<Exercise>()
-                .HasMany(e => e.Videos)
-                .WithOne(v => v.Exercise)
-                .HasForeignKey(v => v.ExerciseId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Exercise>()
@@ -147,11 +120,11 @@ namespace ProjectGym.Data
                 .HasForeignKey(w => w.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<UserExerciseWeight>()
+            modelBuilder.Entity<PersonalExerciseWeight>()
                 .HasOne(w => w.Exercise)
                 .WithMany()
                 .HasForeignKey(w => w.ExerciseId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Cascade);
             #endregion
 
             #region Workouts
@@ -159,13 +132,13 @@ namespace ProjectGym.Data
                 .HasMany(u => u.CreatedWorkouts)
                 .WithOne(w => w.Creator)
                 .HasForeignKey(w => w.CreatorId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Workout>()
                 .HasMany(w => w.WorkoutSets)
                 .WithOne(ws => ws.Workout)
                 .HasForeignKey(ws => ws.WorkoutId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<WorkoutSet>()
                 .HasOne(ws => ws.Set)
@@ -200,16 +173,16 @@ namespace ProjectGym.Data
 
             #region Comments and bookmarks
             modelBuilder.Entity<User>()
-                .HasMany(u => u.ExerciseComments)
+                .HasMany(u => u.Comments)
                 .WithOne(c => c.Creator)
                 .HasForeignKey(c => c.CreatorId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<User>()
-                .HasMany(u => u.ExerciseCommentUpvotes)
+                .HasMany(u => u.CommentUpvotes)
                 .WithMany(c => c.Upvotes)
-                .UsingEntity<CommentUserUpvote>(
-                    j => j.HasOne<ExerciseComment>().WithMany().HasForeignKey(c => c.CommentId).OnDelete(DeleteBehavior.NoAction),
+                .UsingEntity<CommentUpvote>(
+                    j => j.HasOne<Comment>().WithMany().HasForeignKey(c => c.CommentId).OnDelete(DeleteBehavior.NoAction),
                     j => j.HasOne<User>().WithMany().HasForeignKey(u => u.UserId).OnDelete(DeleteBehavior.NoAction),
                     j =>
                     {
@@ -219,10 +192,10 @@ namespace ProjectGym.Data
                 );
 
             modelBuilder.Entity<User>()
-                .HasMany(u => u.ExerciseCommentDownvotes)
+                .HasMany(u => u.CommentDownvotes)
                 .WithMany(c => c.Downvotes)
-                .UsingEntity<CommentUserDownvote>(
-                    j => j.HasOne<ExerciseComment>().WithMany().HasForeignKey(c => c.CommentId).OnDelete(DeleteBehavior.NoAction),
+                .UsingEntity<CommentDownvote>(
+                    j => j.HasOne<Comment>().WithMany().HasForeignKey(c => c.CommentId).OnDelete(DeleteBehavior.NoAction),
                     j => j.HasOne<User>().WithMany().HasForeignKey(u => u.UserId).OnDelete(DeleteBehavior.NoAction),
                     j =>
                     {
@@ -232,9 +205,9 @@ namespace ProjectGym.Data
                 );
 
             modelBuilder.Entity<User>()
-                .HasMany(u => u.ExerciseBookmarks)
+                .HasMany(u => u.Bookmarks)
                 .WithMany()
-                .UsingEntity<UserExerciseBookmark>(
+                .UsingEntity<ExerciseBookmark>(
                     j => j.HasOne<Exercise>().WithMany().HasForeignKey(e => e.ExerciseId).OnDelete(DeleteBehavior.Cascade),
                     j => j.HasOne<User>().WithMany().HasForeignKey(u => u.UserId).OnDelete(DeleteBehavior.Cascade),
                     j =>

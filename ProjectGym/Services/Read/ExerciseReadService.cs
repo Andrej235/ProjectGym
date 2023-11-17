@@ -23,13 +23,9 @@ namespace ProjectGym.Services.Read
 
             if (include.Contains("all"))
                 return exercisesIncluding
-                    .Include(e => e.VariationExercises)
-                    .Include(e => e.IsVariationOf)
-                    .Include(e => e.Category)
-                    .Include(e => e.PrimaryMuscles)
-                    .Include(e => e.SecondaryMuscles)
+                    .Include(e => e.PrimaryMuscleGroups)
+                    .Include(e => e.SecondaryMuscleGroups)
                     .Include(e => e.Equipment)
-                    .Include(e => e.Videos)
                     .Include(e => e.Aliases)
                     .Include(e => e.Notes)
                     .Include(e => e.Images);
@@ -39,12 +35,8 @@ namespace ProjectGym.Services.Read
                 exercisesIncluding = inc switch
                 {
                     "images" => exercisesIncluding.Include(e => e.Images),
-                    "videos" => exercisesIncluding.Include(e => e.Videos),
-                    "variations" => exercisesIncluding.Include(e => e.VariationExercises),
-                    "variationof" => exercisesIncluding.Include(e => e.IsVariationOf),
-                    "category" => exercisesIncluding.Include(e => e.Category),
-                    "primarymuscles" => exercisesIncluding.Include(e => e.PrimaryMuscles),
-                    "secondarymuscles" => exercisesIncluding.Include(e => e.SecondaryMuscles),
+                    "primarymuscles" => exercisesIncluding.Include(e => e.PrimaryMuscleGroups),
+                    "secondarymuscles" => exercisesIncluding.Include(e => e.SecondaryMuscleGroups),
                     "equipment" => exercisesIncluding.Include(e => e.Equipment),
                     "aliases" => exercisesIncluding.Include(e => e.Aliases),
                     "notes" => exercisesIncluding.Include(e => e.Notes),
@@ -73,9 +65,8 @@ namespace ProjectGym.Services.Read
                     return key switch
                     {
                         "id" => e => e.Id == valueId,
-                        "category" => e => e.CategoryId == valueId,
-                        "primarymuscle" => e => e.PrimaryMuscles.Any(m => m.Id == valueId),
-                        "secondarymuscle" => e => e.SecondaryMuscles.Any(m => m.Id == valueId),
+                        "primarymuscle" => e => e.PrimaryMuscleGroups.Any(m => m.Id == valueId),
+                        "secondarymuscle" => e => e.SecondaryMuscleGroups.Any(m => m.Id == valueId),
                         "equipment" => e => e.Equipment.Any(eq => eq.Id == valueId),
                         _ => throw new NotSupportedException($"Invalid key in search query. Entered key: {key}"),
                     };
@@ -94,9 +85,8 @@ namespace ProjectGym.Services.Read
                     return key switch
                     {
                         "id" => e => valueIds.Contains(e.Id),
-                        "category" => e => valueIds.Contains(e.CategoryId),
-                        "primarymuscle" => e => e.PrimaryMuscles.Any(m => valueIds.Contains(m.Id)),
-                        "secondarymuscle" => e => e.SecondaryMuscles.Any(m => valueIds.Contains(m.Id)),
+                        "primarymuscle" => e => e.PrimaryMuscleGroups.Any(m => valueIds.Contains(m.Id)),
+                        "secondarymuscle" => e => e.SecondaryMuscleGroups.Any(m => valueIds.Contains(m.Id)),
                         "equipment" => e => e.Equipment.Any(eq => valueIds.Contains(eq.Id)),
                         _ => throw new NotSupportedException($"Invalid key in search query. Entered key: {key}"),
                     };

@@ -3,18 +3,18 @@ using ProjectGym.Models;
 
 namespace ProjectGym.Services.Mapping
 {
-    public class NoteMapper : IEntityMapperSync<ExerciseNote, NoteDTO>
+    public class NoteMapper : IEntityMapperSync<Note, NoteDTO>
     {
-        public NoteDTO Map(ExerciseNote entity) => new()
+        public NoteDTO Map(Note entity) => new()
         {
             Id = entity.Id,
-            Comment = entity.Comment,
+            Note = entity.NoteText,
             ExerciseId = entity.ExerciseId
         };
 
-        public ExerciseNote Map(NoteDTO dto) => new()
+        public Note Map(NoteDTO dto) => new()
         {
-            Comment = dto.Comment,
+            NoteText = dto.Note,
             ExerciseId = dto.ExerciseId,
         };
     }

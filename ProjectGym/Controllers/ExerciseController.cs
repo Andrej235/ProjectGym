@@ -20,16 +20,14 @@ namespace ProjectGym.Controllers
         public IReadService<Exercise> ReadService { get; }
         public IEntityMapperAsync<Exercise, ExerciseDTO> Mapper { get; }
         public IDeleteService<Exercise> DeleteService { get; }
-        public IDeleteService<ExerciseVariation> ExerciseVariationDeleteService { get; }
         public ICreateService<Exercise, int> CreateService { get; }
 
-        public ExerciseController(IReadService<Exercise> readService, IEntityMapperAsync<Exercise, ExerciseDTO> mapper, IDeleteService<Exercise> deleteService, IDeleteService<ExerciseVariation> exerciseVariationDeleteService, ICreateService<Exercise, int> createService)
+        public ExerciseController(IReadService<Exercise> readService, IEntityMapperAsync<Exercise, ExerciseDTO> mapper, IDeleteService<Exercise> deleteService, ICreateService<Exercise, int> createService)
         {
             Mapper = mapper;
             CreateService = createService;
             ReadService = readService;
             DeleteService = deleteService;
-            ExerciseVariationDeleteService = exerciseVariationDeleteService;
         }
 
         [HttpGet]
@@ -63,7 +61,6 @@ namespace ProjectGym.Controllers
         {
             try
             {
-                await ExerciseVariationDeleteService.DeleteAll(x => x.Exercise1Id == primaryKey || x.Exercise2Id == primaryKey);
                 await DeleteService.DeleteFirst(x => x.Id == primaryKey);
                 return Ok("Successfully deleted entity.");
             }

@@ -9,13 +9,13 @@ namespace ProjectGym.Controllers
 {
     [Route("api/image")]
     [ApiController]
-    public class ImageController : ControllerBase, IReadController<ExerciseImage, ImageDTO, int>, ICreateController<ExerciseImage, ImageDTO, int>
+    public class ImageController : ControllerBase, IReadController<Image, ImageDTO, int>, ICreateController<Image, ImageDTO, int>
     {
-        public IReadService<ExerciseImage> ReadService { get; }
-        public IEntityMapperSync<ExerciseImage, ImageDTO> Mapper { get; }
-        public ICreateService<ExerciseImage, int> CreateService { get; }
+        public IReadService<Image> ReadService { get; }
+        public IEntityMapperSync<Image, ImageDTO> Mapper { get; }
+        public ICreateService<Image, int> CreateService { get; }
 
-        public ImageController(IReadService<ExerciseImage> readService, IEntityMapperSync<ExerciseImage, ImageDTO> mapper, ICreateService<ExerciseImage, int> createService)
+        public ImageController(IReadService<Image> readService, IEntityMapperSync<Image, ImageDTO> mapper, ICreateService<Image, int> createService)
         {
             ReadService = readService;
             Mapper = mapper;

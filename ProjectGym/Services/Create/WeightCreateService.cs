@@ -3,7 +3,7 @@ using ProjectGym.Models;
 
 namespace ProjectGym.Services.Create
 {
-    public class WeightCreateService : ICreateService<UserExerciseWeight, Guid>
+    public class WeightCreateService : ICreateService<PersonalExerciseWeight, Guid>
     {
 /*        private readonly ExerciseContext context;
         public WeightCreateService(ExerciseContext context)
@@ -11,7 +11,7 @@ namespace ProjectGym.Services.Create
             this.context = context;
         }*/
 
-        public /*async*/ Task<Guid> Add(UserExerciseWeight toAdd)
+        public /*async*/ Task<Guid> Add(PersonalExerciseWeight toAdd)
         {
 /*            if (toAdd.UserId == default || toAdd.ExerciseId == default)
                 return default;*/

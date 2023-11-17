@@ -1,9 +1,9 @@
 ﻿namespace ProjectGym.Models
 {
-    public class EquipmentExerciseUsage
+    public class SecondaryMuscleGroupInExercise
     {
         public int Id { get; set; }
         public int ExerciseId { get; set; }
-        public int EquipmentId { get; set; }
+        public int MuscleGroupId { get; set; }
     }
 }

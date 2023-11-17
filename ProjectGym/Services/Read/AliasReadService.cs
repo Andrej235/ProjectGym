@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 
 namespace ProjectGym.Services.Read
 {
-    public class AliasReadService : AbstractReadService<ExerciseAlias, int>
+    public class AliasReadService : AbstractReadService<Alias, int>
     {
         private readonly ExerciseContext context;
         public AliasReadService(ExerciseContext context)
@@ -15,11 +15,11 @@ namespace ProjectGym.Services.Read
             this.context = context;
         }
 
-        protected override Func<ExerciseAlias, int> PrimaryKey => a => a.Id;
+        protected override Func<Alias, int> PrimaryKey => a => a.Id;
 
-        protected override IQueryable<ExerciseAlias> GetIncluded(IEnumerable<string>? include)
+        protected override IQueryable<Alias> GetIncluded(IEnumerable<string>? include)
         {
-            IQueryable<ExerciseAlias> entitiesIncluding = context.ExerciseAliases.AsQueryable();
+            IQueryable<Alias> entitiesIncluding = context.Aliases.AsQueryable();
             if (include is null || !include.Any() || include.Contains("none"))
                 return entitiesIncluding;
 
@@ -29,14 +29,14 @@ namespace ProjectGym.Services.Read
             return entitiesIncluding;
         }
 
-        protected override Expression<Func<ExerciseAlias, bool>> TranslateKeyValueToExpression(string key, string value)
+        protected override Expression<Func<Alias, bool>> TranslateKeyValueToExpression(string key, string value)
         {
             if (key == "name")
             {
                 if (string.IsNullOrWhiteSpace(value))
                     throw new NullReferenceException("Value in a search query cannot be null or empty.");
 
-                return x => x.Alias.ToLower().Contains(value.ToLower());
+                return x => x.AliasName.ToLower().Contains(value.ToLower());
             }
             throw new NotSupportedException($"Invalid key in search query. Entered key: {key}");
         }

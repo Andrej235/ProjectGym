@@ -2,7 +2,7 @@
 
 namespace ProjectGym.Models
 {
-    public class UserExerciseWeight
+    public class PersonalExerciseWeight
     {
         [Key]
         public Guid Id { get; set; }

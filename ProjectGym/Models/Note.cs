@@ -1,9 +1,9 @@
 ﻿namespace ProjectGym.Models
 {
-    public class ExerciseAlias
+    public class Note
     {
         public int Id { get; set; }
-        public string Alias { get; set; } = null!;
+        public string NoteText { get; set; } = null!;
 
         public Exercise Exercise { get; set; } = null!;
         public int ExerciseId { get; set; }

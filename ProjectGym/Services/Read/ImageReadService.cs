@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace ProjectGym.Services.Read
 {
-    public class ImageReadService : AbstractReadService<ExerciseImage, int>
+    public class ImageReadService : AbstractReadService<Image, int>
     {
         private readonly ExerciseContext context;
         public ImageReadService(ExerciseContext context)
@@ -13,11 +13,11 @@ namespace ProjectGym.Services.Read
             this.context = context;
         }
 
-        protected override Func<ExerciseImage, int> PrimaryKey => x => x.Id;
+        protected override Func<Image, int> PrimaryKey => x => x.Id;
 
-        protected override IQueryable<ExerciseImage> GetIncluded(IEnumerable<string>? include)
+        protected override IQueryable<Image> GetIncluded(IEnumerable<string>? include)
         {
-            var entitiesIncluding = context.ExerciseImages.AsQueryable();
+            var entitiesIncluding = context.Images.AsQueryable();
             if (include is null || !include.Any() || include.Contains("none"))
                 return entitiesIncluding;
 
@@ -27,7 +27,7 @@ namespace ProjectGym.Services.Read
             return entitiesIncluding;
         }
 
-        protected override Expression<Func<ExerciseImage, bool>> TranslateKeyValueToExpression(string key, string value)
+        protected override Expression<Func<Image, bool>> TranslateKeyValueToExpression(string key, string value)
         {
             if (key != "exercise")
                 throw new NotSupportedException($"Invalid key in search query. Entered key: {key}");
