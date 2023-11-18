@@ -18,7 +18,7 @@ namespace ProjectGym.Controllers
                                      IDeleteService<Equipment> deleteService) : ControllerBase,
                                                                                 IReadController<Equipment, EquipmentDTO, int>,
                                                                                 ICreateController<Equipment, EquipmentDTO, int>,
-                                                                                IUpdateController<Equipment>,
+                                                                                IUpdateController<Equipment, EquipmentDTO>,
                                                                                 IDeleteController<Equipment, int>
     {
         public IEntityMapperSync<Equipment, EquipmentDTO> Mapper { get; } = mapper;

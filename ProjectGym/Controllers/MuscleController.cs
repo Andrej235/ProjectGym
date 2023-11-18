@@ -9,18 +9,11 @@ namespace ProjectGym.Controllers
 {
     [Route("api/muscle")]
     [ApiController]
-    public class MuscleController : ControllerBase, IReadController<Muscle, MuscleDTO, int>, ICreateController<Muscle, MuscleDTO, int>
+    public class MuscleController(IReadService<Muscle> readService, IEntityMapperSync<Muscle, MuscleDTO> mapper, ICreateService<Muscle, int> createService) : ControllerBase, IReadController<Muscle, MuscleDTO, int>, ICreateController<Muscle, MuscleDTO, int>
     {
-        public IReadService<Muscle> ReadService { get; }
-        public IEntityMapperSync<Muscle, MuscleDTO> Mapper { get; }
-        public ICreateService<Muscle, int> CreateService { get; }
-
-        public MuscleController(IReadService<Muscle> readService, IEntityMapperSync<Muscle, MuscleDTO> mapper, ICreateService<Muscle, int> createService)
-        {
-            ReadService = readService;
-            Mapper = mapper;
-            CreateService = createService;
-        }
+        public IReadService<Muscle> ReadService { get; } = readService;
+        public IEntityMapperSync<Muscle, MuscleDTO> Mapper { get; } = mapper;
+        public ICreateService<Muscle, int> CreateService { get; } = createService;
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id, [FromQuery] string? include)

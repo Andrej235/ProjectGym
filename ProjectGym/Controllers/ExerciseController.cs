@@ -5,25 +5,27 @@ using ProjectGym.Services.Create;
 using ProjectGym.Services.Delete;
 using ProjectGym.Services.Mapping;
 using ProjectGym.Services.Read;
+using ProjectGym.Services.Update;
 
 namespace ProjectGym.Controllers
 {
     [Route("api/exercise")]
     [ApiController]
-    public class ExerciseController : ControllerBase, ICreateController<Exercise, ExerciseDTO, int>, IReadController<Exercise, ExerciseDTO, int>, IDeleteController<Exercise, int>
+    public class ExerciseController(ICreateService<Exercise, int> createService,
+                                    IReadService<Exercise> readService,
+                                    IUpdateService<Exercise> updateService,
+                                    IDeleteService<Exercise> deleteService,
+                                    IEntityMapperAsync<Exercise, ExerciseDTO> mapper) : ControllerBase,
+                                                                              ICreateController<Exercise, ExerciseDTO, int>,
+                                                                              IReadController<Exercise, ExerciseDTO, int>,
+                                                                              IUpdateController<Exercise, ExerciseDTO>,
+                                                                              IDeleteController<Exercise, int>
     {
-        public IReadService<Exercise> ReadService { get; }
-        public IEntityMapperAsync<Exercise, ExerciseDTO> Mapper { get; }
-        public IDeleteService<Exercise> DeleteService { get; }
-        public ICreateService<Exercise, int> CreateService { get; }
-
-        public ExerciseController(IReadService<Exercise> readService, IEntityMapperAsync<Exercise, ExerciseDTO> mapper, IDeleteService<Exercise> deleteService, ICreateService<Exercise, int> createService)
-        {
-            Mapper = mapper;
-            CreateService = createService;
-            ReadService = readService;
-            DeleteService = deleteService;
-        }
+        public IReadService<Exercise> ReadService { get; } = readService;
+        public IEntityMapperAsync<Exercise, ExerciseDTO> Mapper { get; } = mapper;
+        public IDeleteService<Exercise> DeleteService { get; } = deleteService;
+        public ICreateService<Exercise, int> CreateService { get; } = createService;
+        public IUpdateService<Exercise> UpdateService { get; } = updateService;
 
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] int? offset, [FromQuery] int? limit, [FromQuery] string? include, [FromQuery] string? q)
@@ -73,6 +75,19 @@ namespace ProjectGym.Controllers
                 var entity = await Mapper.Map(entityDTO);
                 int newId = await CreateService.Add(entity);
                 return newId != default ? Ok(newId) : BadRequest("Entity already exists");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error occurred: {ex.Message}");
+            }
+        }
+
+        public async Task<IActionResult> Update([FromBody] ExerciseDTO updatedEntity)
+        {
+            try
+            {
+                await UpdateService.Update(await Mapper.Map(updatedEntity));
+                return Ok("Successfully updated entity");
             }
             catch (Exception ex)
             {

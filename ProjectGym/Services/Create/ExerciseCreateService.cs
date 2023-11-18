@@ -18,8 +18,6 @@ namespace ProjectGym.Services.Create
             {
                 try
                 {
-                    context.AttachRange(toAdd.Notes);
-                    context.AttachRange(toAdd.Images);
                     context.AttachRange(toAdd.Equipment);
                     context.AttachRange(toAdd.PrimaryMuscleGroups);
                     context.AttachRange(toAdd.SecondaryMuscleGroups);
@@ -30,29 +28,15 @@ namespace ProjectGym.Services.Create
                     {
                         Name = toAdd.Name,
                         Description = toAdd.Description,
-                        Notes = toAdd.Notes,
-                        Images = toAdd.Images,
                         Equipment = toAdd.Equipment,
                         PrimaryMuscleGroups = toAdd.PrimaryMuscleGroups,
                         SecondaryMuscleGroups = toAdd.SecondaryMuscleGroups,
                         PrimaryMuscles = toAdd.PrimaryMuscles,
                         SecondaryMuscles = toAdd.SecondaryMuscles,
-                        Aliases = toAdd.Aliases,
                     };
 
-                    await context.Exercises.AddAsync(dbEntity);
+                    await context.Exercises.AddAsync(toAdd);
                     await context.SaveChangesAsync();
-
-                    /*      foreach (var e in toAdd.Equipment)
-                              await equipmentExerciseUsageCreateService.Add(new() { EquipmentId = e.Id, ExerciseId = dbEntity.Id });
-
-                          foreach (var m in toAdd.PrimaryMuscleGroups)
-                              await primaryMuscleExerciseConnectionCreateService.Add(new() { MuscleGroupId = m.Id, ExerciseId = dbEntity.Id });
-
-                          foreach (var m in toAdd.SecondaryMuscleGroups)
-                              await secondaryMuscleExerciseConnectionCreateService.Add(new() { MuscleGroupId = m.Id, ExerciseId = dbEntity.Id });*/
-
-                    //await context.SaveChangesAsync();
                     return dbEntity.Id;
                 }
                 catch (Exception ex)

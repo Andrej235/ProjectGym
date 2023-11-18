@@ -20,6 +20,7 @@ namespace ProjectGym
             #region Exercise
             builder.Services.AddTransient<ICreateService<Exercise, int>, ExerciseCreateService>();
             builder.Services.AddTransient<IReadService<Exercise>, ExerciseReadService>();
+            builder.Services.AddTransient<IUpdateService<Exercise>, ExerciseUpdateService>();
             builder.Services.AddTransient<IDeleteService<Exercise>, DeleteService<Exercise>>();
             builder.Services.AddTransient<IEntityMapper<Exercise, ExerciseDTO>, ExerciseMapper>();
             builder.Services.AddTransient<IEntityMapperAsync<Exercise, ExerciseDTO>, ExerciseMapper>();

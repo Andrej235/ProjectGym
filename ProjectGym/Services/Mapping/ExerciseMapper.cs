@@ -28,6 +28,7 @@ namespace ProjectGym.Services.Mapping
 
         public async Task<Exercise> Map(ExerciseDTO dto) => new()
         {
+            Id = dto.Id,
             Name = dto.Name,
             Description = dto.Description,
             Equipment = await equipmentReadService.Get(x => dto.EquipmentIds.Contains(x.Id), 0, -1, "none"),
