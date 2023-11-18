@@ -1,9 +1,6 @@
-using Microsoft.Identity.Client;
-using ProjectGym.Controllers;
 using ProjectGym.Data;
 using ProjectGym.DTOs;
 using ProjectGym.Models;
-using ProjectGym.Services;
 using ProjectGym.Services.Create;
 using ProjectGym.Services.Delete;
 using ProjectGym.Services.Mapping;
@@ -42,6 +39,9 @@ namespace ProjectGym
 
             #region Muscle group
             builder.Services.AddTransient<IReadService<MuscleGroup>, MuscleGroupReadService>();
+            builder.Services.AddTransient<ICreateService<MuscleGroup, int>, MuscleGroupCreateService>();
+            builder.Services.AddTransient<IEntityMapper<MuscleGroup, MuscleGroupDTO>, MuscleGroupMapper>();
+            builder.Services.AddTransient<IEntityMapperSync<MuscleGroup, MuscleGroupDTO>, MuscleGroupMapper>();
             #endregion
 
             #region Muscle

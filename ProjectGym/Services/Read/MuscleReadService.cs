@@ -37,7 +37,14 @@ namespace ProjectGym.Services.Read
                 if (string.IsNullOrWhiteSpace(value))
                     throw new NullReferenceException("Value in a search query cannot be null or empty.");
 
-                return m => m.Name.ToLower().Contains(value.ToLower());
+                return x => x.Name.ToLower().Contains(value.ToLower());
+            }
+            else if (key == "musclegroup")
+            {
+                if (int.TryParse(value, out var id))
+                    return x => x.MuscleGroupId == id;
+                else
+                    throw new NullReferenceException($"Invalid value in search query. Entered value '{value}' for key '{key}'");
             }
             throw new NotSupportedException($"Invalid key in search query. Entered key: {key}");
         }

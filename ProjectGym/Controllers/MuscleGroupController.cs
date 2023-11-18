@@ -7,19 +7,32 @@ using ProjectGym.Services.Read;
 
 namespace ProjectGym.Controllers
 {
-    [Route("api/muscle")]
     [ApiController]
-    public class MuscleController : ControllerBase, IReadController<Muscle, MuscleDTO, int>, ICreateController<Muscle, MuscleDTO, int>
+    [Route("api/musclegroup")]
+    public class MuscleGroupController : ControllerBase, ICreateController<MuscleGroup, MuscleGroupDTO, int>, IReadController<MuscleGroup, MuscleGroupDTO, int>
     {
-        public IReadService<Muscle> ReadService { get; }
-        public IEntityMapperSync<Muscle, MuscleDTO> Mapper { get; }
-        public ICreateService<Muscle, int> CreateService { get; }
+        public IEntityMapperSync<MuscleGroup, MuscleGroupDTO> Mapper { get; }
+        public ICreateService<MuscleGroup, int> CreateService { get; }
+        public IReadService<MuscleGroup> ReadService { get; }
 
-        public MuscleController(IReadService<Muscle> readService, IEntityMapperSync<Muscle, MuscleDTO> mapper, ICreateService<Muscle, int> createService)
+        public MuscleGroupController(ICreateService<MuscleGroup, int> createService, IReadService<MuscleGroup> readService, IEntityMapperSync<MuscleGroup, MuscleGroupDTO> mapper)
         {
+            CreateService = createService;
             ReadService = readService;
             Mapper = mapper;
-            CreateService = createService;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] MuscleGroupDTO entityDTO)
+        {
+            try
+            {
+                return Ok(await CreateService.Add(Mapper.Map(entityDTO)));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error occurred: {ex.Message}");
+            }
         }
 
         [HttpGet("{id}")]
@@ -35,22 +48,16 @@ namespace ProjectGym.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest($"Error occurred: {ex.Message}");
             }
         }
 
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] int? offset, [FromQuery] int? limit, [FromQuery] string? include, [FromQuery] string? q)
         {
-            return Ok((await ReadService.Get(q, offset, limit, include)).Select(Mapper.Map));
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] MuscleDTO entityDTO)
-        {
             try
             {
-                return Ok(await CreateService.Add(Mapper.Map(entityDTO)));
+                return Ok((await ReadService.Get(q, offset, limit, include)).Select(Mapper.Map));
             }
             catch (Exception ex)
             {

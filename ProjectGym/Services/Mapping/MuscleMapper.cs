@@ -13,14 +13,11 @@ namespace ProjectGym.Services.Mapping
             MuscleGroupId = entity.MuscleGroupId,
         };
 
-        public Muscle Map(MuscleDTO dto)
+        public Muscle Map(MuscleDTO dto) => new()
         {
-            return new()
-            {
-                Name = dto.Name,
-                ImageUrl = dto.ImageUrl,
-                MuscleGroupId = dto.MuscleGroupId
-            };
-        }
+            Name = dto.Name,
+            ImageUrl = dto.ImageUrl,
+            MuscleGroupId = dto.MuscleGroupId,
+        };
     }
 }

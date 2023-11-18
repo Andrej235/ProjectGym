@@ -1,32 +1,35 @@
 ﻿using ProjectGym.Data;
+using ProjectGym.DTOs;
 using ProjectGym.Models;
+using ProjectGym.Services.Mapping;
 using ProjectGym.Services.Read;
 using System.Diagnostics;
 
 namespace ProjectGym.Services.Create
 {
-    public class MuscleCreateService : ICreateService<Muscle, int>
+    public class MuscleGroupCreateService : ICreateService<MuscleGroup, int>
     {
+        private readonly IReadService<MuscleGroup> readService;
         private readonly ExerciseContext context;
-        private readonly IReadService<Muscle> readService;
-        public MuscleCreateService(ExerciseContext context, IReadService<Muscle> readService)
+
+        public MuscleGroupCreateService(ExerciseContext context, IReadService<MuscleGroup> readService)
         {
             this.context = context;
             this.readService = readService;
         }
 
-        public async Task<int> Add(Muscle toAdd)
+        public async Task<int> Add(MuscleGroup toAdd)
         {
             try
             {
-                await readService.Get(eq => eq.Name.ToLower() == toAdd.Name.ToLower(), "none");
+                await readService.Get(x => x.Name.ToLower().Trim() == toAdd.Name.ToLower().Trim(), "none");
                 return default;
             }
             catch (NullReferenceException)
             {
                 try
                 {
-                    await context.Muscles.AddAsync(toAdd);
+                    await context.MuscleGroups.AddAsync(toAdd);
                     await context.SaveChangesAsync();
                     return toAdd.Id;
                 }

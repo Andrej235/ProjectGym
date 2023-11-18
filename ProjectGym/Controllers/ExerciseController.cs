@@ -1,15 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.EntityFrameworkCore;
-using ProjectGym.Data;
 using ProjectGym.DTOs;
 using ProjectGym.Models;
-using ProjectGym.Services;
 using ProjectGym.Services.Create;
 using ProjectGym.Services.Delete;
 using ProjectGym.Services.Mapping;
 using ProjectGym.Services.Read;
-using System.Linq.Expressions;
 
 namespace ProjectGym.Controllers
 {
