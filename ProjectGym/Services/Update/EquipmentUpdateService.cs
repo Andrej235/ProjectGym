@@ -7,20 +7,8 @@ using ProjectGym.Services.Read;
 
 namespace ProjectGym.Services.Update
 {
-    public class EquipmentUpdateService : IUpdateService<Equipment>
+    public class EquipmentUpdateService(ExerciseContext context, IReadService<Equipment> readService, IDeleteService<EquipmentUsage> equipmentExerciseUsageDeleteService, ICreateService<EquipmentUsage, int> equipmentExerciseUsageCreateService) : IUpdateService<Equipment>
     {
-        private readonly ExerciseContext context;
-        private readonly IReadService<Equipment> readService;
-        private readonly IDeleteService<EquipmentUsage> equipmentExerciseUsageDeleteService;
-        private readonly ICreateService<EquipmentUsage, int> equipmentExerciseUsageCreateService;
-        public EquipmentUpdateService(ExerciseContext context, IReadService<Equipment> readService, IDeleteService<EquipmentUsage> equipmentExerciseUsageDeleteService, ICreateService<EquipmentUsage, int> equipmentExerciseUsageCreateService)
-        {
-            this.context = context;
-            this.readService = readService;
-            this.equipmentExerciseUsageDeleteService = equipmentExerciseUsageDeleteService;
-            this.equipmentExerciseUsageCreateService = equipmentExerciseUsageCreateService;
-        }
-
         public async Task Update(Equipment updatedEntity)
         {
             var entity = await readService.Get(eq => eq.Id == updatedEntity.Id, "all") ?? throw new NullReferenceException("Entity not found");
@@ -35,9 +23,6 @@ namespace ProjectGym.Services.Update
             });
             foreach (var usage in newUsages)
                 await equipmentExerciseUsageCreateService.Add(usage);
-
-            //context.RemoveRange(context.EquipmentExerciseUsages.Where(eeu => eeu.EquipmentId == entity.Id));
-            //context.AddRange(updatedEntity.UsedInExercises.Select(e => new EquipmentExerciseUsage() { EquipmentId = entity.Id, ExerciseId = e.Id }));
 
             context.Entry(entity).State = EntityState.Modified;
             await context.SaveChangesAsync();

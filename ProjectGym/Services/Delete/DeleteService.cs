@@ -1,20 +1,13 @@
 ﻿using ProjectGym.Data;
+using ProjectGym.Models;
 using ProjectGym.Services.Read;
 using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace ProjectGym.Services.Delete
 {
-    public class DeleteService<T> : IDeleteService<T> where T : class
+    public class DeleteService<T>(ExerciseContext context, IReadService<T> readService) : IDeleteService<T> where T : class
     {
-        private readonly ExerciseContext context;
-        private readonly IReadService<T> readService;
-        public DeleteService(ExerciseContext context, IReadService<T> readService)
-        {
-            this.context = context;
-            this.readService = readService;
-        }
-
         public async Task DeleteFirst(Expression<Func<T, bool>> criteria)
         {
             try
@@ -34,7 +27,7 @@ namespace ProjectGym.Services.Delete
         {
             List<T> entitiesToDelete = await readService.Get(criteria, 0, -1, "none");
 
-            if (entitiesToDelete.Any())
+            if (entitiesToDelete.Count != 0)
             {
                 try
                 {

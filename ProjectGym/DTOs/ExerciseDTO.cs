@@ -12,6 +12,8 @@ namespace ProjectGym.DTOs
         public IEnumerable<int> EquipmentIds { get; set; } = new List<int>();
         public IEnumerable<int> PrimaryMuscleGroupIds { get; set; } = new List<int>();
         public IEnumerable<int> SecondaryMuscleGroupIds { get; set; } = new List<int>();
+        public IEnumerable<int> PrimaryMuscleIds { get; set; } = new List<int>();
+        public IEnumerable<int> SecondaryMuscleIds { get; set; } = new List<int>();
         public IEnumerable<int> AliasIds { get; set; } = new List<int>();
         public IEnumerable<int> NoteIds { get; set; } = new List<int>();
 

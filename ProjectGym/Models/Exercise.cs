@@ -8,6 +8,8 @@
 
         public IEnumerable<MuscleGroup> PrimaryMuscleGroups { get; set; } = new List<MuscleGroup>();
         public IEnumerable<MuscleGroup> SecondaryMuscleGroups { get; set; } = new List<MuscleGroup>();
+        public IEnumerable<Muscle> PrimaryMuscles { get; set; } = new List<Muscle>();
+        public IEnumerable<Muscle> SecondaryMuscles { get; set; } = new List<Muscle>();
         public IEnumerable<Equipment> Equipment { get; set; } = new List<Equipment>();
 
         public IEnumerable<Image> Images { get; set; } = new List<Image>();

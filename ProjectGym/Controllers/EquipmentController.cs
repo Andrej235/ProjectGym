@@ -11,30 +11,21 @@ namespace ProjectGym.Controllers
 {
     [Route("api/equipment")]
     [ApiController]
-    public class EquipmentController : ControllerBase,
-        IReadController<Equipment, EquipmentDTO, int>,
-        ICreateController<Equipment, EquipmentDTO, int>,
-        IUpdateController<Equipment>,
-        IDeleteController<Equipment, int>
+    public class EquipmentController(IEntityMapperSync<Equipment, EquipmentDTO> mapper,
+                                     IReadService<Equipment> readService,
+                                     ICreateService<Equipment, int> createService,
+                                     IUpdateService<Equipment> updateService,
+                                     IDeleteService<Equipment> deleteService) : ControllerBase,
+                                                                                IReadController<Equipment, EquipmentDTO, int>,
+                                                                                ICreateController<Equipment, EquipmentDTO, int>,
+                                                                                IUpdateController<Equipment>,
+                                                                                IDeleteController<Equipment, int>
     {
-        public IEntityMapperAsync<Equipment, EquipmentDTO> Mapper { get; }
-        public IReadService<Equipment> ReadService { get; }
-        public ICreateService<Equipment, int> CreateService { get; }
-        public IUpdateService<Equipment> UpdateService { get; }
-        public IDeleteService<Equipment> DeleteService { get; }
-
-        public EquipmentController(IEntityMapperAsync<Equipment, EquipmentDTO> mapper,
-                                   IReadService<Equipment> readService,
-                                   ICreateService<Equipment, int> createService,
-                                   IUpdateService<Equipment> updateService,
-                                   IDeleteService<Equipment> deleteService)
-        {
-            ReadService = readService;
-            Mapper = mapper;
-            CreateService = createService;
-            UpdateService = updateService;
-            DeleteService = deleteService;
-        }
+        public IEntityMapperSync<Equipment, EquipmentDTO> Mapper { get; } = mapper;
+        public IReadService<Equipment> ReadService { get; } = readService;
+        public ICreateService<Equipment, int> CreateService { get; } = createService;
+        public IUpdateService<Equipment> UpdateService { get; } = updateService;
+        public IDeleteService<Equipment> DeleteService { get; } = deleteService;
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id, [FromQuery] string? include)
@@ -61,7 +52,7 @@ namespace ProjectGym.Controllers
         {
             try
             {
-                int newEntityId = await CreateService.Add(await Mapper.Map(entityDTO));
+                int newEntityId = await CreateService.Add(Mapper.Map(entityDTO));
                 if (newEntityId != default)
                     return Ok(newEntityId);
                 else
@@ -78,7 +69,7 @@ namespace ProjectGym.Controllers
         {
             try
             {
-                var entity = await Mapper.Map(updatedEntity);
+                var entity = Mapper.Map(updatedEntity);
                 await UpdateService.Update(entity);
                 return Ok("Successfully updated entity");
             }

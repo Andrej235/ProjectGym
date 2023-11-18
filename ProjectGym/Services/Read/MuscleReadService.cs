@@ -5,14 +5,8 @@ using System.Linq.Expressions;
 
 namespace ProjectGym.Services.Read
 {
-    public class MuscleReadService : AbstractReadService<Muscle, int>
+    public class MuscleReadService(ExerciseContext context) : AbstractReadService<Muscle, int>
     {
-        private readonly ExerciseContext context;
-        public MuscleReadService(ExerciseContext context)
-        {
-            this.context = context;
-        }
-
         protected override Func<Muscle, int> PrimaryKey => m => m.Id;
 
         protected override IQueryable<Muscle> GetIncluded(IEnumerable<string>? include)

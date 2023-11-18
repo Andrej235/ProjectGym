@@ -5,14 +5,8 @@ using System.Linq.Expressions;
 
 namespace ProjectGym.Services.Read
 {
-    public class ExerciseReadService : AbstractReadService<Exercise, int>
+    public class ExerciseReadService(ExerciseContext context) : AbstractReadService<Exercise, int>
     {
-        private readonly ExerciseContext context;
-        public ExerciseReadService(ExerciseContext context)
-        {
-            this.context = context;
-        }
-
         protected override Func<Exercise, int> PrimaryKey => x => x.Id;
 
         protected override IQueryable<Exercise> GetIncluded(IEnumerable<string>? include)
@@ -25,6 +19,8 @@ namespace ProjectGym.Services.Read
                 return exercisesIncluding
                     .Include(e => e.PrimaryMuscleGroups)
                     .Include(e => e.SecondaryMuscleGroups)
+                    .Include(e => e.PrimaryMuscles)
+                    .Include(e => e.SecondaryMuscles)
                     .Include(e => e.Equipment)
                     .Include(e => e.Aliases)
                     .Include(e => e.Notes)
@@ -35,8 +31,10 @@ namespace ProjectGym.Services.Read
                 exercisesIncluding = inc switch
                 {
                     "images" => exercisesIncluding.Include(e => e.Images),
-                    "primarymuscles" => exercisesIncluding.Include(e => e.PrimaryMuscleGroups),
-                    "secondarymuscles" => exercisesIncluding.Include(e => e.SecondaryMuscleGroups),
+                    "primarymuscles" => exercisesIncluding.Include(e => e.PrimaryMuscles),
+                    "secondarymuscles" => exercisesIncluding.Include(e => e.SecondaryMuscles),
+                    "primarymusclegroups" => exercisesIncluding.Include(e => e.PrimaryMuscleGroups),
+                    "secondarymusclegroups" => exercisesIncluding.Include(e => e.SecondaryMuscleGroups),
                     "equipment" => exercisesIncluding.Include(e => e.Equipment),
                     "aliases" => exercisesIncluding.Include(e => e.Aliases),
                     "notes" => exercisesIncluding.Include(e => e.Notes),
@@ -53,9 +51,6 @@ namespace ProjectGym.Services.Read
                 if (string.IsNullOrWhiteSpace(value))
                     throw new NullReferenceException("Value in a search query cannot be null or empty.");
 
-                /*                var ids = exercisesQueryable.AsEnumerable().Where(e => e.Name.IsSimilar(value)).Select(e => e.Id);
-                                return e => ids.Contains(e.Id);*/
-
                 return e => e.Name.ToLower().Contains(value.ToLower());
             }
             else
@@ -65,8 +60,10 @@ namespace ProjectGym.Services.Read
                     return key switch
                     {
                         "id" => e => e.Id == valueId,
-                        "primarymuscle" => e => e.PrimaryMuscleGroups.Any(m => m.Id == valueId),
-                        "secondarymuscle" => e => e.SecondaryMuscleGroups.Any(m => m.Id == valueId),
+                        "primarymusclegroup" => e => e.PrimaryMuscleGroups.Any(m => m.Id == valueId),
+                        "secondarymusclegroup" => e => e.SecondaryMuscleGroups.Any(m => m.Id == valueId),
+                        "primarymuscle" => e => e.PrimaryMuscles.Any(m => m.Id == valueId),
+                        "secondarymuscle" => e => e.SecondaryMuscles.Any(m => m.Id == valueId),
                         "equipment" => e => e.Equipment.Any(eq => eq.Id == valueId),
                         _ => throw new NotSupportedException($"Invalid key in search query. Entered key: {key}"),
                     };
@@ -75,7 +72,7 @@ namespace ProjectGym.Services.Read
                 if (value.Contains(','))
                 {
                     var values = value.Replace(" ", "").Split(',');
-                    List<int> valueIds = new();
+                    List<int> valueIds = [];
                     foreach (var id in values)
                     {
                         if (int.TryParse(id, out int newId))
@@ -85,8 +82,10 @@ namespace ProjectGym.Services.Read
                     return key switch
                     {
                         "id" => e => valueIds.Contains(e.Id),
-                        "primarymuscle" => e => e.PrimaryMuscleGroups.Any(m => valueIds.Contains(m.Id)),
-                        "secondarymuscle" => e => e.SecondaryMuscleGroups.Any(m => valueIds.Contains(m.Id)),
+                        "primarymusclegroup" => e => e.PrimaryMuscleGroups.Any(m => valueIds.Contains(m.Id)),
+                        "secondarymusclegroup" => e => e.SecondaryMuscleGroups.Any(m => valueIds.Contains(m.Id)),
+                        "primarymuscle" => e => e.PrimaryMuscles.Any(m => valueIds.Contains(m.Id)),
+                        "secondarymuscle" => e => e.SecondaryMuscles.Any(m => valueIds.Contains(m.Id)),
                         "equipment" => e => e.Equipment.Any(eq => valueIds.Contains(eq.Id)),
                         _ => throw new NotSupportedException($"Invalid key in search query. Entered key: {key}"),
                     };

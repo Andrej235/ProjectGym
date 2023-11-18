@@ -15,6 +15,8 @@ namespace ProjectGym.Data
         public DbSet<Alias> Aliases { get; set; }
         public DbSet<PrimaryMuscleGroupInExercise> PrimaryMuscleGroups { get; set; }
         public DbSet<SecondaryMuscleGroupInExercise> SecondaryMuscleGroups { get; set; }
+        public DbSet<PrimaryMuscleGroupInExercise> PrimaryMuscles { get; set; }
+        public DbSet<SecondaryMuscleGroupInExercise> SecondaryMuscles { get; set; }
         public DbSet<EquipmentUsage> EquipmentUsages { get; set; }
 
         public DbSet<User> Users { get; set; }
@@ -59,6 +61,32 @@ namespace ProjectGym.Data
                 .WithMany(m => m.SecondaryInExercises)
                 .UsingEntity<SecondaryMuscleGroupInExercise>(
                     j => j.HasOne<MuscleGroup>().WithMany().HasForeignKey(m => m.MuscleGroupId).OnDelete(DeleteBehavior.Cascade),
+                    j => j.HasOne<Exercise>().WithMany().HasForeignKey(e => e.ExerciseId).OnDelete(DeleteBehavior.Cascade),
+                    j =>
+                    {
+                        j.Property(me => me.Id).ValueGeneratedOnAdd();
+                        j.HasKey(me => me.Id);
+                    }
+                );
+
+            modelBuilder.Entity<Exercise>()
+                .HasMany(e => e.PrimaryMuscles)
+                .WithMany()
+                .UsingEntity<PrimaryMuscleInExercise>(
+                    j => j.HasOne<Muscle>().WithMany().HasForeignKey(m => m.MuscleId).OnDelete(DeleteBehavior.Cascade),
+                    j => j.HasOne<Exercise>().WithMany().HasForeignKey(e => e.ExerciseId).OnDelete(DeleteBehavior.Cascade),
+                    j =>
+                    {
+                        j.Property(me => me.Id).ValueGeneratedOnAdd();
+                        j.HasKey(me => me.Id);
+                    }
+                );
+
+            modelBuilder.Entity<Exercise>()
+                .HasMany(e => e.SecondaryMuscles)
+                .WithMany()
+                .UsingEntity<SecondaryMuscleInExercise>(
+                    j => j.HasOne<Muscle>().WithMany().HasForeignKey(m => m.MuscleId).OnDelete(DeleteBehavior.Cascade),
                     j => j.HasOne<Exercise>().WithMany().HasForeignKey(e => e.ExerciseId).OnDelete(DeleteBehavior.Cascade),
                     j =>
                     {

@@ -5,28 +5,13 @@ using System.Diagnostics;
 
 namespace ProjectGym.Services.Create
 {
-    public class ExerciseCreateService : ICreateService<Exercise, int>
+    public class ExerciseCreateService(ExerciseContext context, IReadService<Exercise> readService) : ICreateService<Exercise, int>
     {
-        private readonly ExerciseContext context;
-        private readonly IReadService<Exercise> readService;
-        private readonly ICreateService<EquipmentUsage, int> equipmentExerciseUsageCreateService;
-        private readonly ICreateService<PrimaryMuscleGroupInExercise, int> primaryMuscleExerciseConnectionCreateService;
-        private readonly ICreateService<SecondaryMuscleGroupInExercise, int> secondaryMuscleExerciseConnectionCreateService;
-
-        public ExerciseCreateService(ExerciseContext context, IReadService<Exercise> readService, ICreateService<EquipmentUsage, int> equipmentExerciseUsageCreateService, ICreateService<PrimaryMuscleGroupInExercise, int> primaryMuscleExerciseConnectionCreateService, ICreateService<SecondaryMuscleGroupInExercise, int> secondaryMuscleExerciseConnectionCreateService)
-        {
-            this.context = context;
-            this.readService = readService;
-            this.equipmentExerciseUsageCreateService = equipmentExerciseUsageCreateService;
-            this.primaryMuscleExerciseConnectionCreateService = primaryMuscleExerciseConnectionCreateService;
-            this.secondaryMuscleExerciseConnectionCreateService = secondaryMuscleExerciseConnectionCreateService;
-        }
-
         public async Task<int> Add(Exercise toAdd)
         {
             try
             {
-                await readService.Get(x => x.Name.ToLower() == toAdd.Name.ToLower(), "none");
+                await readService.Get(x => x.Name.ToLower().Equals(toAdd.Name.ToLower()), "none");
                 return default;
             }
             catch (NullReferenceException)
@@ -35,6 +20,11 @@ namespace ProjectGym.Services.Create
                 {
                     context.AttachRange(toAdd.Notes);
                     context.AttachRange(toAdd.Images);
+                    context.AttachRange(toAdd.Equipment);
+                    context.AttachRange(toAdd.PrimaryMuscleGroups);
+                    context.AttachRange(toAdd.SecondaryMuscleGroups);
+                    context.AttachRange(toAdd.PrimaryMuscles);
+                    context.AttachRange(toAdd.SecondaryMuscles);
 
                     Exercise dbEntity = new()
                     {
@@ -42,21 +32,27 @@ namespace ProjectGym.Services.Create
                         Description = toAdd.Description,
                         Notes = toAdd.Notes,
                         Images = toAdd.Images,
+                        Equipment = toAdd.Equipment,
+                        PrimaryMuscleGroups = toAdd.PrimaryMuscleGroups,
+                        SecondaryMuscleGroups = toAdd.SecondaryMuscleGroups,
+                        PrimaryMuscles = toAdd.PrimaryMuscles,
+                        SecondaryMuscles = toAdd.SecondaryMuscles,
+                        Aliases = toAdd.Aliases,
                     };
 
                     await context.Exercises.AddAsync(dbEntity);
                     await context.SaveChangesAsync();
 
-                    foreach (var e in toAdd.Equipment)
-                        await equipmentExerciseUsageCreateService.Add(new() { EquipmentId = e.Id, ExerciseId = dbEntity.Id });
+                    /*      foreach (var e in toAdd.Equipment)
+                              await equipmentExerciseUsageCreateService.Add(new() { EquipmentId = e.Id, ExerciseId = dbEntity.Id });
 
-                    foreach (var m in toAdd.PrimaryMuscleGroups)
-                        await primaryMuscleExerciseConnectionCreateService.Add(new() { MuscleGroupId = m.Id, ExerciseId = dbEntity.Id });
+                          foreach (var m in toAdd.PrimaryMuscleGroups)
+                              await primaryMuscleExerciseConnectionCreateService.Add(new() { MuscleGroupId = m.Id, ExerciseId = dbEntity.Id });
 
-                    foreach (var m in toAdd.SecondaryMuscleGroups)
-                        await secondaryMuscleExerciseConnectionCreateService.Add(new() { MuscleGroupId = m.Id, ExerciseId = dbEntity.Id });
+                          foreach (var m in toAdd.SecondaryMuscleGroups)
+                              await secondaryMuscleExerciseConnectionCreateService.Add(new() { MuscleGroupId = m.Id, ExerciseId = dbEntity.Id });*/
 
-                    await context.SaveChangesAsync();
+                    //await context.SaveChangesAsync();
                     return dbEntity.Id;
                 }
                 catch (Exception ex)

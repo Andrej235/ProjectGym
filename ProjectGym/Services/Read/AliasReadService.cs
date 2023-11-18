@@ -7,14 +7,8 @@ using System.Linq.Expressions;
 
 namespace ProjectGym.Services.Read
 {
-    public class AliasReadService : AbstractReadService<Alias, int>
+    public class AliasReadService(ExerciseContext context) : AbstractReadService<Alias, int>
     {
-        private readonly ExerciseContext context;
-        public AliasReadService(ExerciseContext context)
-        {
-            this.context = context;
-        }
-
         protected override Func<Alias, int> PrimaryKey => a => a.Id;
 
         protected override IQueryable<Alias> GetIncluded(IEnumerable<string>? include)

@@ -5,16 +5,8 @@ using System.Diagnostics;
 
 namespace ProjectGym.Services.Create
 {
-    public class ImageCreateService : ICreateService<Image, int>
+    public class ImageCreateService(IReadService<Exercise> exerciseReadService, ExerciseContext context) : ICreateService<Image, int>
     {
-        private readonly ExerciseContext context;
-        private readonly IReadService<Exercise> exerciseReadService;
-        public ImageCreateService(IReadService<Exercise> exerciseReadService, ExerciseContext context)
-        {
-            this.exerciseReadService = exerciseReadService;
-            this.context = context;
-        }
-
         public async Task<int> Add(Image toAdd)
         {
             if (toAdd.ExerciseId < 1)

@@ -5,14 +5,8 @@ using System.Linq.Expressions;
 
 namespace ProjectGym.Services.Read
 {
-    public class NoteReadService : AbstractReadService<Note, int>
+    public class NoteReadService(ExerciseContext context) : AbstractReadService<Note, int>
     {
-        private readonly ExerciseContext context;
-        public NoteReadService(ExerciseContext context)
-        {
-            this.context = context;
-        }
-
         protected override Func<Note, int> PrimaryKey => n => n.Id;
 
         protected override IQueryable<Note> GetIncluded(IEnumerable<string>? include)
@@ -29,14 +23,15 @@ namespace ProjectGym.Services.Read
 
         protected override Expression<Func<Note, bool>> TranslateKeyValueToExpression(string key, string value)
         {
-            if (key == "name")
+/*            if (key == "name")
             {
                 if (string.IsNullOrWhiteSpace(value))
                     throw new NullReferenceException("Value in a search query cannot be null or empty.");
 
-                return x => x.NoteText.ToLower().Contains(value.ToLower());
+                return x => x.NoteText.Contains(value, StringComparison.CurrentCultureIgnoreCase);
             }
-            throw new NotSupportedException($"Invalid key in search query. Entered key: {key}");
+            throw new NotSupportedException($"Invalid key in search query. Entered key: {key}");*/
+            throw new NotSupportedException($"Notes don't support search query");
         }
     }
 }

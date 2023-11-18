@@ -1,9 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ProjectGym.Data;
-using ProjectGym.Models;
 using System.Diagnostics;
 using System.Linq.Expressions;
-using System.Runtime.InteropServices;
 
 namespace ProjectGym.Services.Read
 {
@@ -22,11 +19,11 @@ namespace ProjectGym.Services.Read
 
             var criterias = new List<Expression<Func<T, bool>>>();
             var keyValuePairsInSearchQuery = query.Split(';')
-                                                        .Select(sq => sq.Split('=')
-                                                        .Select(x => x.Trim().ToLower())
-                                                        .ToList())
-                                                        .Where(x => x.Count == 2)
-                                                        .ToList();
+                                                  .Select(sq => sq.Split('=')
+                                                  .Select(x => x.Trim().ToLower())
+                                                  .ToList())
+                                                  .Where(x => x.Count == 2)
+                                                  .ToList();
 
             List<string>? strictKeyValuePair = keyValuePairsInSearchQuery.FirstOrDefault(kvp => kvp[0] == "strict");
             bool isStrictModeEnabled = false;

@@ -5,14 +5,8 @@ using System.Linq.Expressions;
 
 namespace ProjectGym.Services.Read
 {
-    public class ImageReadService : AbstractReadService<Image, int>
+    public class ImageReadService(ExerciseContext context) : AbstractReadService<Image, int>
     {
-        private readonly ExerciseContext context;
-        public ImageReadService(ExerciseContext context)
-        {
-            this.context = context;
-        }
-
         protected override Func<Image, int> PrimaryKey => x => x.Id;
 
         protected override IQueryable<Image> GetIncluded(IEnumerable<string>? include)

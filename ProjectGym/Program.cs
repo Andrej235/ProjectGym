@@ -63,7 +63,7 @@ namespace ProjectGym
             builder.Services.AddTransient<IUpdateService<Equipment>, EquipmentUpdateService>();
             builder.Services.AddTransient<IDeleteService<Equipment>, DeleteService<Equipment>>();
             builder.Services.AddTransient<IEntityMapper<Equipment, EquipmentDTO>, EquipmentMapper>();
-            builder.Services.AddTransient<IEntityMapperAsync<Equipment, EquipmentDTO>, EquipmentMapper>();
+            builder.Services.AddTransient<IEntityMapperSync<Equipment, EquipmentDTO>, EquipmentMapper>();
             #endregion
 
             #region Alias
