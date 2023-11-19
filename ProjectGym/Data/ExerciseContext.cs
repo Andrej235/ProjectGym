@@ -15,8 +15,8 @@ namespace ProjectGym.Data
         public DbSet<Alias> Aliases { get; set; }
         public DbSet<PrimaryMuscleGroupInExercise> PrimaryMuscleGroups { get; set; }
         public DbSet<SecondaryMuscleGroupInExercise> SecondaryMuscleGroups { get; set; }
-        public DbSet<PrimaryMuscleGroupInExercise> PrimaryMuscles { get; set; }
-        public DbSet<SecondaryMuscleGroupInExercise> SecondaryMuscles { get; set; }
+        public DbSet<PrimaryMuscleInExercise> PrimaryMuscles { get; set; }
+        public DbSet<SecondaryMuscleInExercise> SecondaryMuscles { get; set; }
         public DbSet<EquipmentUsage> EquipmentUsages { get; set; }
 
         public DbSet<User> Users { get; set; }

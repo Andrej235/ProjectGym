@@ -12,8 +12,8 @@ using ProjectGym.Data;
 namespace ProjectGym.Migrations
 {
     [DbContext(typeof(ExerciseContext))]
-    [Migration("20231118180910_AddedARelationShipBetweenExerciseAndMuscle")]
-    partial class AddedARelationShipBetweenExerciseAndMuscle
+    [Migration("20231119150328_FullDatabaseRevamp")]
+    partial class FullDatabaseRevamp
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -357,7 +357,7 @@ namespace ProjectGym.Migrations
 
                     b.HasIndex("MuscleGroupId");
 
-                    b.ToTable("PrimaryMuscleGroupInExercise");
+                    b.ToTable("PrimaryMuscleGroups");
                 });
 
             modelBuilder.Entity("ProjectGym.Models.PrimaryMuscleInExercise", b =>
@@ -380,7 +380,7 @@ namespace ProjectGym.Migrations
 
                     b.HasIndex("MuscleId");
 
-                    b.ToTable("PrimaryMuscleInExercise");
+                    b.ToTable("PrimaryMuscles");
                 });
 
             modelBuilder.Entity("ProjectGym.Models.SecondaryMuscleGroupInExercise", b =>
@@ -403,7 +403,7 @@ namespace ProjectGym.Migrations
 
                     b.HasIndex("MuscleGroupId");
 
-                    b.ToTable("SecondaryMuscleGroupInExercise");
+                    b.ToTable("SecondaryMuscleGroups");
                 });
 
             modelBuilder.Entity("ProjectGym.Models.SecondaryMuscleInExercise", b =>
@@ -426,7 +426,7 @@ namespace ProjectGym.Migrations
 
                     b.HasIndex("MuscleId");
 
-                    b.ToTable("SecondaryMuscleInExercise");
+                    b.ToTable("SecondaryMuscles");
                 });
 
             modelBuilder.Entity("ProjectGym.Models.Set", b =>

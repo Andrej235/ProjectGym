@@ -7,17 +7,8 @@ using System.Diagnostics;
 
 namespace ProjectGym.Services.Create
 {
-    public class MuscleGroupCreateService : ICreateService<MuscleGroup, int>
+    public class MuscleGroupCreateService(ExerciseContext context, IReadService<MuscleGroup> readService) : ICreateService<MuscleGroup, int>
     {
-        private readonly IReadService<MuscleGroup> readService;
-        private readonly ExerciseContext context;
-
-        public MuscleGroupCreateService(ExerciseContext context, IReadService<MuscleGroup> readService)
-        {
-            this.context = context;
-            this.readService = readService;
-        }
-
         public async Task<int> Add(MuscleGroup toAdd)
         {
             try

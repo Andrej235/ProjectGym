@@ -14,6 +14,7 @@ namespace ProjectGym.Services.Mapping
 
         public Note Map(NoteDTO dto) => new()
         {
+            Id = dto.Id,
             NoteText = dto.Note,
             ExerciseId = dto.ExerciseId,
         };

@@ -5,16 +5,8 @@ using System.Diagnostics;
 
 namespace ProjectGym.Services.Create
 {
-    public class AliasCreateService : ICreateService<Alias, int>
+    public class AliasCreateService(ExerciseContext context, IReadService<Exercise> exerciseReadService) : ICreateService<Alias, int>
     {
-        private readonly ExerciseContext context;
-        private readonly IReadService<Exercise> exerciseReadService;
-        public AliasCreateService(ExerciseContext context, IReadService<Exercise> exerciseReadService)
-        {
-            this.context = context;
-            this.exerciseReadService = exerciseReadService;
-        }
-
         public async Task<int> Add(Alias toAdd)
         {
             if (toAdd.ExerciseId < 1)

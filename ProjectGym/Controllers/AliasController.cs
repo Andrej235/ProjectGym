@@ -2,6 +2,7 @@
 using ProjectGym.DTOs;
 using ProjectGym.Models;
 using ProjectGym.Services;
+using ProjectGym.Services.Create;
 using ProjectGym.Services.Mapping;
 using ProjectGym.Services.Read;
 using System.Linq.Expressions;
@@ -10,14 +11,29 @@ namespace ProjectGym.Controllers
 {
     [Route("api/alias")]
     [ApiController]
-    public class AliasController : ControllerBase, IReadController<Alias, ExerciseAliasDTO, int>
+    public class AliasController(ICreateService<Alias, int> createService,
+                                 IReadService<Alias> readService,
+                                 IEntityMapperSync<Alias, ExerciseAliasDTO> mapper) : ControllerBase, IReadController<Alias, ExerciseAliasDTO, int>, ICreateController<Alias, ExerciseAliasDTO, int>
     {
-        public IReadService<Alias> ReadService { get; }
-        public IEntityMapper<Alias, ExerciseAliasDTO> Mapper { get; }
-        public AliasController(IReadService<Alias> readService, IEntityMapper<Alias, ExerciseAliasDTO> mapper)
+        public ICreateService<Alias, int> CreateService { get; } = createService;
+        public IReadService<Alias> ReadService { get; } = readService;
+        public IEntityMapperSync<Alias, ExerciseAliasDTO> Mapper { get; } = mapper;
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] ExerciseAliasDTO entityDTO)
         {
-            ReadService = readService;
-            Mapper = mapper;
+            try
+            {
+                int newEntityId = await CreateService.Add(Mapper.Map(entityDTO));
+                if (newEntityId != default)
+                    return Ok(newEntityId);
+                else
+                    return BadRequest("Entity already exists.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("{id}")]

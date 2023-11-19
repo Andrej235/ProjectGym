@@ -1,7 +1,5 @@
 ﻿using ProjectGym.DTOs;
 using ProjectGym.Models;
-using ProjectGym.Services.Read;
-using System.Diagnostics;
 
 namespace ProjectGym.Services.Mapping
 {
@@ -16,6 +14,7 @@ namespace ProjectGym.Services.Mapping
 
         public Equipment Map(EquipmentDTO dto) => new()
         {
+            Id = dto.Id,
             Name = dto.Name,
         };
     }

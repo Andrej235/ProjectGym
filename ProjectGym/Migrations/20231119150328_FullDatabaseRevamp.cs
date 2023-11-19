@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ProjectGym.Migrations
 {
     /// <inheritdoc />
-    public partial class EntireNewDatabase : Migration
+    public partial class FullDatabaseRevamp : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -372,6 +372,58 @@ namespace ProjectGym.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PrimaryMuscles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ExerciseId = table.Column<int>(type: "int", nullable: false),
+                    MuscleId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PrimaryMuscles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PrimaryMuscles_Exercises_ExerciseId",
+                        column: x => x.ExerciseId,
+                        principalTable: "Exercises",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PrimaryMuscles_Muscles_MuscleId",
+                        column: x => x.MuscleId,
+                        principalTable: "Muscles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SecondaryMuscles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ExerciseId = table.Column<int>(type: "int", nullable: false),
+                    MuscleId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SecondaryMuscles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SecondaryMuscles_Exercises_ExerciseId",
+                        column: x => x.ExerciseId,
+                        principalTable: "Exercises",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SecondaryMuscles_Muscles_MuscleId",
+                        column: x => x.MuscleId,
+                        principalTable: "Muscles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CommentDownvotes",
                 columns: table => new
                 {
@@ -557,6 +609,16 @@ namespace ProjectGym.Migrations
                 column: "MuscleGroupId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PrimaryMuscles_ExerciseId",
+                table: "PrimaryMuscles",
+                column: "ExerciseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PrimaryMuscles_MuscleId",
+                table: "PrimaryMuscles",
+                column: "MuscleId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SecondaryMuscleGroups_ExerciseId",
                 table: "SecondaryMuscleGroups",
                 column: "ExerciseId");
@@ -565,6 +627,16 @@ namespace ProjectGym.Migrations
                 name: "IX_SecondaryMuscleGroups_MuscleGroupId",
                 table: "SecondaryMuscleGroups",
                 column: "MuscleGroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SecondaryMuscles_ExerciseId",
+                table: "SecondaryMuscles",
+                column: "ExerciseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SecondaryMuscles_MuscleId",
+                table: "SecondaryMuscles",
+                column: "MuscleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Sets_CreatorId",
@@ -637,16 +709,19 @@ namespace ProjectGym.Migrations
                 name: "Images");
 
             migrationBuilder.DropTable(
-                name: "Muscles");
-
-            migrationBuilder.DropTable(
                 name: "Notes");
 
             migrationBuilder.DropTable(
                 name: "PrimaryMuscleGroups");
 
             migrationBuilder.DropTable(
+                name: "PrimaryMuscles");
+
+            migrationBuilder.DropTable(
                 name: "SecondaryMuscleGroups");
+
+            migrationBuilder.DropTable(
+                name: "SecondaryMuscles");
 
             migrationBuilder.DropTable(
                 name: "Weights");
@@ -661,13 +736,16 @@ namespace ProjectGym.Migrations
                 name: "Equipment");
 
             migrationBuilder.DropTable(
-                name: "MuscleGroups");
+                name: "Muscles");
 
             migrationBuilder.DropTable(
                 name: "Supersets");
 
             migrationBuilder.DropTable(
                 name: "Workouts");
+
+            migrationBuilder.DropTable(
+                name: "MuscleGroups");
 
             migrationBuilder.DropTable(
                 name: "Sets");

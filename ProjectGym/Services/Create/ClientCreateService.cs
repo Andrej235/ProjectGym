@@ -5,15 +5,8 @@ using System.Diagnostics;
 
 namespace ProjectGym.Services.Create
 {
-    public class ClientCreateService : ICreateService<Client, Guid>
+    public class ClientCreateService(ExerciseContext context) : ICreateService<Client, Guid>
     {
-        private readonly ExerciseContext context;
-
-        public ClientCreateService(ExerciseContext context)
-        {
-            this.context = context;
-        }
-
         public async Task<Guid> Add(Client toAdd)
         {
             try

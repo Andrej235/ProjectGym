@@ -17,6 +17,7 @@ namespace ProjectGym.Services.Mapping
 
         public MuscleGroup Map(MuscleGroupDTO dto) => new()
         {
+            Id = dto.Id,
             Name = dto.Name,
         };
     }

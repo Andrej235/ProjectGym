@@ -88,14 +88,26 @@ namespace ProjectGym
             builder.Services.AddTransient<IEntityMapperSync<Image, ImageDTO>, ImageMapper>();
             #endregion
 
-            #region Primary muscle exercise connection
+            #region Primary muscle group
             builder.Services.AddTransient<ICreateService<PrimaryMuscleGroupInExercise, int>, PrimaryMuscleExerciseConnectionCreateService>();
-            builder.Services.AddTransient<IReadService<PrimaryMuscleGroupInExercise>, PrimaryMuscleExerciseConnectionReadService>();
+            builder.Services.AddTransient<IReadService<PrimaryMuscleGroupInExercise>, PrimaryMuscleGroupReadService>();
+            builder.Services.AddTransient<IDeleteService<PrimaryMuscleGroupInExercise>, DeleteService<PrimaryMuscleGroupInExercise>>();
             #endregion
 
-            #region Secondary muscle exercise connection
-            builder.Services.AddTransient<IReadService<SecondaryMuscleGroupInExercise>, SecondaryMuscleExerciseConnectionReadService>();
+            #region Secondary muscle group
+            builder.Services.AddTransient<IReadService<SecondaryMuscleGroupInExercise>, SecondaryMuscleGroupReadService>();
             builder.Services.AddTransient<ICreateService<SecondaryMuscleGroupInExercise, int>, SecondaryMuscleExerciseConnectionCreateService>();
+            builder.Services.AddTransient<IDeleteService<SecondaryMuscleGroupInExercise>, DeleteService<SecondaryMuscleGroupInExercise>>();
+            #endregion
+
+            #region Primary muscle
+            builder.Services.AddTransient<IReadService<PrimaryMuscleInExercise>, PrimaryMuscleReadService>();
+            builder.Services.AddTransient<IDeleteService<PrimaryMuscleInExercise>, DeleteService<PrimaryMuscleInExercise>>();
+            #endregion
+
+            #region Secondary muscle
+            builder.Services.AddTransient<IReadService<SecondaryMuscleInExercise>, SecondaryMuscleReadService>();
+            builder.Services.AddTransient<IDeleteService<SecondaryMuscleInExercise>, DeleteService<SecondaryMuscleInExercise>>();
             #endregion
 
             builder.Services.AddControllers();

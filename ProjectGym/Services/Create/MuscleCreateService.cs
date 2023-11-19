@@ -5,36 +5,15 @@ using System.Diagnostics;
 
 namespace ProjectGym.Services.Create
 {
-    public class MuscleCreateService : ICreateService<Muscle, int>
+    public class MuscleCreateService(ExerciseContext context) : ICreateService<Muscle, int>
     {
-        private readonly ExerciseContext context;
-        private readonly IReadService<Muscle> readService;
-        public MuscleCreateService(ExerciseContext context, IReadService<Muscle> readService)
-        {
-            this.context = context;
-            this.readService = readService;
-        }
-
         public async Task<int> Add(Muscle toAdd)
         {
             try
             {
-                await readService.Get(eq => eq.Name.ToLower() == toAdd.Name.ToLower(), "none");
-                return default;
-            }
-            catch (NullReferenceException)
-            {
-                try
-                {
-                    await context.Muscles.AddAsync(toAdd);
-                    await context.SaveChangesAsync();
-                    return toAdd.Id;
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"---> Error occurred: {ex.Message} \n{ex.InnerException?.Message}");
-                    return default;
-                }
+                await context.Muscles.AddAsync(toAdd);
+                await context.SaveChangesAsync();
+                return toAdd.Id;
             }
             catch (Exception ex)
             {

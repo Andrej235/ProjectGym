@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace ProjectGym.Services.Read
 {
-    public class PrimaryMuscleExerciseConnectionReadService(ExerciseContext context) : AbstractReadService<PrimaryMuscleGroupInExercise, int>
+    public class PrimaryMuscleGroupReadService(ExerciseContext context) : AbstractReadService<PrimaryMuscleGroupInExercise, int>
     {
         protected override Func<PrimaryMuscleGroupInExercise, int> PrimaryKey => x => x.Id;
 
@@ -16,7 +16,7 @@ namespace ProjectGym.Services.Read
             {
                 return key switch
                 {
-                    "muscle" => x => x.MuscleGroupId == valueId,
+                    "musclegroup" => x => x.MuscleGroupId == valueId,
                     "exercise" => x => x.ExerciseId == valueId,
                     _ => throw new NotSupportedException($"Invalid key in search query. Entered key: {key}"),
                 };

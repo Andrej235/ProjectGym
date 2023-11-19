@@ -14,6 +14,7 @@ namespace ProjectGym.Services.Mapping
 
         public Alias Map(ExerciseAliasDTO dto) => new()
         {
+            Id = dto.Id,
             AliasName = dto.Alias,
             ExerciseId = dto.ExerciseId,
         };

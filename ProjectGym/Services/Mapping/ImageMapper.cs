@@ -14,6 +14,7 @@ namespace ProjectGym.Services.Mapping
 
         public Image Map(ImageDTO dto) => new()
         {
+            Id = dto.Id,
             ExerciseId = dto.ExerciseId,
             ImageURL = dto.ImageURL,
         };

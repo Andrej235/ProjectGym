@@ -5,16 +5,8 @@ using System.Diagnostics;
 
 namespace ProjectGym.Services.Create
 {
-    public class PrimaryMuscleExerciseConnectionCreateService : ICreateService<PrimaryMuscleGroupInExercise, int>
+    public class PrimaryMuscleExerciseConnectionCreateService(ExerciseContext context, IReadService<PrimaryMuscleGroupInExercise> readService) : ICreateService<PrimaryMuscleGroupInExercise, int>
     {
-        private readonly ExerciseContext context;
-        private readonly IReadService<PrimaryMuscleGroupInExercise> readService;
-        public PrimaryMuscleExerciseConnectionCreateService(ExerciseContext context, IReadService<PrimaryMuscleGroupInExercise> readService)
-        {
-            this.context = context;
-            this.readService = readService;
-        }
-
         public async Task<int> Add(PrimaryMuscleGroupInExercise toAdd)
         {
             try

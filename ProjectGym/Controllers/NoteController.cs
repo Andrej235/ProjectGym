@@ -2,6 +2,7 @@
 using ProjectGym.DTOs;
 using ProjectGym.Models;
 using ProjectGym.Services;
+using ProjectGym.Services.Create;
 using ProjectGym.Services.Mapping;
 using ProjectGym.Services.Read;
 
@@ -9,15 +10,30 @@ namespace ProjectGym.Controllers
 {
     [Route("api/note")]
     [ApiController]
-    public class NoteController : ControllerBase, IReadController<Note, NoteDTO, int>
+    public class NoteController(ICreateService<Note, int> createService,
+                                IReadService<Note> readService,
+                                IEntityMapperSync<Note, NoteDTO> mapper) : ControllerBase, ICreateController<Note, NoteDTO, int>, IReadController<Note, NoteDTO, int>
     {
-        public NoteController(IReadService<Note> readService, IEntityMapper<Note, NoteDTO> mapper)
+        public ICreateService<Note, int> CreateService { get; } = createService;
+        public IReadService<Note> ReadService { get; } = readService;
+        public IEntityMapperSync<Note, NoteDTO> Mapper { get; } = mapper;
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] NoteDTO entityDTO)
         {
-            ReadService = readService;
-            Mapper = mapper;
+            try
+            {
+                int newEntityId = await CreateService.Add(Mapper.Map(entityDTO));
+                if (newEntityId != default)
+                    return Ok(newEntityId);
+                else
+                    return BadRequest("Entity already exists.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
-        public IReadService<Note> ReadService { get; }
-        public IEntityMapper<Note, NoteDTO> Mapper { get; }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id, [FromQuery] string? include)

@@ -1,11 +1,18 @@
 ﻿using ProjectGym.Data;
 using ProjectGym.Models;
+using ProjectGym.Services.Delete;
 using ProjectGym.Services.Read;
 using System.Diagnostics;
 
 namespace ProjectGym.Services.Update
 {
-    public class ExerciseUpdateService(ExerciseContext context, IReadService<Exercise> readService) : IUpdateService<Exercise>
+    public class ExerciseUpdateService(ExerciseContext context,
+                                       IReadService<Exercise> readService,
+                                       IDeleteService<EquipmentUsage> equipmentUsageDeleteService,
+                                       IDeleteService<PrimaryMuscleGroupInExercise> primaryMuscleGroupDeleteService,
+                                       IDeleteService<SecondaryMuscleGroupInExercise> secondaryMuscleGroupDeleteService,
+                                       IDeleteService<PrimaryMuscleInExercise> primaryMuscleDeleteService,
+                                       IDeleteService<SecondaryMuscleInExercise> secondaryMuscleDeleteService) : IUpdateService<Exercise>
     {
         public async Task Update(Exercise updatedEntity)
         {
@@ -14,25 +21,32 @@ namespace ProjectGym.Services.Update
                 var exercise = await readService.Get(x => x.Id == updatedEntity.Id, "none") ?? throw new NullReferenceException("Exercise was not found.");
                 context.AttachRange(exercise);
 
-                //Handle many to many relationships manualy as that is the only way to avoid creating duplicates and to even delete a relationship
-
                 if (updatedEntity.Description != "")
                     exercise.Description = updatedEntity.Description;
 
                 if (updatedEntity.Equipment.Any())
+                {
+                    await equipmentUsageDeleteService.DeleteAll(x => x.ExerciseId == exercise.Id);
                     exercise.Equipment = updatedEntity.Equipment;
+                }
 
                 if (updatedEntity.PrimaryMuscleGroups.Any())
+                {
+                    await primaryMuscleGroupDeleteService.DeleteAll(x => x.ExerciseId == exercise.Id);
                     exercise.PrimaryMuscleGroups = updatedEntity.PrimaryMuscleGroups;
+                }
 
-                if (updatedEntity.SecondaryMuscleGroups.Any())
-                    exercise.SecondaryMuscleGroups = updatedEntity.SecondaryMuscleGroups;
+                await secondaryMuscleGroupDeleteService.DeleteAll(x => x.ExerciseId == exercise.Id);
+                exercise.SecondaryMuscleGroups = updatedEntity.SecondaryMuscleGroups;
 
                 if (updatedEntity.PrimaryMuscles.Any())
+                {
+                    await primaryMuscleDeleteService.DeleteAll(x => x.ExerciseId == exercise.Id);
                     exercise.PrimaryMuscles = updatedEntity.PrimaryMuscles;
+                }
 
-                if (updatedEntity.SecondaryMuscles.Any())
-                    exercise.SecondaryMuscles = updatedEntity.SecondaryMuscles;
+                await secondaryMuscleDeleteService.DeleteAll(x => x.ExerciseId == exercise.Id);
+                exercise.SecondaryMuscles = updatedEntity.SecondaryMuscles;
 
                 await context.SaveChangesAsync();
             }
