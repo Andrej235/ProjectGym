@@ -11,17 +11,17 @@ namespace ProjectGym.Services.Read
 
         protected override IQueryable<Muscle> GetIncluded(IEnumerable<string>? include)
         {
-            IQueryable<Muscle> musclesIncluding = context.Muscles.AsQueryable();
+            IQueryable<Muscle> entitiesIncluding = context.Muscles.AsQueryable();
             if (include is null || !include.Any() || include.Contains("none"))
-                return musclesIncluding;
+                return entitiesIncluding;
 
             if (include.Contains("all") || include.Contains("musclegroup"))
             {
-                return musclesIncluding
+                return entitiesIncluding
                     .Include(x => x.MuscleGroup);
             }
 
-            return musclesIncluding;
+            return entitiesIncluding;
         }
 
         protected override Expression<Func<Muscle, bool>> TranslateKeyValueToExpression(string key, string value)

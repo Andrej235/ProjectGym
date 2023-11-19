@@ -6,9 +6,9 @@ namespace ProjectGym.Models
     {
         [Key]
         public Guid Id { get; set; }
-        public int Weight { get; set; }
+        public float Weight { get; set; }
         public bool IsCurrent { get; set; }
-        public DateTime? DateOfAchieving { get; set; }
+        public DateTime DateOfAchieving { get; set; }
 
         public Exercise Exercise { get; set; } = null!;
         public int ExerciseId { get; set; }

@@ -15,10 +15,23 @@ namespace ProjectGym.Services.Read
             if (include is null || !include.Any() || include.Contains("none"))
                 return entitiesIncluding;
 
-            if (include.Contains("all") || include.Contains("muscles"))
+            if (include.Contains("all"))
             {
                 return entitiesIncluding
-                    .Include(x => x.Muscles);
+                    .Include(x => x.Muscles)
+                    .Include(x => x.PrimaryInExercises)
+                    .Include(x => x.SecondaryInExercises);
+            }
+
+            foreach (var inc in include)
+            {
+                entitiesIncluding = inc switch
+                {
+                    "muscles" => entitiesIncluding.Include(x => x.Muscles),
+                    "primaryin" => entitiesIncluding.Include(x => x.PrimaryInExercises),
+                    "secondaryin" => entitiesIncluding.Include(x => x.SecondaryInExercises),
+                    _ => entitiesIncluding
+                };
             }
 
             return entitiesIncluding;

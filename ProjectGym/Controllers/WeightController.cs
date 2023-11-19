@@ -1,31 +1,29 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProjectGym.DTOs;
 using ProjectGym.Models;
-using ProjectGym.Services;
 using ProjectGym.Services.Create;
 using ProjectGym.Services.Mapping;
 using ProjectGym.Services.Read;
 using ProjectGym.Utilities;
-using System.Linq.Expressions;
 
 namespace ProjectGym.Controllers
 {
-    [Route("api/alias")]
     [ApiController]
-    public class AliasController(ICreateService<Alias, int> createService,
-                                 IReadService<Alias> readService,
-                                 IEntityMapperSync<Alias, ExerciseAliasDTO> mapper) : ControllerBase, IReadController<Alias, ExerciseAliasDTO, int>, ICreateController<Alias, ExerciseAliasDTO, int>
+    [Route("api/weight")]
+    public class WeightController(ICreateService<PersonalExerciseWeight, Guid> createService,
+                                  IEntityMapperSync<PersonalExerciseWeight, PersonalExerciseWeightDTO> mapper,
+                                  IReadService<PersonalExerciseWeight> readService) : ControllerBase, ICreateController<PersonalExerciseWeight, PersonalExerciseWeightDTO, Guid>, IReadController<PersonalExerciseWeight, PersonalExerciseWeightDTO, Guid>
     {
-        public ICreateService<Alias, int> CreateService { get; } = createService;
-        public IReadService<Alias> ReadService { get; } = readService;
-        public IEntityMapperSync<Alias, ExerciseAliasDTO> Mapper { get; } = mapper;
+        public ICreateService<PersonalExerciseWeight, Guid> CreateService { get; } = createService;
+        public IReadService<PersonalExerciseWeight> ReadService { get; } = readService;
+        public IEntityMapperSync<PersonalExerciseWeight, PersonalExerciseWeightDTO> Mapper { get; } = mapper;
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] ExerciseAliasDTO entityDTO)
+        public async Task<IActionResult> Create([FromBody] PersonalExerciseWeightDTO entityDTO)
         {
             try
             {
-                int newEntityId = await CreateService.Add(Mapper.Map(entityDTO));
+                Guid newEntityId = await CreateService.Add(Mapper.Map(entityDTO));
                 if (newEntityId != default)
                     return Ok(newEntityId);
                 else
@@ -39,7 +37,7 @@ namespace ProjectGym.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id, [FromQuery] string? include)
+        public async Task<IActionResult> Get(Guid id, [FromQuery] string? include)
         {
             try
             {

@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ProjectGym.Data;
 using ProjectGym.DTOs;
 using ProjectGym.Models;
 using ProjectGym.Services.Create;
@@ -8,7 +6,6 @@ using ProjectGym.Services.Mapping;
 using ProjectGym.Services.Read;
 using ProjectGym.Services.Update;
 using ProjectGym.Utilities;
-using System;
 using System.Diagnostics;
 using static ProjectGym.Controllers.UserController;
 
@@ -16,29 +13,19 @@ namespace ProjectGym.Controllers
 {
     [Route("api/user")]
     [ApiController]
-    public class UserController : ControllerBase, ICreateController<User, RegisterDTO, Guid>
+    public class UserController(IReadService<User> readService,
+                          IEntityMapper<User, UserDTO> mapper,
+                          ICreateService<User, Guid> createService,
+                          ICreateService<Client, Guid> clientCreateService,
+                          IReadService<Client> clientReadService,
+                          IUpdateService<Client> clientUpdateService) : ControllerBase, ICreateController<User, RegisterDTO, Guid>
     {
-        public IReadService<User> ReadService { get; }
-        public IReadService<Client> ClientReadService { get; }
-        public IEntityMapper<User, UserDTO> Mapper { get; }
-        public ICreateService<User, Guid> CreateService { get; }
-        public ICreateService<Client, Guid> ClientCreateService { get; }
-        public IUpdateService<Client> ClientUpdateService { get; }
-
-        public UserController(IReadService<User> readService,
-                              IEntityMapper<User, UserDTO> mapper,
-                              ICreateService<User, Guid> createService,
-                              ICreateService<Client, Guid> clientCreateService,
-                              IReadService<Client> clientReadService,
-                              IUpdateService<Client> clientUpdateService)
-        {
-            ReadService = readService;
-            Mapper = mapper;
-            CreateService = createService;
-            ClientCreateService = clientCreateService;
-            ClientReadService = clientReadService;
-            ClientUpdateService = clientUpdateService;
-        }
+        public IReadService<User> ReadService { get; } = readService;
+        public IReadService<Client> ClientReadService { get; } = clientReadService;
+        public IEntityMapper<User, UserDTO> Mapper { get; } = mapper;
+        public ICreateService<User, Guid> CreateService { get; } = createService;
+        public ICreateService<Client, Guid> ClientCreateService { get; } = clientCreateService;
+        public IUpdateService<Client> ClientUpdateService { get; } = clientUpdateService;
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] RegisterDTO userDTO)
@@ -66,19 +53,27 @@ namespace ProjectGym.Controllers
         [HttpPut("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO userDTO)
         {
-            var user = await ReadService.Get(x => x.Email == userDTO.Email, "none");
-            if (user is null)
-                return NotFound("Incorrect email");
-
-            var hash = userDTO.Password.HashPassword(user.Salt);
-            if (!user.PasswordHash.SequenceEqual(hash))
-                return BadRequest("Incorrect password");
-
-            return Ok(new LoggedInDTO()
+            try
             {
-                ClientGuid = await VerifyClient(userDTO.ClientGuid, user),
-                User = Mapper.Map(user)
-            });
+                var user = await ReadService.Get(x => x.Email == userDTO.Email, "none");
+                if (user is null)
+                    return NotFound("Incorrect email");
+
+                var hash = userDTO.Password.HashPassword(user.Salt);
+                if (!user.PasswordHash.SequenceEqual(hash))
+                    return BadRequest("Incorrect password");
+
+                return Ok(new LoggedInDTO()
+                {
+                    ClientGuid = await VerifyClient(userDTO.ClientGuid, user),
+                    User = Mapper.Map(user)
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"---> Error occurred: {ex.Message} \n{ex.InnerException?.Message}");
+                return BadRequest($"Error occurred: {ex.Message} \n{ex.InnerException?.Message}");
+            }
         }
 
         [HttpGet("client/{guid}")]
@@ -147,10 +142,6 @@ namespace ProjectGym.Controllers
             }
             return res;
         }
-
-        //public async Task<IActionResult> Get(Guid id, [FromQuery] string? include) => Ok(Mapper.Map(await ReadService.Get(x => x.Id == id, include)));
-
-
 
         public class RegisterDTO
         {
