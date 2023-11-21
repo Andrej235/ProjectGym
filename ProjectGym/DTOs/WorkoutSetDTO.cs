@@ -1,15 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace ProjectGym.Models
+﻿namespace ProjectGym.DTOs
 {
-    public class Superset
+    public class WorkoutSetDTO
     {
-        [Key]
         public Guid Id { get; set; }
         public int TargetSets { get; set; }
         public bool DropSets { get; set; } = false;
 
-        public Set Set { get; set; } = null!;
+        public Guid WorkoutId { get; set; }
         public Guid SetId { get; set; }
+        public Guid? SuperSetId { get; set; }
     }
 }

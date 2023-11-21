@@ -1,6 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ProjectGym.Utilities;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq.Expressions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace ProjectGym.Services.Read
 {
@@ -8,79 +11,124 @@ namespace ProjectGym.Services.Read
     {
         protected abstract Func<T, TPrimaryKey> PrimaryKey { get; }
 
-        public virtual async Task<T> Get(Expression<Func<T, bool>> criteria, string? include = "all") => await GetIncluded(SplitIncludeString(include)).FirstOrDefaultAsync(criteria) ?? throw new NullReferenceException("Entity not found");
-        public virtual async Task<List<T>> Get(Expression<Func<T, bool>> criteria, int? offset = 0, int? limit = -1, string? include = "all") => await ApplyOffsetAndLimit(GetIncluded(SplitIncludeString(include)).Where(criteria), offset, limit);
+        public virtual async Task<T> Get(Expression<Func<T, bool>> criteria, string? include = "all")
+        {
+            IQueryable<T> entitesQueryable = GetIncluded(SplitIncludeString(include));
+            return await entitesQueryable.FirstAsync(criteria);
+        }
+
+        public virtual async Task<List<T>> Get(Expression<Func<T, bool>> criteria, int? offset = 0, int? limit = -1, string? include = "all")
+        {
+            return await Task.Run(() =>
+            {
+                IQueryable<T> entitesQueryable = GetIncluded(SplitIncludeString(include));
+                return ApplyOffsetAndLimit(entitesQueryable.Where(criteria), offset, limit);
+            });
+        }
+
         public virtual async Task<List<T>> Get(string? query, int? offset = 0, int? limit = -1, string? include = "all")
         {
-            var entitiesQueryable = GetIncluded(SplitIncludeString(include));
-
-            if (query is null)
-                return await ApplyOffsetAndLimit(entitiesQueryable, offset, limit);
-
-            var criterias = new List<Expression<Func<T, bool>>>();
-            var keyValuePairsInSearchQuery = query.Split(';')
-                                                  .Select(sq => sq.Split('=')
-                                                  .Select(x => x.Trim().ToLower())
-                                                  .ToList())
-                                                  .Where(x => x.Count == 2)
-                                                  .ToList();
-
-            List<string>? strictKeyValuePair = keyValuePairsInSearchQuery.FirstOrDefault(kvp => kvp[0] == "strict");
-            bool isStrictModeEnabled = false;
-
-            if (strictKeyValuePair is not null)
+            return await Task.Run(() =>
             {
-                isStrictModeEnabled = strictKeyValuePair[1] is null || strictKeyValuePair[1] == "true";
-                keyValuePairsInSearchQuery.Remove(strictKeyValuePair);
-            }
+                var entitiesQueryable = GetIncluded(SplitIncludeString(include));
+                if (query is null)
+                    return ApplyOffsetAndLimit(entitiesQueryable, offset, limit);
 
-            foreach (var keyValue in keyValuePairsInSearchQuery)
-            {
-                try
+                var keyValuePairsInSearchQuery = SplitQueryString(query);
+                List<string>? strictKeyValuePair = keyValuePairsInSearchQuery.FirstOrDefault(kvp => kvp[0] == "strict");
+                bool isStrictModeEnabled = false;
+
+                if (strictKeyValuePair != null)
                 {
-                    criterias.Add(TranslateKeyValueToExpression(keyValue[0], keyValue[1]));
+                    isStrictModeEnabled = strictKeyValuePair[1] == "true";
+                    keyValuePairsInSearchQuery.Remove(strictKeyValuePair);
                 }
-                catch (Exception ex)
+
+                if (isStrictModeEnabled)
                 {
-                    Debug.WriteLine($"---> Exception occured: {ex}");
+                    foreach (var criteria in DecipherQuery(keyValuePairsInSearchQuery))
+                        entitiesQueryable = entitiesQueryable.Where(criteria);
                 }
-            }
+                else
+                {
+                    return ApplyOffsetAndLimit(ApplyNonStrictCriterias(entitiesQueryable, DecipherQuery(keyValuePairsInSearchQuery)), offset, limit);
+                }
 
-            if (isStrictModeEnabled)
-            {
-                foreach (var criteria in criterias)
-                    entitiesQueryable = entitiesQueryable.Where(criteria);
-            }
-            else
-            {
-                var exercises = criterias.Select(x => entitiesQueryable.Where(x))
-                    .SelectMany(q => q)
-                    .GroupBy(PrimaryKey)
-                    .OrderByDescending(g => g.Count())
-                    .SelectMany(g => g)
-                    .DistinctBy(PrimaryKey)
-                    .Skip(offset ?? 0);
-
-                if (limit is not null && limit >= 0)
-                    exercises = exercises.Take(limit ?? 0);
-
-                return exercises.ToList();
-            }
-
-            return await ApplyOffsetAndLimit(entitiesQueryable, offset, limit);
+                return ApplyOffsetAndLimit(entitiesQueryable, offset, limit);
+            });
         }
 
         protected abstract IQueryable<T> GetIncluded(IEnumerable<string>? include);
         protected abstract Expression<Func<T, bool>> TranslateKeyValueToExpression(string key, string value);
-        protected async Task<List<T>> ApplyOffsetAndLimit(IQueryable<T> queryable, int? offset = 0, int? limit = -1)
+
+        protected static IEnumerable<string>? SplitIncludeString(string? include) => include?.ToLower().Replace(" ", "").Split(',').Where(x => !string.IsNullOrWhiteSpace(x));
+        protected static List<List<string>> SplitQueryString(string query) => query.Split(';')
+            .Select(sq => sq.Split('=').Select(x => x.Trim().ToLower()).ToList())
+            .Where(x => x.Count == 2)
+            .ToList();
+
+        protected IEnumerable<Expression<Func<T, bool>>> DecipherQuery(string query)
+        {
+            var keyValuePairsInSearchQuery = SplitQueryString(query);
+            foreach (var keyValue in keyValuePairsInSearchQuery)
+            {
+                Expression<Func<T, bool>>? current = null;
+                try
+                {
+                    current = TranslateKeyValueToExpression(keyValue[0], keyValue[1]);
+                }
+                catch (Exception ex)
+                {
+                    LogDebugger.LogError(ex);
+                }
+
+                if (current == null)
+                    continue;
+                yield return current;
+            }
+        }
+        protected IEnumerable<Expression<Func<T, bool>>> DecipherQuery(List<List<string>> keyValuePairsInSearchQuery)
+        {
+            foreach (var keyValue in keyValuePairsInSearchQuery)
+            {
+                Expression<Func<T, bool>>? current = null;
+                try
+                {
+                    current = TranslateKeyValueToExpression(keyValue[0], keyValue[1]);
+                }
+                catch (Exception ex)
+                {
+                    LogDebugger.LogError(ex);
+                }
+
+                if (current == null)
+                    continue;
+                yield return current;
+            }
+        }
+
+        protected virtual IQueryable<T> ApplyNonStrictCriterias(IQueryable<T> entitiesQueryable, IEnumerable<Expression<Func<T, bool>>> criterias) => criterias
+                .Select(x => entitiesQueryable.Where(x))
+                .SelectMany(q => q)
+                .GroupBy(PrimaryKey)
+                .OrderByDescending(g => g.Count())
+                .SelectMany(g => g)
+                .DistinctBy(PrimaryKey)
+                .AsQueryable();
+        protected List<T> ApplyOffsetAndLimit(IQueryable<T> queryable, int? offset = 0, int? limit = -1)
         {
             queryable = queryable.Skip(offset ?? 0);
 
             if (limit != null && limit >= 0)
                 queryable = queryable.Take(limit ?? 0);
 
-            return await queryable.ToListAsync();
+            return [.. queryable];
         }
-        private static IEnumerable<string>? SplitIncludeString(string? include) => include?.ToLower().Replace(" ", "").Split(',').Where(x => !string.IsNullOrWhiteSpace(x));
+
+        //**************************************************************
+        //Less efficient than just doing it in function
+        //protected static bool IsStrictModeEnabledInQuery(string query) => SplitQueryString(query).FirstOrDefault(kvp => kvp[0] == "strict")?[1] == "true";
+        //protected static bool IsStrictModeEnabledInQuery(List<List<string>> keyValuePairsInSearchQuery) => keyValuePairsInSearchQuery.FirstOrDefault(kvp => kvp[0] == "strict")?[1] == "true";
+        //**************************************************************
     }
 }

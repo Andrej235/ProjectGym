@@ -35,8 +35,16 @@ namespace ProjectGym
             #region Weight
             builder.Services.AddTransient<ICreateService<PersonalExerciseWeight, Guid>, WeightCreateService>();
             builder.Services.AddTransient<IReadService<PersonalExerciseWeight>, WeightReadService>();
+            builder.Services.AddTransient<IUpdateService<PersonalExerciseWeight>, WeightUpdateService>();
             builder.Services.AddTransient<IEntityMapper<PersonalExerciseWeight, PersonalExerciseWeightDTO>, WeightMapper>();
             builder.Services.AddTransient<IEntityMapperSync<PersonalExerciseWeight, PersonalExerciseWeightDTO>, WeightMapper>();
+            #endregion
+
+            #region Workouts
+            builder.Services.AddTransient<IReadService<Workout>, WorkoutReadService>();
+            builder.Services.AddTransient<ICreateService<Workout, Guid>, WorkoutCreateService>();
+            builder.Services.AddTransient<IEntityMapper<Workout, WorkoutDTO>, WorkoutMapper>();
+            builder.Services.AddTransient<IEntityMapperSync<Workout, WorkoutDTO>, WorkoutMapper>();
             #endregion
 
             #region Client

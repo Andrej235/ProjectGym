@@ -17,6 +17,8 @@ namespace ProjectGym.Services.Read
                 return x => x.ExerciseId == exerciseId;
             else if (key == "user" && Guid.TryParse(value, out var userId))
                 return x => x.UserId == userId;
+            else if ((key == "iscurrent" || key == "current") && bool.TryParse(value, out var isCurrent))
+                return x => x.IsCurrent == isCurrent;
 
             throw new NotSupportedException($"Invalid search query key-value pair. Entered key: {key} | Entered value: {value}");
         }
