@@ -40,6 +40,27 @@ namespace ProjectGym
             builder.Services.AddTransient<IEntityMapperSync<PersonalExerciseWeight, PersonalExerciseWeightDTO>, WeightMapper>();
             #endregion
 
+            #region Set
+            builder.Services.AddTransient<ICreateService<Set, Guid>, SetCreateService>();
+            builder.Services.AddTransient<IReadService<Set>, SetReadService>();
+            builder.Services.AddTransient<IEntityMapper<Set, SetDTO>, SetMapper>();
+            builder.Services.AddTransient<IEntityMapperSync<Set, SetDTO>, SetMapper>();
+            #endregion
+
+            #region Superset
+            builder.Services.AddTransient<ICreateService<Superset, Guid>, SupersetCreateService>();
+            builder.Services.AddTransient<IReadService<Superset>, SupersetReadService>();
+            builder.Services.AddTransient<IEntityMapper<Superset, SupersetDTO>, SupersetMapper>();
+            builder.Services.AddTransient<IEntityMapperSync<Superset, SupersetDTO>, SupersetMapper>();
+            #endregion
+
+            #region Workout Set
+            builder.Services.AddTransient<ICreateService<WorkoutSet, Guid>, WorkoutSetCreateService>();
+            builder.Services.AddTransient<IReadService<WorkoutSet>, WorkoutSetReadService>();
+            builder.Services.AddTransient<IEntityMapper<WorkoutSet, WorkoutSetDTO>, WorkoutSetMapper>();
+            builder.Services.AddTransient<IEntityMapperSync<WorkoutSet, WorkoutSetDTO>, WorkoutSetMapper>();
+            #endregion
+
             #region Workouts
             builder.Services.AddTransient<IReadService<Workout>, WorkoutReadService>();
             builder.Services.AddTransient<ICreateService<Workout, Guid>, WorkoutCreateService>();

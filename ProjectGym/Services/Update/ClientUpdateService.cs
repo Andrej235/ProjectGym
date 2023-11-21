@@ -4,16 +4,8 @@ using ProjectGym.Services.Read;
 
 namespace ProjectGym.Services.Update
 {
-    public class ClientUpdateService : IUpdateService<Client>
+    public class ClientUpdateService(ExerciseContext context, IReadService<Client> readService) : IUpdateService<Client>
     {
-        private readonly ExerciseContext context;
-        private readonly IReadService<Client> readService;
-        public ClientUpdateService(ExerciseContext context, IReadService<Client> readService)
-        {
-            this.context = context;
-            this.readService = readService;
-        }
-
         public async Task Update(Client updatedEntity)
         {
             var entity = await readService.Get(x => x.Id == updatedEntity.Id, "user");

@@ -38,7 +38,7 @@ namespace ProjectGym.Services.Read
                 if (int.TryParse(value, out var id))
                     return x => x.MuscleGroupId == id;
                 else
-                    throw new NullReferenceException($"Invalid value in search query. Entered value '{value}' for key '{key}'");
+                    throw new NotSupportedException($"Invalid value in search query. Entered value '{value}' for key '{key}'");
             }
             throw new NotSupportedException($"Invalid key in search query. Entered key: {key}");
         }

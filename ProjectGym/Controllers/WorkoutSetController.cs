@@ -9,15 +9,15 @@ using ProjectGym.Utilities;
 namespace ProjectGym.Controllers
 {
     [ApiController]
-    [Route("api/workout")]
-    public class WorkoutController(IReadService<Workout> readService, ICreateService<Workout, Guid> createService, IEntityMapperSync<Workout, WorkoutDTO> mapper) : ControllerBase, ICreateController<Workout, WorkoutDTO, Guid>, IReadController<Workout, WorkoutDTO, Guid>
+    [Route("api/workoutset")]
+    public class WorkoutSetController(IReadService<WorkoutSet> readService, ICreateService<WorkoutSet, Guid> createService, IEntityMapperSync<WorkoutSet, WorkoutSetDTO> mapper) : ControllerBase, ICreateController<WorkoutSet, WorkoutSetDTO, Guid>, IReadController<WorkoutSet, WorkoutSetDTO, Guid>
     {
-        public IReadService<Workout> ReadService { get; } = readService;
-        public ICreateService<Workout, Guid> CreateService { get; } = createService;
-        public IEntityMapperSync<Workout, WorkoutDTO> Mapper { get; } = mapper;
+        public IReadService<WorkoutSet> ReadService { get; } = readService;
+        public ICreateService<WorkoutSet, Guid> CreateService { get; } = createService;
+        public IEntityMapperSync<WorkoutSet, WorkoutSetDTO> Mapper { get; } = mapper;
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] WorkoutDTO entityDTO)
+        public async Task<IActionResult> Create([FromBody] WorkoutSetDTO entityDTO)
         {
             try
             {

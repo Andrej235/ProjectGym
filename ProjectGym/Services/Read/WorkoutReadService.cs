@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace ProjectGym.Services.Read
 {
-    public class WorkoutReadService(ExerciseContext context, IReadService<Client> clientReadService) : AbstractReadService<Workout, Guid>
+    public class WorkoutReadService(ExerciseContext context) : AbstractReadService<Workout, Guid>
     {
         protected override Func<Workout, Guid> PrimaryKey => x => x.Id;
 
@@ -35,51 +35,52 @@ namespace ProjectGym.Services.Read
 
         public override async Task<List<Workout>> Get(string? query, int? offset = 0, int? limit = -1, string? include = "all")
         {
-            var entitiesQueryable = GetIncluded(SplitIncludeString(include));
-            if (query is null)
-                return ApplyOffsetAndLimit(entitiesQueryable, offset, limit).Where(x => x.IsPublic).ToList();
-
-            var keyValuePairsInSearchQuery = SplitQueryString(query);
-            List<string>? strictKeyValuePair = keyValuePairsInSearchQuery.FirstOrDefault(kvp => kvp[0] == "strict");
-            bool isStrictModeEnabled = false;
-
-            if (strictKeyValuePair != null)
+            return await Task.Run(() =>
             {
-                isStrictModeEnabled = strictKeyValuePair[1] == "true";
-                keyValuePairsInSearchQuery.Remove(strictKeyValuePair);
-            }
+                var entitiesQueryable = GetIncluded(SplitIncludeString(include));
+                if (query is null)
+                    return ApplyOffsetAndLimit(entitiesQueryable, offset, limit).Where(x => x.IsPublic).ToList();
 
-            List<Workout> entities = [];
-            if (isStrictModeEnabled)
-            {
-                foreach (var criteria in DecipherQuery(keyValuePairsInSearchQuery))
-                    entitiesQueryable = entitiesQueryable.Where(criteria);
+                var keyValuePairsInSearchQuery = SplitQueryString(query);
+                List<string>? strictKeyValuePair = keyValuePairsInSearchQuery.FirstOrDefault(kvp => kvp[0] == "strict");
+                bool isStrictModeEnabled = false;
 
-                entities = ApplyOffsetAndLimit(entitiesQueryable, offset, limit);
-            }
-            else
-            {
-                entities = ApplyOffsetAndLimit(ApplyNonStrictCriterias(entitiesQueryable, DecipherQuery(keyValuePairsInSearchQuery)), offset, limit);
-            }
+                if (strictKeyValuePair != null)
+                {
+                    isStrictModeEnabled = strictKeyValuePair[1] == "true";
+                    keyValuePairsInSearchQuery.Remove(strictKeyValuePair);
+                }
 
+                List<Workout> entities = [];
+                if (isStrictModeEnabled)
+                {
+                    foreach (var criteria in DecipherQuery(keyValuePairsInSearchQuery))
+                        entitiesQueryable = entitiesQueryable.Where(criteria);
 
-
-            List<string>? clientKeyValuePair = keyValuePairsInSearchQuery.FirstOrDefault(kvp => kvp[0] == "client" || kvp[0] == "clientid");
-            if (clientKeyValuePair != null && Guid.TryParse(clientKeyValuePair[1], out var clientId))
-            {
-                Guid? creatorId = (await clientReadService.Get(x => x.Id == clientId, "none")).UserGUID;
-
-                List<string>? personalKeyValuePair = keyValuePairsInSearchQuery.FirstOrDefault(kvp => kvp[0] == "personal");
-                if (personalKeyValuePair is null)
-                    return entities.Where(x => x.IsPublic && x.CreatorId != creatorId).ToList();
+                    entities = ApplyOffsetAndLimit(entitiesQueryable, offset, limit);
+                }
                 else
                 {
-                    return personalKeyValuePair[1].ToLower().Trim() == "true"
-                        ? entities.Where(x => x.CreatorId == creatorId).ToList()
-                        : entities.Where(x => x.IsPublic && x.CreatorId != creatorId).ToList();
+                    entities = ApplyOffsetAndLimit(ApplyNonStrictCriterias(entitiesQueryable, DecipherQuery(keyValuePairsInSearchQuery)), offset, limit);
                 }
-            }
-            return entities.Where(x => x.IsPublic).ToList();
+
+
+
+                List<string>? clientKeyValuePair = keyValuePairsInSearchQuery.FirstOrDefault(kvp => kvp[0] == "client" || kvp[0] == "clientid");
+                if (clientKeyValuePair != null && Guid.TryParse(clientKeyValuePair[1], out var creatorId))
+                {
+                    List<string>? personalKeyValuePair = keyValuePairsInSearchQuery.FirstOrDefault(kvp => kvp[0] == "personal");
+                    if (personalKeyValuePair is null)
+                        return entities.Where(x => x.IsPublic && x.CreatorId != creatorId).ToList();
+                    else
+                    {
+                        return personalKeyValuePair[1].ToLower().Trim() == "true"
+                            ? entities.Where(x => x.CreatorId == creatorId).ToList()
+                            : entities.Where(x => x.IsPublic && x.CreatorId != creatorId).ToList();
+                    }
+                }
+                return entities.Where(x => x.IsPublic).ToList();
+            });
         }
     }
 }
