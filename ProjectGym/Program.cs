@@ -47,13 +47,6 @@ namespace ProjectGym
             builder.Services.AddTransient<IEntityMapperSync<Set, SetDTO>, SetMapper>();
             #endregion
 
-            #region Superset
-            builder.Services.AddTransient<ICreateService<Superset, Guid>, SupersetCreateService>();
-            builder.Services.AddTransient<IReadService<Superset>, SupersetReadService>();
-            builder.Services.AddTransient<IEntityMapper<Superset, SupersetDTO>, SupersetMapper>();
-            builder.Services.AddTransient<IEntityMapperSync<Superset, SupersetDTO>, SupersetMapper>();
-            #endregion
-
             #region Workout Set
             builder.Services.AddTransient<ICreateService<WorkoutSet, Guid>, WorkoutSetCreateService>();
             builder.Services.AddTransient<IReadService<WorkoutSet>, WorkoutSetReadService>();

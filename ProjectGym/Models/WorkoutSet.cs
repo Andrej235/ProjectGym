@@ -7,7 +7,6 @@ namespace ProjectGym.Models
         [Key]
         public Guid Id { get; set; }
         public int TargetSets { get; set; }
-        public bool DropSets { get; set; }
 
         public Workout Workout { get; set; } = null!;
         public Guid WorkoutId { get; set; }
@@ -15,7 +14,7 @@ namespace ProjectGym.Models
         public Set Set { get; set; } = null!;
         public Guid SetId { get; set; }
 
-        public Superset? Superset { get; set; }
+        public Set? Superset { get; set; }
         public Guid? SuperSetId { get; set; }
     }
 }

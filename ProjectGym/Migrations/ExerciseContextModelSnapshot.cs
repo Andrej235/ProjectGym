@@ -435,11 +435,11 @@ namespace ProjectGym.Migrations
                     b.Property<Guid>("CreatorId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("DropSet")
+                        .HasColumnType("bit");
+
                     b.Property<int>("ExerciseId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("Partials")
-                        .HasColumnType("bit");
 
                     b.Property<int>("RepRange_Bottom")
                         .HasColumnType("int");
@@ -457,28 +457,6 @@ namespace ProjectGym.Migrations
                     b.HasIndex("ExerciseId");
 
                     b.ToTable("Sets");
-                });
-
-            modelBuilder.Entity("ProjectGym.Models.Superset", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("DropSets")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("SetId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("TargetSets")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SetId");
-
-                    b.ToTable("Supersets");
                 });
 
             modelBuilder.Entity("ProjectGym.Models.User", b =>
@@ -536,9 +514,6 @@ namespace ProjectGym.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("DropSets")
-                        .HasColumnType("bit");
 
                     b.Property<Guid>("SetId")
                         .HasColumnType("uniqueidentifier");
@@ -794,17 +769,6 @@ namespace ProjectGym.Migrations
                     b.Navigation("Exercise");
                 });
 
-            modelBuilder.Entity("ProjectGym.Models.Superset", b =>
-                {
-                    b.HasOne("ProjectGym.Models.Set", "Set")
-                        .WithMany()
-                        .HasForeignKey("SetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Set");
-                });
-
             modelBuilder.Entity("ProjectGym.Models.Workout", b =>
                 {
                     b.HasOne("ProjectGym.Models.User", "Creator")
@@ -824,7 +788,7 @@ namespace ProjectGym.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ProjectGym.Models.Superset", "Superset")
+                    b.HasOne("ProjectGym.Models.Set", "Superset")
                         .WithMany()
                         .HasForeignKey("SuperSetId")
                         .OnDelete(DeleteBehavior.NoAction);

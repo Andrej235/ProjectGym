@@ -8,7 +8,6 @@ namespace ProjectGym.Services.Mapping
         public WorkoutSet Map(WorkoutSetDTO dto) => new()
         {
             Id = dto.Id,
-            DropSets = dto.DropSets,
             TargetSets = dto.TargetSets,
             SetId = dto.SetId,
             SuperSetId = dto.SuperSetId,
@@ -18,7 +17,6 @@ namespace ProjectGym.Services.Mapping
         public WorkoutSetDTO Map(WorkoutSet entity) => new()
         {
             Id = entity.Id,
-            DropSets = entity.DropSets,
             TargetSets = entity.TargetSets,
             SetId = entity.SetId,
             SuperSetId = entity.SuperSetId,

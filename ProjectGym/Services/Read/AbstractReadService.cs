@@ -14,7 +14,8 @@ namespace ProjectGym.Services.Read
         public virtual async Task<T> Get(Expression<Func<T, bool>> criteria, string? include = "all")
         {
             IQueryable<T> entitesQueryable = GetIncluded(SplitIncludeString(include));
-            return await entitesQueryable.FirstAsync(criteria);
+            T? entity = await entitesQueryable.FirstOrDefaultAsync(criteria);
+            return entity ?? throw new NullReferenceException();
         }
 
         public virtual async Task<List<T>> Get(Expression<Func<T, bool>> criteria, int? offset = 0, int? limit = -1, string? include = "all")

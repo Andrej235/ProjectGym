@@ -24,20 +24,9 @@ namespace ProjectGym.Services.Create
                     context.AttachRange(toAdd.PrimaryMuscles);
                     context.AttachRange(toAdd.SecondaryMuscles);
 
-                    Exercise dbEntity = new()
-                    {
-                        Name = toAdd.Name,
-                        Description = toAdd.Description,
-                        Equipment = toAdd.Equipment,
-                        PrimaryMuscleGroups = toAdd.PrimaryMuscleGroups,
-                        SecondaryMuscleGroups = toAdd.SecondaryMuscleGroups,
-                        PrimaryMuscles = toAdd.PrimaryMuscles,
-                        SecondaryMuscles = toAdd.SecondaryMuscles,
-                    };
-
                     await context.Exercises.AddAsync(toAdd);
                     await context.SaveChangesAsync();
-                    return dbEntity.Id;
+                    return toAdd.Id;
                 }
                 catch (Exception ex)
                 {

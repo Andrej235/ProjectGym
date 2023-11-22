@@ -302,8 +302,8 @@ namespace ProjectGym.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RepRange_Bottom = table.Column<int>(type: "int", nullable: false),
                     RepRange_Top = table.Column<int>(type: "int", nullable: false),
-                    Partials = table.Column<bool>(type: "bit", nullable: false),
                     ToFaliure = table.Column<bool>(type: "bit", nullable: false),
+                    DropSet = table.Column<bool>(type: "bit", nullable: false),
                     ExerciseId = table.Column<int>(type: "int", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
@@ -329,9 +329,9 @@ namespace ProjectGym.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Weight = table.Column<int>(type: "int", nullable: false),
+                    Weight = table.Column<float>(type: "real", nullable: false),
                     IsCurrent = table.Column<bool>(type: "bit", nullable: false),
-                    DateOfAchieving = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DateOfAchieving = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ExerciseId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
@@ -357,6 +357,7 @@ namespace ProjectGym.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsPublic = table.Column<bool>(type: "bit", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
@@ -472,32 +473,11 @@ namespace ProjectGym.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Supersets",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TargetSets = table.Column<int>(type: "int", nullable: false),
-                    DropSets = table.Column<bool>(type: "bit", nullable: false),
-                    SetId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Supersets", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Supersets_Sets_SetId",
-                        column: x => x.SetId,
-                        principalTable: "Sets",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "WorkoutSets",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TargetSets = table.Column<int>(type: "int", nullable: false),
-                    DropSets = table.Column<bool>(type: "bit", nullable: false),
                     WorkoutId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SetId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SuperSetId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
@@ -512,9 +492,9 @@ namespace ProjectGym.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_WorkoutSets_Supersets_SuperSetId",
+                        name: "FK_WorkoutSets_Sets_SuperSetId",
                         column: x => x.SuperSetId,
-                        principalTable: "Supersets",
+                        principalTable: "Sets",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_WorkoutSets_Workouts_WorkoutId",
@@ -649,11 +629,6 @@ namespace ProjectGym.Migrations
                 column: "ExerciseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Supersets_SetId",
-                table: "Supersets",
-                column: "SetId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Weights_ExerciseId",
                 table: "Weights",
                 column: "ExerciseId");
@@ -739,16 +714,13 @@ namespace ProjectGym.Migrations
                 name: "Muscles");
 
             migrationBuilder.DropTable(
-                name: "Supersets");
+                name: "Sets");
 
             migrationBuilder.DropTable(
                 name: "Workouts");
 
             migrationBuilder.DropTable(
                 name: "MuscleGroups");
-
-            migrationBuilder.DropTable(
-                name: "Sets");
 
             migrationBuilder.DropTable(
                 name: "Exercises");

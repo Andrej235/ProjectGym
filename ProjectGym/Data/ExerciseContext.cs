@@ -25,7 +25,6 @@ namespace ProjectGym.Data
         public DbSet<CommentDownvote> CommentDownvotes { get; set; }
         public DbSet<ExerciseBookmark> ExerciseBookmarks { get; set; }
         public DbSet<Set> Sets { get; set; }
-        public DbSet<Superset> Supersets { get; set; }
         public DbSet<PersonalExerciseWeight> Weights { get; set; }
         public DbSet<Workout> Workouts { get; set; }
         public DbSet<WorkoutSet> WorkoutSets { get; set; }
@@ -179,12 +178,6 @@ namespace ProjectGym.Data
                 .WithMany()
                 .HasForeignKey(ws => ws.SuperSetId)
                 .OnDelete(DeleteBehavior.NoAction);
-
-            modelBuilder.Entity<Superset>()
-                .HasOne(ss => ss.Set)
-                .WithMany()
-                .HasForeignKey(ss => ss.SetId)
-                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Set>()
                 .HasOne(s => s.Creator)
