@@ -108,13 +108,14 @@ namespace ProjectGym.Services.Read
         }
 
         protected virtual IQueryable<T> ApplyNonStrictCriterias(IQueryable<T> entitiesQueryable, IEnumerable<Expression<Func<T, bool>>> criterias) => criterias
-                .Select(x => entitiesQueryable.Where(x))
-                .SelectMany(q => q)
-                .GroupBy(PrimaryKey)
-                .OrderByDescending(g => g.Count())
-                .SelectMany(g => g)
-                .DistinctBy(PrimaryKey)
-                .AsQueryable();
+            .Where(x => x.Body is not ConstantExpression)
+            .Select(x => entitiesQueryable.Where(x))
+            .SelectMany(q => q)
+            .GroupBy(PrimaryKey)
+            .OrderByDescending(g => g.Count())
+            .SelectMany(g => g)
+            .DistinctBy(PrimaryKey)
+            .AsQueryable();
         protected List<T> ApplyOffsetAndLimit(IQueryable<T> queryable, int? offset = 0, int? limit = -1)
         {
             queryable = queryable.Skip(offset ?? 0);

@@ -1,5 +1,6 @@
 ﻿using ProjectGym.Data;
 using ProjectGym.Models;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace ProjectGym.Services.Read
@@ -12,11 +13,11 @@ namespace ProjectGym.Services.Read
 
         protected override Expression<Func<WorkoutSet, bool>> TranslateKeyValueToExpression(string key, string value)
         {
-            //TODO: Implement multiple values per search ---> like in exercise read service
+            //Maybe make ~= mean one of x,y,z and = mean x and y and z
+
             /*TODO: 
                 -Read service for supersets
                 -Update services for sets, workout sets and supersets
-                -more ways to search sets and workouts (like I did for workout sets below)
              */
             if (int.TryParse(value, out int valueId))
             {
@@ -32,6 +33,26 @@ namespace ProjectGym.Services.Read
             }
             else
             {
+                if (value.Contains(','))
+                {
+                    var values = value.Replace(" ", "").Split(',');
+                    List<int> valueIds = [];
+                    foreach (var id in values)
+                    {
+                        if (int.TryParse(id, out int newId))
+                            valueIds.Add(newId);
+                    }
+
+                    return key switch
+                    {
+                        "primarymusclegroup" => x => x.Set.Exercise.PrimaryMuscleGroups.Any(m => valueIds.Contains(m.Id)),
+                        "secondarymusclegroup" => x => x.Set.Exercise.SecondaryMuscleGroups.Any(m => valueIds.Contains(m.Id)),
+                        "primarymuscle" => x => x.Set.Exercise.PrimaryMuscles.Any(m => valueIds.Contains(m.Id)),
+                        "secondarymuscle" => x => x.Set.Exercise.SecondaryMuscles.Any(m => valueIds.Contains(m.Id)),
+                        "equipment" => x => x.Set.Exercise.Equipment.Any(eq => valueIds.Contains(eq.Id)),
+                        _ => throw new NotSupportedException($"Invalid key in search query. Entered key: {key}"),
+                    };
+                }
                 throw new NotSupportedException($"Invalid value in search query. Entered value '{value}' for key '{key}'");
             }
         }

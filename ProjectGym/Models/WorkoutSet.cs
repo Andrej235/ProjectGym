@@ -9,7 +9,6 @@ namespace ProjectGym.Models
         public int TargetSets { get; set; }
         public bool DropSets { get; set; }
 
-
         public Workout Workout { get; set; } = null!;
         public Guid WorkoutId { get; set; }
 

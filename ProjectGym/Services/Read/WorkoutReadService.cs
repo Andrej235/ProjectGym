@@ -24,6 +24,40 @@ namespace ProjectGym.Services.Read
 
         protected override Expression<Func<Workout, bool>> TranslateKeyValueToExpression(string key, string value)
         {
+            if (int.TryParse(value, out int valueId))
+            {
+                return key switch
+                {
+                    "equipment" => x => x.WorkoutSets.Any(x => x.Set.Exercise.Equipment.Any(x => x.Id == valueId)),
+                    "primarymusclegroup" => x => x.WorkoutSets.Any(x => x.Set.Exercise.PrimaryMuscleGroups.Any(x => x.Id == valueId)),
+                    "secondarymusclegroup" => x => x.WorkoutSets.Any(x => x.Set.Exercise.SecondaryMuscleGroups.Any(x => x.Id == valueId)),
+                    "primarymuscle" => x => x.WorkoutSets.Any(x => x.Set.Exercise.PrimaryMuscles.Any(x => x.Id == valueId)),
+                    "secondarymuscle" => x => x.WorkoutSets.Any(x => x.Set.Exercise.SecondaryMuscles.Any(x => x.Id == valueId)),
+                    _ => throw new NotSupportedException($"Invalid key in search query. Entered key: {key}")
+                };
+            }
+
+            if (value.Contains(','))
+            {
+                var values = value.Replace(" ", "").Split(',');
+                List<int> valueIds = [];
+                foreach (var id in values)
+                {
+                    if (int.TryParse(id, out int newId))
+                        valueIds.Add(newId);
+                }
+
+                return key switch
+                {
+                    "primarymusclegroup" => x => x.WorkoutSets.Any(x => x.Set.Exercise.PrimaryMuscleGroups.Any(m => valueIds.Contains(m.Id))),
+                    "secondarymusclegroup" => x => x.WorkoutSets.Any(x => x.Set.Exercise.SecondaryMuscleGroups.Any(m => valueIds.Contains(m.Id))),
+                    "primarymuscle" => x => x.WorkoutSets.Any(x => x.Set.Exercise.PrimaryMuscles.Any(m => valueIds.Contains(m.Id))),
+                    "secondarymuscle" => x => x.WorkoutSets.Any(x => x.Set.Exercise.SecondaryMuscles.Any(m => valueIds.Contains(m.Id))),
+                    "equipment" => x => x.WorkoutSets.Any(x => x.Set.Exercise.Equipment.Any(eq => valueIds.Contains(eq.Id))),
+                    _ => throw new NotSupportedException($"Invalid key in search query. Entered key: {key}"),
+                };
+            }
+
             return key switch
             {
                 "personal" => x => true,
