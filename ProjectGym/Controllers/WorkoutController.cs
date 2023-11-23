@@ -2,18 +2,31 @@
 using ProjectGym.DTOs;
 using ProjectGym.Models;
 using ProjectGym.Services.Create;
+using ProjectGym.Services.Delete;
 using ProjectGym.Services.Mapping;
 using ProjectGym.Services.Read;
+using ProjectGym.Services.Update;
 using ProjectGym.Utilities;
 
 namespace ProjectGym.Controllers
 {
     [ApiController]
     [Route("api/workout")]
-    public class WorkoutController(IReadService<Workout> readService, ICreateService<Workout, Guid> createService, IEntityMapperSync<Workout, WorkoutDTO> mapper) : ControllerBase, ICreateController<Workout, WorkoutDTO, Guid>, IReadController<Workout, WorkoutDTO, Guid>
+    public class WorkoutController(IReadService<Workout> readService,
+                                   ICreateService<Workout, Guid> createService,
+                                   IEntityMapperSync<Workout, WorkoutDTO> mapper,
+                                   IDeleteService<Workout> deleteService,
+                                   IUpdateService<Workout> updateService)
+        : ControllerBase,
+        ICreateController<Workout, WorkoutDTO, Guid>,
+        IReadController<Workout, WorkoutDTO, Guid>,
+        IUpdateController<Workout, WorkoutDTO>,
+        IDeleteController<Workout, Guid>
     {
         public IReadService<Workout> ReadService { get; } = readService;
         public ICreateService<Workout, Guid> CreateService { get; } = createService;
+        public IUpdateService<Workout> UpdateService { get; } = updateService;
+        public IDeleteService<Workout> DeleteService { get; } = deleteService;
         public IEntityMapperSync<Workout, WorkoutDTO> Mapper { get; } = mapper;
 
         [HttpPost]
@@ -26,6 +39,21 @@ namespace ProjectGym.Controllers
                     return Ok(newEntityId);
                 else
                     return BadRequest("Entity already exists.");
+            }
+            catch (Exception ex)
+            {
+                LogDebugger.LogError(ex);
+                return BadRequest(LogDebugger.GetErrorMessage(ex));
+            }
+        }
+
+        [HttpDelete("{primaryKey}")]
+        public async Task<IActionResult> Delete(Guid primaryKey)
+        {
+            try
+            {
+                await DeleteService.DeleteFirst(x => x.Id == primaryKey);
+                return Ok("Successfully deleted entity");
             }
             catch (Exception ex)
             {
@@ -55,6 +83,21 @@ namespace ProjectGym.Controllers
             {
                 var entities = (await ReadService.Get(q, offset, limit, include)).Select(Mapper.Map);
                 return Ok(entities);
+            }
+            catch (Exception ex)
+            {
+                LogDebugger.LogError(ex);
+                return BadRequest(LogDebugger.GetErrorMessage(ex));
+            }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Update([FromBody] WorkoutDTO updatedEntity)
+        {
+            try
+            {
+                await UpdateService.Update(Mapper.Map(updatedEntity));
+                return Ok("Successfully updated entity");
             }
             catch (Exception ex)
             {

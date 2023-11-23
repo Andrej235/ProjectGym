@@ -4,12 +4,9 @@ using ProjectGym.Services.Read;
 
 namespace ProjectGym.Services.Mapping
 {
-    public class ExerciseMapper(IReadService<Image> imageReadService,
-                          IReadService<Equipment> equipmentReadService,
-                          IReadService<MuscleGroup> muscleGroupReadService,
-                          IReadService<Alias> aliasReadService,
-                          IReadService<Note> noteReadService,
-                          IReadService<Muscle> muscleReadService) : IEntityMapperAsync<Exercise, ExerciseDTO>
+    public class ExerciseMapper(IReadService<Equipment> equipmentReadService,
+                                IReadService<MuscleGroup> muscleGroupReadService,
+                                IReadService<Muscle> muscleReadService) : IEntityMapperAsync<Exercise, ExerciseDTO>
     {
         public ExerciseDTO Map(Exercise entity) => new()
         {
@@ -23,7 +20,8 @@ namespace ProjectGym.Services.Mapping
             PrimaryMuscleGroupIds = entity.PrimaryMuscleGroups.Select(x => x.Id),
             SecondaryMuscleGroupIds = entity.SecondaryMuscleGroups.Select(x => x.Id),
             PrimaryMuscleIds = entity.PrimaryMuscles.Select(x => x.Id),
-            SecondaryMuscleIds = entity.SecondaryMuscles.Select(x => x.Id)
+            SecondaryMuscleIds = entity.SecondaryMuscles.Select(x => x.Id),
+            CommentIds = entity.Comments.Select(x => x.Id),
         };
 
         public async Task<Exercise> Map(ExerciseDTO dto) => new()
@@ -32,13 +30,10 @@ namespace ProjectGym.Services.Mapping
             Name = dto.Name,
             Description = dto.Description,
             Equipment = await equipmentReadService.Get(x => dto.EquipmentIds.Contains(x.Id), 0, -1, "none"),
-            Notes = await noteReadService.Get(x => dto.NoteIds.Contains(x.Id), 0, -1, "none"),
-            Aliases = await aliasReadService.Get(x => dto.AliasIds.Contains(x.Id), 0, -1, "none"),
-            Images = await imageReadService.Get(x => dto.ImageIds.Contains(x.Id), 0, -1, "none"),
             PrimaryMuscleGroups = await muscleGroupReadService.Get(x => dto.PrimaryMuscleGroupIds.Contains(x.Id), 0, -1, "none"),
             SecondaryMuscleGroups = await muscleGroupReadService.Get(x => dto.SecondaryMuscleGroupIds.Contains(x.Id), 0, -1, "none"),
             PrimaryMuscles = await muscleReadService.Get(x => dto.PrimaryMuscleIds.Contains(x.Id), 0, -1, "none"),
-            SecondaryMuscles = await muscleReadService.Get(x => dto.SecondaryMuscleIds.Contains(x.Id), 0, -1, "none")
+            SecondaryMuscles = await muscleReadService.Get(x => dto.SecondaryMuscleIds.Contains(x.Id), 0, -1, "none"),
         };
     }
 }

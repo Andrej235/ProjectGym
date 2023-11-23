@@ -4,6 +4,7 @@ using ProjectGym.Models;
 using ProjectGym.Services.Create;
 using ProjectGym.Services.Mapping;
 using ProjectGym.Services.Read;
+using ProjectGym.Services.Update;
 using ProjectGym.Utilities;
 
 namespace ProjectGym.Controllers
@@ -12,10 +13,12 @@ namespace ProjectGym.Controllers
     [Route("api/set")]
     public class SetController(IReadService<Set> readService,
                                ICreateService<Set, Guid> createService,
-                               IEntityMapperSync<Set, SetDTO> mapper) : ControllerBase, ICreateController<Set, SetDTO, Guid>, IReadController<Set, SetDTO, Guid>
+                               IEntityMapperSync<Set, SetDTO> mapper,
+                               IUpdateService<Set> updateService) : ControllerBase, ICreateController<Set, SetDTO, Guid>, IReadController<Set, SetDTO, Guid>, IUpdateController<Set, SetDTO>
     {
         public IReadService<Set> ReadService { get; } = readService;
         public ICreateService<Set, Guid> CreateService { get; } = createService;
+        public IUpdateService<Set> UpdateService { get; } = updateService;
         public IEntityMapperSync<Set, SetDTO> Mapper { get; } = mapper;
 
         [HttpPost]
@@ -57,6 +60,21 @@ namespace ProjectGym.Controllers
             {
                 var entities = (await ReadService.Get(q, offset, limit, include)).Select(Mapper.Map);
                 return Ok(entities);
+            }
+            catch (Exception ex)
+            {
+                LogDebugger.LogError(ex);
+                return BadRequest(LogDebugger.GetErrorMessage(ex));
+            }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Update([FromBody] SetDTO updatedEntity)
+        {
+            try
+            {
+                await UpdateService.Update(Mapper.Map(updatedEntity));
+                return Ok("Successfully updated entity");
             }
             catch (Exception ex)
             {

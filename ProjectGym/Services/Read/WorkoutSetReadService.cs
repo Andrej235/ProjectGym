@@ -13,11 +13,8 @@ namespace ProjectGym.Services.Read
 
         protected override Expression<Func<WorkoutSet, bool>> TranslateKeyValueToExpression(string key, string value)
         {
-            //Maybe make ~= mean one of x,y,z and = mean x and y and z
-
             /*TODO: 
-                -Read service for supersets
-                -Update services for sets, workout sets and supersets
+                -Update services for sets and workout sets
              */
             if (int.TryParse(value, out int valueId))
             {

@@ -7,6 +7,7 @@ namespace ProjectGym.Services.Mapping
     {
         public Workout Map(WorkoutDTO dto) => new()
         {
+            Id = dto.Id,
             Name = dto.Name,
             CreatorId = dto.CreatorId,
             IsPublic = dto.IsPublic,

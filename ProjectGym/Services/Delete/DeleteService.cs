@@ -1,6 +1,7 @@
 ﻿using ProjectGym.Data;
 using ProjectGym.Models;
 using ProjectGym.Services.Read;
+using ProjectGym.Utilities;
 using System.Diagnostics;
 using System.Linq.Expressions;
 
@@ -17,9 +18,9 @@ namespace ProjectGym.Services.Delete
                 context.Set<T>().Remove(entityToDelete);
                 await context.SaveChangesAsync();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Debug.WriteLine($"---> An error occurred while trying to delete entity: {ex.Message}");
+                throw;
             }
         }
 
@@ -37,7 +38,7 @@ namespace ProjectGym.Services.Delete
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"---> An error occurred while trying to delete entities: {ex.Message}");
+                    LogDebugger.LogError(ex);
                     return false;
                 }
             }

@@ -13,7 +13,7 @@ namespace ProjectGym.Services.Mapping
             ToFaliure = dto.ToFaliure,
             CreatorId = dto.CreatorId,
             ExerciseId = dto.ExerciseId,
-            DropSet = dto.DtopSet,
+            DropSet = dto.DropSet,
         };
 
         public SetDTO Map(Set entity) => new()
@@ -24,7 +24,7 @@ namespace ProjectGym.Services.Mapping
             RepRange_Bottom = entity.RepRange_Bottom,
             CreatorId = entity.CreatorId,
             ExerciseId = entity.ExerciseId,
-            DtopSet = entity.DropSet,
+            DropSet = entity.DropSet,
         };
     }
 }
