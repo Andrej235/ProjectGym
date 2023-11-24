@@ -3,16 +3,16 @@ using ProjectGym.Models;
 
 namespace ProjectGym.Services.Mapping
 {
-    public class AliasMapper : IEntityMapperSync<Alias, ExerciseAliasDTO>
+    public class AliasMapper : IEntityMapper<Alias, AliasDTO>
     {
-        public ExerciseAliasDTO Map(Alias entity) => new()
+        public AliasDTO Map(Alias entity) => new()
         {
             Id = entity.Id,
             Alias = entity.AliasName,
             ExerciseId = entity.ExerciseId,
         };
 
-        public Alias Map(ExerciseAliasDTO dto) => new()
+        public Alias Map(AliasDTO dto) => new()
         {
             Id = dto.Id,
             AliasName = dto.Alias,

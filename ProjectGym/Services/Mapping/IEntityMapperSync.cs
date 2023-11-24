@@ -1,7 +1,8 @@
-﻿namespace ProjectGym.Services.Mapping
+﻿/*namespace ProjectGym.Services.Mapping
 {
-    public interface IEntityMapperSync<TEntity, TDTO> : IEntityMapper<TEntity, TDTO>
+    public interface IEntityMapper<TEntity, TDTO> : IEntityMapper<TEntity, TDTO>
     {
         TEntity Map(TDTO dto);
     }
 }
+*/

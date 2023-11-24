@@ -5,7 +5,7 @@
         /// <summary>
         /// Adds entity to database
         /// </summary>
-        /// <returns>Id of added entity. default if the create action was unsuccessful</returns>
+        /// <returns>Id of added entity</returns>
         /// <param name="toAdd">Entity to save in the database</param>
         Task<object> Add(TEntity toAdd);
     }

@@ -10,7 +10,7 @@ namespace ProjectGym.Services.Create
         public async Task<object> Add(Alias toAdd)
         {
             if (toAdd.ExerciseId < 1)
-                return default(int);
+                throw new NullReferenceException($"Exercise with Id {toAdd.ExerciseId} was not found");
 
             try
             {
@@ -21,15 +21,10 @@ namespace ProjectGym.Services.Create
 
                 return toAdd.Id;
             }
-            catch (NullReferenceException)
-            {
-                LogDebugger.LogError(new NullReferenceException($"Exercise with Id {toAdd.ExerciseId} was not found"));
-                return default(int);
-            }
             catch (Exception ex)
             {
                 LogDebugger.LogError(ex);
-                return default(int);
+                throw;
             }
         }
     }

@@ -14,7 +14,7 @@ namespace ProjectGym.Services.Create
             try
             {
                 await readService.Get(x => x.Name.ToLower().Trim() == toAdd.Name.ToLower().Trim(), "none");
-                return default(int);
+                throw new Exception("Entity already exists");
             }
             catch (NullReferenceException)
             {
@@ -27,13 +27,13 @@ namespace ProjectGym.Services.Create
                 catch (Exception ex)
                 {
                     Debug.WriteLine($"---> Error occurred: {ex.Message} \n{ex.InnerException?.Message}");
-                    return default(int);
+                    throw;
                 }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"---> Error occurred: {ex.Message} \n{ex.InnerException?.Message}");
-                return default(int);
+                throw;
             }
         }
     }

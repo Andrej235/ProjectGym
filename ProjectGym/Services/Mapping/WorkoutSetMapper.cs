@@ -3,7 +3,7 @@ using ProjectGym.Models;
 
 namespace ProjectGym.Services.Mapping
 {
-    public class WorkoutSetMapper : IEntityMapperSync<WorkoutSet, WorkoutSetDTO>
+    public class WorkoutSetMapper : IEntityMapper<WorkoutSet, WorkoutSetDTO>
     {
         public WorkoutSet Map(WorkoutSetDTO dto) => new()
         {

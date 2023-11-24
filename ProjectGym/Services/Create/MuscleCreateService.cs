@@ -18,7 +18,7 @@ namespace ProjectGym.Services.Create
             catch (Exception ex)
             {
                 Debug.WriteLine($"---> Error occurred: {ex.Message} \n{ex.InnerException?.Message}");
-                return default(int);
+                throw;
             }
         }
     }

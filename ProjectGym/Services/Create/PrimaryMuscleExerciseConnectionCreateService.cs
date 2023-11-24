@@ -1,6 +1,7 @@
 ﻿using ProjectGym.Data;
 using ProjectGym.Models;
 using ProjectGym.Services.Read;
+using ProjectGym.Utilities;
 using System.Diagnostics;
 
 namespace ProjectGym.Services.Create
@@ -12,7 +13,7 @@ namespace ProjectGym.Services.Create
             try
             {
                 await readService.Get(x => x.MuscleGroupId == toAdd.MuscleGroupId && x.ExerciseId == toAdd.ExerciseId, "none");
-                return default(int);
+                throw new Exception("Entity already exists");
             }
             catch (NullReferenceException)
             {
@@ -24,14 +25,14 @@ namespace ProjectGym.Services.Create
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"Error occured while trying to add PrimaryMuscleExerciseConnection: {ex.Message}");
-                    return default(int);
+                    LogDebugger.LogError(ex);
+                    throw;
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error occured while trying to add PrimaryMuscleExerciseConnection: {ex.Message}");
-                return default(int);
+                LogDebugger.LogError(ex);
+                throw;
             }
         }
     }

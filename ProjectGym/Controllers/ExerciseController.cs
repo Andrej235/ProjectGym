@@ -72,7 +72,7 @@ namespace ProjectGym.Controllers
         {
             try
             {
-                var entity = await Mapper.Map(entityDTO);
+                var entity = await Mapper.MapAsync(entityDTO);
                 var newId = await CreateService.Add(entity);
                 return newId != default ? Ok(newId) : BadRequest("Entity already exists");
             }
@@ -86,7 +86,7 @@ namespace ProjectGym.Controllers
         {
             try
             {
-                await UpdateService.Update(await Mapper.Map(updatedEntity));
+                await UpdateService.Update(await Mapper.MapAsync(updatedEntity));
                 return Ok("Successfully updated entity");
             }
             catch (Exception ex)

@@ -36,7 +36,7 @@ namespace ProjectGym.Services.Create
             catch (Exception ex)
             {
                 LogDebugger.LogError(ex);
-                return default(Guid);
+                throw;
             }
         }
     }

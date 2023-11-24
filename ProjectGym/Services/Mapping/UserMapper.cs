@@ -18,5 +18,13 @@ namespace ProjectGym.Services.Mapping
             CommentDownvoteIds = entity.CommentDownvotes.Select(x => x.Id),
             BookmarkIds = entity.Bookmarks.Select(x => x.Id),
         };
+
+        public User Map(UserDTO dto) => new()
+        {
+            Id = dto.Id,
+            Name = dto.Name,
+            Email = dto.Email,
+            //TODO?: Maybe add hashing here?
+        };
     }
 }

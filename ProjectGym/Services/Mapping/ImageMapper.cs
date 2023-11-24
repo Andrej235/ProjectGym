@@ -3,7 +3,7 @@ using ProjectGym.Models;
 
 namespace ProjectGym.Services.Mapping
 {
-    public class ImageMapper : IEntityMapperSync<Image, ImageDTO>
+    public class ImageMapper : IEntityMapper<Image, ImageDTO>
     {
         public ImageDTO Map(Image entity) => new()
         {

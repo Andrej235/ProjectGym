@@ -3,7 +3,7 @@ using ProjectGym.Models;
 
 namespace ProjectGym.Services.Mapping
 {
-    public class WeightMapper : IEntityMapperSync<PersonalExerciseWeight, PersonalExerciseWeightDTO>
+    public class WeightMapper : IEntityMapper<PersonalExerciseWeight, PersonalExerciseWeightDTO>
     {
         public PersonalExerciseWeight Map(PersonalExerciseWeightDTO dto) => new()
         {

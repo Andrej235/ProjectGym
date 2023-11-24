@@ -1,6 +1,7 @@
 ﻿using ProjectGym.Data;
 using ProjectGym.Models;
 using ProjectGym.Services.Read;
+using ProjectGym.Utilities;
 using System.Diagnostics;
 
 namespace ProjectGym.Services.Create
@@ -10,7 +11,7 @@ namespace ProjectGym.Services.Create
         public async Task<object> Add(Note toAdd)
         {
             if (toAdd.ExerciseId < 1)
-                return default(int);
+                throw new NullReferenceException($"Exercise with Id {toAdd.ExerciseId} was not found");
 
             try
             {
@@ -21,16 +22,10 @@ namespace ProjectGym.Services.Create
 
                 return toAdd.Id;
             }
-            catch (NullReferenceException)
-            {
-
-                Debug.WriteLine($"Exercise with Id {toAdd.ExerciseId} was not found");
-                return default(int);
-            }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error occured while trying to add Image: {ex.Message}");
-                return default(int);
+                LogDebugger.LogError(ex);
+                throw;
             }
         }
     }

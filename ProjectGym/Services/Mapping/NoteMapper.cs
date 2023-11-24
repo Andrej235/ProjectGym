@@ -3,7 +3,7 @@ using ProjectGym.Models;
 
 namespace ProjectGym.Services.Mapping
 {
-    public class NoteMapper : IEntityMapperSync<Note, NoteDTO>
+    public class NoteMapper : IEntityMapper<Note, NoteDTO>
     {
         public NoteDTO Map(Note entity) => new()
         {

@@ -24,7 +24,7 @@ namespace ProjectGym.Services.Mapping
             CommentIds = entity.Comments.Select(x => x.Id),
         };
 
-        public async Task<Exercise> Map(ExerciseDTO dto) => new()
+        public async Task<Exercise> MapAsync(ExerciseDTO dto) => new()
         {
             Id = dto.Id,
             Name = dto.Name,
@@ -34,6 +34,13 @@ namespace ProjectGym.Services.Mapping
             SecondaryMuscleGroups = await muscleGroupReadService.Get(x => dto.SecondaryMuscleGroupIds.Contains(x.Id), 0, -1, "none"),
             PrimaryMuscles = await muscleReadService.Get(x => dto.PrimaryMuscleIds.Contains(x.Id), 0, -1, "none"),
             SecondaryMuscles = await muscleReadService.Get(x => dto.SecondaryMuscleIds.Contains(x.Id), 0, -1, "none"),
+        };
+
+        Exercise IEntityMapper<Exercise, ExerciseDTO>.Map(ExerciseDTO dto) => new()
+        {
+            Id = dto.Id,
+            Name = dto.Name,
+            Description = dto.Description,
         };
     }
 }

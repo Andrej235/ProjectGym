@@ -4,50 +4,104 @@ using ProjectGym.Services.Delete;
 using ProjectGym.Services.Mapping;
 using ProjectGym.Services.Read;
 using ProjectGym.Services.Update;
+using ProjectGym.Utilities;
 
 namespace ProjectGym.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class RepositoryController<TEntity, TDTO, TMapper> 
+    public class RepositoryController<TEntity, TDTO>(ICreateService<TEntity> createService,
+                                                     IUpdateService<TEntity> updateService,
+                                                     IDeleteService<TEntity> deleteService,
+                                                     IReadService<TEntity> readService,
+                                                     IEntityMapper<TEntity, TDTO> mapper)
         : ControllerBase,
-        ICreateController<TEntity, TDTO>, 
-        IReadController<TEntity, TDTO>, 
+        ICreateController<TEntity, TDTO>,
+        IReadController<TEntity, TDTO>,
         IUpdateController<TEntity, TDTO>,
-        IDeleteController<TEntity> 
+        IDeleteController<TEntity>
         where TEntity : class
         where TDTO : class
-        where TMapper : IEntityMapperSync<TEntity, TDTO>, IEntityMapperAsync<TEntity, TDTO>
     {
-        public ICreateService<TEntity> CreateService => throw new NotImplementedException();
-        public IUpdateService<TEntity> UpdateService => throw new NotImplementedException();
-        public IDeleteService<TEntity> DeleteService => throw new NotImplementedException();
-        public IReadService<TEntity> ReadService => throw new NotImplementedException();
-        public TMapper Mapper => throw new NotImplementedException();
+        public ICreateService<TEntity> CreateService { get; } = createService;
+        public IUpdateService<TEntity> UpdateService { get; } = updateService;
+        public IDeleteService<TEntity> DeleteService { get; } = deleteService;
+        public IReadService<TEntity> ReadService { get; } = readService;
+        public IEntityMapper<TEntity, TDTO> Mapper { get; } = mapper;
 
-        public Task<IActionResult> Create([FromBody] TDTO entityDTO)
+        [HttpPost]
+        public virtual async Task<IActionResult> Create([FromBody] TDTO entityDTO)
         {
-            throw new NotImplementedException();
+            try
+            {
+                //TODO: change create service to throw errors instead of default(TPK);
+                var newEntityId = await CreateService.Add(Mapper.Map(entityDTO));
+                return Ok(newEntityId);
+            }
+            catch (Exception ex)
+            {
+                LogDebugger.LogError(ex);
+                return BadRequest(LogDebugger.GetErrorMessage(ex));
+            }
         }
 
-        public Task<IActionResult> Delete(string primaryKey)
+        [HttpGet("{id}")]
+        public virtual async Task<IActionResult> Get(string id, [FromQuery] string? include)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return Ok(Mapper.Map(await ReadService.Get(id, include)));
+            }
+            catch (Exception ex)
+            {
+                LogDebugger.LogError(ex);
+                return BadRequest(LogDebugger.GetErrorMessage(ex));
+            }
         }
 
-        public Task<IActionResult> Get(string id, [FromQuery] string? include)
+        [HttpGet]
+        public virtual async Task<IActionResult> Get([FromQuery] int? offset, [FromQuery] int? limit, [FromQuery] string? include, [FromQuery] string? q)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var entities = (await ReadService.Get(q, offset, limit, include)).Select(Mapper.Map);
+                return Ok(entities);
+            }
+            catch (Exception ex)
+            {
+                LogDebugger.LogError(ex);
+                return BadRequest(LogDebugger.GetErrorMessage(ex));
+            }
         }
 
-        public Task<IActionResult> Get([FromQuery] int? offset, [FromQuery] int? limit, [FromQuery] string? include, [FromQuery] string? q)
+        [HttpPut]
+        public virtual async Task<IActionResult> Update([FromBody] TDTO updatedEntity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await UpdateService.Update(Mapper.Map(updatedEntity));
+                return Ok("Successfully updated entity");
+            }
+            catch (Exception ex)
+            {
+                LogDebugger.LogError(ex);
+                return BadRequest(LogDebugger.GetErrorMessage(ex));
+            }
         }
 
-        public Task<IActionResult> Update([FromBody] TDTO updatedEntity)
+        [HttpDelete("{primaryKey}")]
+        public virtual async Task<IActionResult> Delete(string primaryKey)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await DeleteService.Delete(primaryKey);
+                return Ok("Successfully deleted entity.");
+            }
+            catch (Exception ex)
+            {
+                LogDebugger.LogError(ex);
+                return BadRequest(LogDebugger.GetErrorMessage(ex));
+            }
         }
     }
 }

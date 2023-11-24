@@ -1,6 +1,6 @@
 ﻿namespace ProjectGym.DTOs
 {
-    public class ExerciseAliasDTO
+    public class AliasDTO
     {
         public int Id { get; set; }
         public string Alias { get; set; } = null!;

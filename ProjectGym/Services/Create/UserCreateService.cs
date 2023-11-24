@@ -12,7 +12,7 @@ namespace ProjectGym.Services.Create
             try
             {
                 await readService.Get(eq => eq.Email == toAdd.Email, "none");
-                return default(Guid);
+                throw new Exception("Entity already exists");
             }
             catch (NullReferenceException)
             {
@@ -25,13 +25,13 @@ namespace ProjectGym.Services.Create
                 catch (Exception ex)
                 {
                     LogDebugger.LogError(ex);
-                    return default(Guid);
+                    throw;
                 }
             }
             catch (Exception ex)
             {
                 LogDebugger.LogError(ex);
-                return default(Guid);
+                throw;
             }
         }
     }

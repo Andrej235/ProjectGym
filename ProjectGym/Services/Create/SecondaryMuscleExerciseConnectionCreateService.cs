@@ -12,7 +12,7 @@ namespace ProjectGym.Services.Create
             try
             {
                 await readService.Get(x => x.MuscleGroupId == toAdd.MuscleGroupId && x.ExerciseId == toAdd.ExerciseId, "none");
-                return default(int);
+                throw new Exception("Entity already exists");
             }
             catch (NullReferenceException)
             {
@@ -25,13 +25,13 @@ namespace ProjectGym.Services.Create
                 catch (Exception ex)
                 {
                     LogDebugger.LogError(ex);
-                    return default(int);
+                    throw;
                 }
             }
             catch (Exception ex)
             {
                 LogDebugger.LogError(ex);
-                return default(int);
+                throw;
             }
         }
     }

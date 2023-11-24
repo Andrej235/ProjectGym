@@ -3,7 +3,7 @@ using ProjectGym.Models;
 
 namespace ProjectGym.Services.Mapping
 {
-    public class SetMapper : IEntityMapperSync<Set, SetDTO>
+    public class SetMapper : IEntityMapper<Set, SetDTO>
     {
         public Set Map(SetDTO dto) => new()
         {

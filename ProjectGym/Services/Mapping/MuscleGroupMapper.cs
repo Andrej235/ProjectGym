@@ -4,7 +4,7 @@ using ProjectGym.Services.Read;
 
 namespace ProjectGym.Services.Mapping
 {
-    public class MuscleGroupMapper : IEntityMapperSync<MuscleGroup, MuscleGroupDTO>
+    public class MuscleGroupMapper : IEntityMapper<MuscleGroup, MuscleGroupDTO>
     {
         public MuscleGroupDTO Map(MuscleGroup entity) => new()
         {

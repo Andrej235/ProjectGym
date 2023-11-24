@@ -1,6 +1,5 @@
 ﻿using ProjectGym.Data;
 using ProjectGym.Models;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace ProjectGym.Services.Read
