@@ -13,24 +13,24 @@ namespace ProjectGym.Controllers
     [ApiController]
     public class ImageController(IReadService<Image> readService,
                                  IEntityMapperSync<Image, ImageDTO> mapper,
-                                 ICreateService<Image, int> createService,
+                                 ICreateService<Image> createService,
                                  IDeleteService<Image> deleteService)
         : ControllerBase,
-        IReadController<Image, ImageDTO, int>,
-        ICreateController<Image, ImageDTO, int>,
-        IDeleteController<Image, int>
+        IReadController<Image, ImageDTO>,
+        ICreateController<Image, ImageDTO>,
+        IDeleteController<Image>
     {
         public IReadService<Image> ReadService { get; } = readService;
         public IEntityMapperSync<Image, ImageDTO> Mapper { get; } = mapper;
         public IDeleteService<Image> DeleteService { get; } = deleteService;
-        public ICreateService<Image, int> CreateService { get; } = createService;
+        public ICreateService<Image> CreateService { get; } = createService;
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id, [FromQuery] string? include)
+        public async Task<IActionResult> Get(string id, [FromQuery] string? include)
         {
             try
             {
-                return Ok(Mapper.Map(await ReadService.Get(x => x.Id == id, include)));
+                return Ok(Mapper.Map(await ReadService.Get(id, include)));
             }
             catch (Exception ex)
             {
@@ -60,7 +60,7 @@ namespace ProjectGym.Controllers
             try
             {
                 var entity = Mapper.Map(entityDTO);
-                int newId = await CreateService.Add(entity);
+                var newId = await CreateService.Add(entity);
                 return newId != default ? Ok(newId) : BadRequest("Entity already exists");
             }
             catch (Exception ex)
@@ -70,11 +70,11 @@ namespace ProjectGym.Controllers
         }
 
         [HttpDelete("{primaryKey}")]
-        public async Task<IActionResult> Delete(int primaryKey)
+        public async Task<IActionResult> Delete(string primaryKey)
         {
             try
             {
-                await DeleteService.DeleteFirst(x => x.Id == primaryKey);
+                await DeleteService.Delete(primaryKey);
                 return Ok("Successfully deleted entity.");
             }
             catch (Exception ex)

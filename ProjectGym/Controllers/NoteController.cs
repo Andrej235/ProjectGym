@@ -12,16 +12,16 @@ namespace ProjectGym.Controllers
 {
     [Route("api/note")]
     [ApiController]
-    public class NoteController(ICreateService<Note, int> createService,
+    public class NoteController(ICreateService<Note> createService,
                                 IReadService<Note> readService,
                                 IEntityMapperSync<Note, NoteDTO> mapper,
                                 IDeleteService<Note> deleteService) :
         ControllerBase,
-        ICreateController<Note, NoteDTO, int>,
-        IReadController<Note, NoteDTO, int>,
-        IDeleteController<Note, int>
+        ICreateController<Note, NoteDTO>,
+        IReadController<Note, NoteDTO>,
+        IDeleteController<Note>
     {
-        public ICreateService<Note, int> CreateService { get; } = createService;
+        public ICreateService<Note> CreateService { get; } = createService;
         public IReadService<Note> ReadService { get; } = readService;
         public IDeleteService<Note> DeleteService { get; } = deleteService;
         public IEntityMapperSync<Note, NoteDTO> Mapper { get; } = mapper;
@@ -31,7 +31,7 @@ namespace ProjectGym.Controllers
         {
             try
             {
-                int newEntityId = await CreateService.Add(Mapper.Map(entityDTO));
+                var newEntityId = await CreateService.Add(Mapper.Map(entityDTO));
                 if (newEntityId != default)
                     return Ok(newEntityId);
                 else
@@ -44,11 +44,11 @@ namespace ProjectGym.Controllers
         }
 
         [HttpDelete("{primaryKey}")]
-        public async Task<IActionResult> Delete(int primaryKey)
+        public async Task<IActionResult> Delete(string primaryKey)
         {
             try
             {
-                await DeleteService.DeleteFirst(x => x.Id == primaryKey);
+                await DeleteService.Delete(primaryKey);
                 return Ok("Successfully deleted entity.");
             }
             catch (Exception ex)
@@ -59,11 +59,11 @@ namespace ProjectGym.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id, [FromQuery] string? include)
+        public async Task<IActionResult> Get(string id, [FromQuery] string? include)
         {
             try
             {
-                return Ok(Mapper.Map(await ReadService.Get(x => x.Id == id, include)));
+                return Ok(Mapper.Map(await ReadService.Get(id, include)));
             }
             catch (Exception ex)
             {

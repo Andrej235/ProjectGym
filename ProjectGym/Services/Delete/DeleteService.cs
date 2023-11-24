@@ -9,6 +9,21 @@ namespace ProjectGym.Services.Delete
 {
     public class DeleteService<T>(ExerciseContext context, IReadService<T> readService) : IDeleteService<T> where T : class
     {
+        public async Task Delete(object id)
+        {
+            try
+            {
+                T entityToDelete = await readService.Get(id, "none");
+
+                context.Set<T>().Remove(entityToDelete);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public async Task DeleteFirst(Expression<Func<T, bool>> criteria)
         {
             try

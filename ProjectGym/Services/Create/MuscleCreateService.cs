@@ -5,9 +5,9 @@ using System.Diagnostics;
 
 namespace ProjectGym.Services.Create
 {
-    public class MuscleCreateService(ExerciseContext context) : ICreateService<Muscle, int>
+    public class MuscleCreateService(ExerciseContext context) : ICreateService<Muscle>
     {
-        public async Task<int> Add(Muscle toAdd)
+        public async Task<object> Add(Muscle toAdd)
         {
             try
             {
@@ -18,7 +18,7 @@ namespace ProjectGym.Services.Create
             catch (Exception ex)
             {
                 Debug.WriteLine($"---> Error occurred: {ex.Message} \n{ex.InnerException?.Message}");
-                return default;
+                return default(int);
             }
         }
     }

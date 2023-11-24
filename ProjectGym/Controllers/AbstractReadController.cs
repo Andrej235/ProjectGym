@@ -6,16 +6,10 @@ using System.Security.Cryptography;
 namespace ProjectGym.Controllers
 {
     [Obsolete("Doesn't work, kept as an idea")]
-    public abstract class AbstractReadController<TEntity, TDTO, TPK> : ControllerBase where TEntity : class where TDTO : class
+    public abstract class AbstractReadController<TEntity, TDTO, TPK>(IReadService<TEntity> readService, IEntityMapper<TEntity, TDTO> mapper) : ControllerBase where TEntity : class where TDTO : class
     {
-        protected readonly IReadService<TEntity> readService;
-        protected readonly IEntityMapper<TEntity, TDTO> mapper;
-
-        public AbstractReadController(IReadService<TEntity> readService, IEntityMapper<TEntity, TDTO> mapper)
-        {
-            this.readService = readService;
-            this.mapper = mapper;
-        }
+        protected readonly IReadService<TEntity> readService = readService;
+        protected readonly IEntityMapper<TEntity, TDTO> mapper = mapper;
 
         protected abstract Func<TEntity, TPK> PrimaryKey { get; }
 

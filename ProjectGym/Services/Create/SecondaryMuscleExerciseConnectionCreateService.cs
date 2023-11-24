@@ -1,18 +1,18 @@
 ﻿using ProjectGym.Data;
 using ProjectGym.Models;
 using ProjectGym.Services.Read;
-using System.Diagnostics;
+using ProjectGym.Utilities;
 
 namespace ProjectGym.Services.Create
 {
-    public class SecondaryMuscleExerciseConnectionCreateService(ExerciseContext context, IReadService<SecondaryMuscleGroupInExercise> readService) : ICreateService<SecondaryMuscleGroupInExercise, int>
+    public class SecondaryMuscleExerciseConnectionCreateService(ExerciseContext context, IReadService<SecondaryMuscleGroupInExercise> readService) : ICreateService<SecondaryMuscleGroupInExercise>
     {
-        public async Task<int> Add(SecondaryMuscleGroupInExercise toAdd)
+        public async Task<object> Add(SecondaryMuscleGroupInExercise toAdd)
         {
             try
             {
-                await readService.Get(x => x.MuscleGroupId == toAdd.MuscleGroupId&& x.ExerciseId == toAdd.ExerciseId, "none");
-                return default;
+                await readService.Get(x => x.MuscleGroupId == toAdd.MuscleGroupId && x.ExerciseId == toAdd.ExerciseId, "none");
+                return default(int);
             }
             catch (NullReferenceException)
             {
@@ -24,14 +24,14 @@ namespace ProjectGym.Services.Create
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"Error occured while trying to add SecondaryMuscleExerciseConnections: {ex.Message}");
-                    return default;
+                    LogDebugger.LogError(ex);
+                    return default(int);
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error occured while trying to add SecondaryMuscleExerciseConnections: {ex.Message}");
-                return default;
+                LogDebugger.LogError(ex);
+                return default(int);
             }
         }
     }

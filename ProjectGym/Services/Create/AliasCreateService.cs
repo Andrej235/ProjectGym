@@ -2,16 +2,15 @@
 using ProjectGym.Models;
 using ProjectGym.Services.Read;
 using ProjectGym.Utilities;
-using System.Diagnostics;
 
 namespace ProjectGym.Services.Create
 {
-    public class AliasCreateService(ExerciseContext context, IReadService<Exercise> exerciseReadService) : ICreateService<Alias, int>
+    public class AliasCreateService(ExerciseContext context, IReadService<Exercise> exerciseReadService) : ICreateService<Alias>
     {
-        public async Task<int> Add(Alias toAdd)
+        public async Task<object> Add(Alias toAdd)
         {
             if (toAdd.ExerciseId < 1)
-                return default;
+                return default(int);
 
             try
             {
@@ -25,12 +24,12 @@ namespace ProjectGym.Services.Create
             catch (NullReferenceException)
             {
                 LogDebugger.LogError(new NullReferenceException($"Exercise with Id {toAdd.ExerciseId} was not found"));
-                return default;
+                return default(int);
             }
             catch (Exception ex)
             {
                 LogDebugger.LogError(ex);
-                return default;
+                return default(int);
             }
         }
     }

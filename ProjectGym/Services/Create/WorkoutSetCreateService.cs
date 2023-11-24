@@ -3,9 +3,9 @@ using ProjectGym.Models;
 
 namespace ProjectGym.Services.Create
 {
-    public class WorkoutSetCreateService(ExerciseContext context) : ICreateService<WorkoutSet, Guid>
+    public class WorkoutSetCreateService(ExerciseContext context) : ICreateService<WorkoutSet>
     {
-        public async Task<Guid> Add(WorkoutSet toAdd)
+        public async Task<object> Add(WorkoutSet toAdd)
         {
             await context.AddAsync(toAdd);
             await context.SaveChangesAsync();

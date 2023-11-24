@@ -1,13 +1,12 @@
 ﻿using ProjectGym.Data;
 using ProjectGym.Models;
-using ProjectGym.Services.Read;
 using System.Diagnostics;
 
 namespace ProjectGym.Services.Create
 {
-    public class ClientCreateService(ExerciseContext context) : ICreateService<Client, Guid>
+    public class ClientCreateService(ExerciseContext context) : ICreateService<Client>
     {
-        public async Task<Guid> Add(Client toAdd)
+        public async Task<object> Add(Client toAdd)
         {
             try
             {
@@ -21,7 +20,7 @@ namespace ProjectGym.Services.Create
             catch (Exception ex)
             {
                 Debug.WriteLine($"---> Error occurred: {ex.Message} \n{ex.InnerException?.Message}");
-                return default;
+                return default(Guid);
             }
         }
     }

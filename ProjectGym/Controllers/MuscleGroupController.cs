@@ -12,18 +12,18 @@ namespace ProjectGym.Controllers
 {
     [ApiController]
     [Route("api/musclegroup")]
-    public class MuscleGroupController(ICreateService<MuscleGroup, int> createService,
+    public class MuscleGroupController(ICreateService<MuscleGroup> createService,
                                        IReadService<MuscleGroup> readService,
                                        IEntityMapperSync<MuscleGroup, MuscleGroupDTO> mapper,
                                        IUpdateService<MuscleGroup> updateService,
                                        IDeleteService<MuscleGroup> deleteService) :
         ControllerBase,
-        ICreateController<MuscleGroup, MuscleGroupDTO, int>,
-        IReadController<MuscleGroup, MuscleGroupDTO, int>,
+        ICreateController<MuscleGroup, MuscleGroupDTO>,
+        IReadController<MuscleGroup, MuscleGroupDTO>,
         IUpdateController<MuscleGroup, MuscleGroupDTO>,
-        IDeleteController<MuscleGroup, int>
+        IDeleteController<MuscleGroup>
     {
-        public ICreateService<MuscleGroup, int> CreateService { get; } = createService;
+        public ICreateService<MuscleGroup> CreateService { get; } = createService;
         public IReadService<MuscleGroup> ReadService { get; } = readService;
         public IUpdateService<MuscleGroup> UpdateService { get; } = updateService;
         public IDeleteService<MuscleGroup> DeleteService { get; } = deleteService;
@@ -34,7 +34,7 @@ namespace ProjectGym.Controllers
         {
             try
             {
-                int newEntityId = await CreateService.Add(Mapper.Map(entityDTO));
+                var newEntityId = await CreateService.Add(Mapper.Map(entityDTO));
                 if (newEntityId != default)
                     return Ok(newEntityId);
                 else
@@ -47,11 +47,11 @@ namespace ProjectGym.Controllers
             }
         }
 
-        public async Task<IActionResult> Delete(int primaryKey)
+        public async Task<IActionResult> Delete(string primaryKey)
         {
             try
             {
-                await DeleteService.DeleteFirst(x => x.Id == primaryKey);
+                await DeleteService.Delete(primaryKey);
                 return Ok("Successfully deleted entity.");
             }
             catch (Exception ex)
@@ -62,11 +62,11 @@ namespace ProjectGym.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id, [FromQuery] string? include)
+        public async Task<IActionResult> Get(string id, [FromQuery] string? include)
         {
             try
             {
-                return Ok(Mapper.Map(await ReadService.Get(x => x.Id == id, include)));
+                return Ok(Mapper.Map(await ReadService.Get(id, include)));
             }
             catch (Exception ex)
             {

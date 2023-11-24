@@ -15,16 +15,16 @@ namespace ProjectGym.Controllers
     [ApiController]
     public class UserController(IReadService<User> readService,
                           IEntityMapper<User, UserDTO> mapper,
-                          ICreateService<User, Guid> createService,
-                          ICreateService<Client, Guid> clientCreateService,
+                          ICreateService<User> createService,
+                          ICreateService<Client> clientCreateService,
                           IReadService<Client> clientReadService,
-                          IUpdateService<Client> clientUpdateService) : ControllerBase, ICreateController<User, RegisterDTO, Guid>
+                          IUpdateService<Client> clientUpdateService) : ControllerBase, ICreateController<User, RegisterDTO>
     {
         public IReadService<User> ReadService { get; } = readService;
         public IReadService<Client> ClientReadService { get; } = clientReadService;
         public IEntityMapper<User, UserDTO> Mapper { get; } = mapper;
-        public ICreateService<User, Guid> CreateService { get; } = createService;
-        public ICreateService<Client, Guid> ClientCreateService { get; } = clientCreateService;
+        public ICreateService<User> CreateService { get; } = createService;
+        public ICreateService<Client> ClientCreateService { get; } = clientCreateService;
         public IUpdateService<Client> ClientUpdateService { get; } = clientUpdateService;
 
         [HttpPost]

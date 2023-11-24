@@ -11,20 +11,20 @@ namespace ProjectGym.Controllers
 {
     [Route("api/exercise")]
     [ApiController]
-    public class ExerciseController(ICreateService<Exercise, int> createService,
+    public class ExerciseController(ICreateService<Exercise> createService,
                                     IReadService<Exercise> readService,
                                     IUpdateService<Exercise> updateService,
                                     IDeleteService<Exercise> deleteService,
                                     IEntityMapperAsync<Exercise, ExerciseDTO> mapper) : ControllerBase,
-                                                                              ICreateController<Exercise, ExerciseDTO, int>,
-                                                                              IReadController<Exercise, ExerciseDTO, int>,
+                                                                              ICreateController<Exercise, ExerciseDTO>,
+                                                                              IReadController<Exercise, ExerciseDTO>,
                                                                               IUpdateController<Exercise, ExerciseDTO>,
-                                                                              IDeleteController<Exercise, int>
+                                                                              IDeleteController<Exercise>
     {
         public IReadService<Exercise> ReadService { get; } = readService;
         public IEntityMapperAsync<Exercise, ExerciseDTO> Mapper { get; } = mapper;
         public IDeleteService<Exercise> DeleteService { get; } = deleteService;
-        public ICreateService<Exercise, int> CreateService { get; } = createService;
+        public ICreateService<Exercise> CreateService { get; } = createService;
         public IUpdateService<Exercise> UpdateService { get; } = updateService;
 
         [HttpGet]
@@ -36,11 +36,11 @@ namespace ProjectGym.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id, [FromQuery] string? include)
+        public async Task<IActionResult> Get(string id, [FromQuery] string? include)
         {
             try
             {
-                var exercise = await ReadService.Get(p => p.Id == id, include);
+                var exercise = await ReadService.Get(id, include);
                 return Ok((ExerciseDTO?)Mapper.Map(exercise));
             }
             catch (NullReferenceException)
@@ -54,11 +54,11 @@ namespace ProjectGym.Controllers
         }
 
         [HttpDelete("{primaryKey}")]
-        public async Task<IActionResult> Delete(int primaryKey)
+        public async Task<IActionResult> Delete(string primaryKey)
         {
             try
             {
-                await DeleteService.DeleteFirst(x => x.Id == primaryKey);
+                await DeleteService.Delete(primaryKey);
                 return Ok("Successfully deleted entity.");
             }
             catch (Exception ex)
@@ -73,7 +73,7 @@ namespace ProjectGym.Controllers
             try
             {
                 var entity = await Mapper.Map(entityDTO);
-                int newId = await CreateService.Add(entity);
+                var newId = await CreateService.Add(entity);
                 return newId != default ? Ok(newId) : BadRequest("Entity already exists");
             }
             catch (Exception ex)

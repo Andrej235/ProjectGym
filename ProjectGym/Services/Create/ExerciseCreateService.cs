@@ -1,18 +1,18 @@
 ﻿using ProjectGym.Data;
 using ProjectGym.Models;
 using ProjectGym.Services.Read;
-using System.Diagnostics;
+using ProjectGym.Utilities;
 
 namespace ProjectGym.Services.Create
 {
-    public class ExerciseCreateService(ExerciseContext context, IReadService<Exercise> readService) : ICreateService<Exercise, int>
+    public class ExerciseCreateService(ExerciseContext context, IReadService<Exercise> readService) : ICreateService<Exercise>
     {
-        public async Task<int> Add(Exercise toAdd)
+        public async Task<object> Add(Exercise toAdd)
         {
             try
             {
                 await readService.Get(x => x.Name.ToLower().Equals(toAdd.Name.ToLower()), "none");
-                return default;
+                return default(int);
             }
             catch (NullReferenceException)
             {
@@ -30,14 +30,14 @@ namespace ProjectGym.Services.Create
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"---> Error occurred: {ex.Message} \n{ex.InnerException?.Message}");
-                    return default;
+                    LogDebugger.LogError(ex);
+                    return default(int);
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"---> Error occurred: {ex.Message} \n{ex.InnerException?.Message}");
-                return default;
+                LogDebugger.LogError(ex);
+                return default(int);
             }
         }
     }

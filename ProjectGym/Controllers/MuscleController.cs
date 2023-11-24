@@ -14,27 +14,27 @@ namespace ProjectGym.Controllers
     [ApiController]
     public class MuscleController(IReadService<Muscle> readService,
                                   IEntityMapperSync<Muscle, MuscleDTO> mapper,
-                                  ICreateService<Muscle, int> createService,
+                                  ICreateService<Muscle> createService,
                                   IUpdateService<Muscle> updateService,
                                   IDeleteService<Muscle> deleteService) :
         ControllerBase,
-        IReadController<Muscle, MuscleDTO, int>,
-        ICreateController<Muscle, MuscleDTO, int>,
+        IReadController<Muscle, MuscleDTO>,
+        ICreateController<Muscle, MuscleDTO>,
         IUpdateController<Muscle, MuscleDTO>,
-        IDeleteController<Muscle, int>
+        IDeleteController<Muscle>
     {
         public IReadService<Muscle> ReadService { get; } = readService;
         public IEntityMapperSync<Muscle, MuscleDTO> Mapper { get; } = mapper;
         public IUpdateService<Muscle> UpdateService { get; } = updateService;
         public IDeleteService<Muscle> DeleteService { get; } = deleteService;
-        public ICreateService<Muscle, int> CreateService { get; } = createService;
+        public ICreateService<Muscle> CreateService { get; } = createService;
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id, [FromQuery] string? include)
+        public async Task<IActionResult> Get(string id, [FromQuery] string? include)
         {
             try
             {
-                return Ok(Mapper.Map(await ReadService.Get(x => x.Id == id, include)));
+                return Ok(Mapper.Map(await ReadService.Get(id, include)));
             }
             catch (Exception ex)
             {
@@ -63,7 +63,7 @@ namespace ProjectGym.Controllers
         {
             try
             {
-                int newEntityId = await CreateService.Add(Mapper.Map(entityDTO));
+                var newEntityId = await CreateService.Add(Mapper.Map(entityDTO));
                 if (newEntityId != default)
                     return Ok(newEntityId);
                 else
@@ -92,11 +92,11 @@ namespace ProjectGym.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Delete(int primaryKey)
+        public async Task<IActionResult> Delete(string primaryKey)
         {
             try
             {
-                await DeleteService.DeleteFirst(x => x.Id == primaryKey);
+                await DeleteService.Delete(primaryKey);
                 return Ok("Successfully deleted entity.");
             }
             catch (Exception ex)

@@ -10,72 +10,26 @@ namespace ProjectGym.Controllers
 {
     [Route("api/database")]
     [ApiController]
-    public class DatabaseController : ControllerBase
+    public class DatabaseController(ExerciseContext context,
+                              IReadService<Exercise> exerciseReadService,
+                              IReadService<Muscle> muscleReadService,
+                              IReadService<Equipment> equipmentReadService,
+                              IReadService<Image> imageReadService,
+                              IReadService<Note> noteReadService,
+                              IReadService<Alias> aliasReadService,
+                              IEntityMapperAsync<Exercise, ExerciseDTO> exerciseMapper,
+                              IEntityMapperAsync<Muscle, MuscleDTO> muscleMapper,
+                              IEntityMapperAsync<Equipment, EquipmentDTO> equipmentMapper,
+                              IEntityMapperSync<Image, ImageDTO> imageMapper,
+                              IEntityMapperSync<Note, NoteDTO> noteMapper,
+                              IEntityMapperSync<Alias, ExerciseAliasDTO> aliasMapper,
+                              ICreateService<Exercise> exerciseCreateService,
+                              ICreateService<Muscle> muscleCreateService,
+                              ICreateService<Equipment> equipmentCreateService,
+                              ICreateService<Image> imageCreateService,
+                              ICreateService<Note> noteCreateService,
+                              ICreateService<Alias> aliasCreateService) : ControllerBase
     {
-        private readonly ExerciseContext context;
-
-        private readonly IReadService<Exercise> exerciseReadService;
-        private readonly IReadService<Muscle> muscleReadService;
-        private readonly IReadService<Equipment> equipmentReadService;
-        private readonly IReadService<Image> imageReadService;
-        private readonly IReadService<Note> noteReadService;
-        private readonly IReadService<Alias> aliasReadService;
-
-        private readonly IEntityMapperAsync<Exercise, ExerciseDTO> exerciseMapper;
-        private readonly IEntityMapperAsync<Muscle, MuscleDTO> muscleMapper;
-        private readonly IEntityMapperAsync<Equipment, EquipmentDTO> equipmentMapper;
-        private readonly IEntityMapperSync<Image, ImageDTO> imageMapper;
-        private readonly IEntityMapperSync<Note, NoteDTO> noteMapper;
-        private readonly IEntityMapperSync<Alias, ExerciseAliasDTO> aliasMapper;
-
-        private readonly ICreateService<Exercise, int> exerciseCreateService;
-        private readonly ICreateService<Muscle, int> muscleCreateService;
-        private readonly ICreateService<Equipment, int> equipmentCreateService;
-        private readonly ICreateService<Image, int> imageCreateService;
-        private readonly ICreateService<Note, int> noteCreateService;
-        private readonly ICreateService<Alias, int> aliasCreateService;
-
-        public DatabaseController(ExerciseContext context,
-                                  IReadService<Exercise> exerciseReadService,
-                                  IReadService<Muscle> muscleReadService,
-                                  IReadService<Equipment> equipmentReadService,
-                                  IReadService<Image> imageReadService,
-                                  IReadService<Note> noteReadService,
-                                  IReadService<Alias> aliasReadService,
-                                  IEntityMapperAsync<Exercise, ExerciseDTO> exerciseMapper,
-                                  IEntityMapperAsync<Muscle, MuscleDTO> muscleMapper,
-                                  IEntityMapperAsync<Equipment, EquipmentDTO> equipmentMapper,
-                                  IEntityMapperSync<Image, ImageDTO> imageMapper,
-                                  IEntityMapperSync<Note, NoteDTO> noteMapper,
-                                  IEntityMapperSync<Alias, ExerciseAliasDTO> aliasMapper,
-                                  ICreateService<Exercise, int> exerciseCreateService,
-                                  ICreateService<Muscle, int> muscleCreateService,
-                                  ICreateService<Equipment, int> equipmentCreateService,
-                                  ICreateService<Image, int> imageCreateService,
-                                  ICreateService<Note, int> noteCreateService,
-                                  ICreateService<Alias, int> aliasCreateService)
-        {
-            this.context = context;
-            this.exerciseReadService = exerciseReadService;
-            this.muscleReadService = muscleReadService;
-            this.equipmentReadService = equipmentReadService;
-            this.imageReadService = imageReadService;
-            this.noteReadService = noteReadService;
-            this.aliasReadService = aliasReadService;
-            this.exerciseMapper = exerciseMapper;
-            this.muscleMapper = muscleMapper;
-            this.equipmentMapper = equipmentMapper;
-            this.imageMapper = imageMapper;
-            this.noteMapper = noteMapper;
-            this.aliasMapper = aliasMapper;
-            this.exerciseCreateService = exerciseCreateService;
-            this.muscleCreateService = muscleCreateService;
-            this.equipmentCreateService = equipmentCreateService;
-            this.imageCreateService = imageCreateService;
-            this.noteCreateService = noteCreateService;
-            this.aliasCreateService = aliasCreateService;
-        }
-
         [HttpGet]
         public async Task<IActionResult> GetAllData()
         {

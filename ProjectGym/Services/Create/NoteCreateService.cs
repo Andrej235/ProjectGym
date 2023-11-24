@@ -5,12 +5,12 @@ using System.Diagnostics;
 
 namespace ProjectGym.Services.Create
 {
-    public class NoteCreateService(ExerciseContext context, IReadService<Exercise> exerciseReadService) : ICreateService<Note, int>
+    public class NoteCreateService(ExerciseContext context, IReadService<Exercise> exerciseReadService) : ICreateService<Note>
     {
-        public async Task<int> Add(Note toAdd)
+        public async Task<object> Add(Note toAdd)
         {
             if (toAdd.ExerciseId < 1)
-                return default;
+                return default(int);
 
             try
             {
@@ -25,12 +25,12 @@ namespace ProjectGym.Services.Create
             {
 
                 Debug.WriteLine($"Exercise with Id {toAdd.ExerciseId} was not found");
-                return default;
+                return default(int);
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error occured while trying to add Image: {ex.Message}");
-                return default;
+                return default(int);
             }
         }
     }

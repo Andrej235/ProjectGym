@@ -5,6 +5,12 @@ namespace ProjectGym.Services.Delete
     public interface IDeleteService<T> where T : class
     {
         /// <summary>
+        /// Deletes the entity from the database which has the provided id
+        /// </summary>
+        /// <exception cref="NullReferenceException"></exception>
+        Task Delete(object id);
+
+        /// <summary>
         /// Deletes the first entity from the database which fits the provided criteria
         /// </summary>
         /// <exception cref="NullReferenceException"></exception>

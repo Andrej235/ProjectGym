@@ -18,7 +18,7 @@ namespace ProjectGym
             builder.Services.AddTransient<ExerciseContext>();
 
             #region Exercise
-            builder.Services.AddTransient<ICreateService<Exercise, int>, ExerciseCreateService>();
+            builder.Services.AddTransient<ICreateService<Exercise>, ExerciseCreateService>();
             builder.Services.AddTransient<IReadService<Exercise>, ExerciseReadService>();
             builder.Services.AddTransient<IUpdateService<Exercise>, ExerciseUpdateService>();
             builder.Services.AddTransient<IDeleteService<Exercise>, DeleteService<Exercise>>();
@@ -28,12 +28,12 @@ namespace ProjectGym
 
             #region User
             builder.Services.AddTransient<IReadService<User>, UserReadService>();
-            builder.Services.AddTransient<ICreateService<User, Guid>, UserCreateService>();
+            builder.Services.AddTransient<ICreateService<User>, UserCreateService>();
             builder.Services.AddTransient<IEntityMapper<User, UserDTO>, UserMapper>();
             #endregion
 
             #region Weight
-            builder.Services.AddTransient<ICreateService<PersonalExerciseWeight, Guid>, WeightCreateService>();
+            builder.Services.AddTransient<ICreateService<PersonalExerciseWeight>, WeightCreateService>();
             builder.Services.AddTransient<IReadService<PersonalExerciseWeight>, WeightReadService>();
             builder.Services.AddTransient<IUpdateService<PersonalExerciseWeight>, UpdateService<PersonalExerciseWeight>>();
             builder.Services.AddTransient<IEntityMapper<PersonalExerciseWeight, PersonalExerciseWeightDTO>, WeightMapper>();
@@ -41,7 +41,7 @@ namespace ProjectGym
             #endregion
 
             #region Set
-            builder.Services.AddTransient<ICreateService<Set, Guid>, SetCreateService>();
+            builder.Services.AddTransient<ICreateService<Set>, SetCreateService>();
             builder.Services.AddTransient<IReadService<Set>, SetReadService>();
             builder.Services.AddTransient<IUpdateService<Set>, UpdateService<Set>>();
             builder.Services.AddTransient<IDeleteService<Set>, DeleteService<Set>>();
@@ -50,7 +50,7 @@ namespace ProjectGym
             #endregion
 
             #region Workout Set
-            builder.Services.AddTransient<ICreateService<WorkoutSet, Guid>, WorkoutSetCreateService>();
+            builder.Services.AddTransient<ICreateService<WorkoutSet>, WorkoutSetCreateService>();
             builder.Services.AddTransient<IReadService<WorkoutSet>, WorkoutSetReadService>();
             builder.Services.AddTransient<IUpdateService<WorkoutSet>, UpdateService<WorkoutSet>>();
             builder.Services.AddTransient<IDeleteService<WorkoutSet>, DeleteService<WorkoutSet>>();
@@ -60,7 +60,7 @@ namespace ProjectGym
 
             #region Workouts
             builder.Services.AddTransient<IReadService<Workout>, WorkoutReadService>();
-            builder.Services.AddTransient<ICreateService<Workout, Guid>, WorkoutCreateService>();
+            builder.Services.AddTransient<ICreateService<Workout>, WorkoutCreateService>();
             builder.Services.AddTransient<IUpdateService<Workout>, WorkoutUpdateService>();
             builder.Services.AddTransient<IDeleteService<Workout>, DeleteService<Workout>>();
             builder.Services.AddTransient<IEntityMapper<Workout, WorkoutDTO>, WorkoutMapper>();
@@ -69,12 +69,12 @@ namespace ProjectGym
 
             #region Client
             builder.Services.AddTransient<IReadService<Client>, ClientReadService>();
-            builder.Services.AddTransient<ICreateService<Client, Guid>, ClientCreateService>();
+            builder.Services.AddTransient<ICreateService<Client>, ClientCreateService>();
             builder.Services.AddTransient<IUpdateService<Client>, ClientUpdateService>();
             #endregion
 
             #region Muscle group
-            builder.Services.AddTransient<ICreateService<MuscleGroup, int>, MuscleGroupCreateService>();
+            builder.Services.AddTransient<ICreateService<MuscleGroup>, MuscleGroupCreateService>();
             builder.Services.AddTransient<IReadService<MuscleGroup>, MuscleGroupReadService>();
             builder.Services.AddTransient<IUpdateService<MuscleGroup>, UpdateService<MuscleGroup>>();
             builder.Services.AddTransient<IDeleteService<MuscleGroup>, DeleteService<MuscleGroup>>();
@@ -83,7 +83,7 @@ namespace ProjectGym
             #endregion
 
             #region Muscle
-            builder.Services.AddTransient<ICreateService<Muscle, int>, MuscleCreateService>();
+            builder.Services.AddTransient<ICreateService<Muscle>, MuscleCreateService>();
             builder.Services.AddTransient<IReadService<Muscle>, MuscleReadService>();
             builder.Services.AddTransient<IUpdateService<Muscle>, UpdateService<Muscle>>();
             builder.Services.AddTransient<IDeleteService<Muscle>, DeleteService<Muscle>>();
@@ -92,13 +92,13 @@ namespace ProjectGym
             #endregion
 
             #region Equipment exercise usage
-            builder.Services.AddTransient<ICreateService<EquipmentUsage, int>, EquipmentExerciseUsageCreateService>();
+            builder.Services.AddTransient<ICreateService<EquipmentUsage>, EquipmentExerciseUsageCreateService>();
             builder.Services.AddTransient<IReadService<EquipmentUsage>, EquipmentExerciseUsageReadService>();
             builder.Services.AddTransient<IDeleteService<EquipmentUsage>, DeleteService<EquipmentUsage>>();
             #endregion
 
             #region Equipment
-            builder.Services.AddTransient<ICreateService<Equipment, int>, EquipmentCreateService>();
+            builder.Services.AddTransient<ICreateService<Equipment>, EquipmentCreateService>();
             builder.Services.AddTransient<IReadService<Equipment>, EquipmentReadService>();
             builder.Services.AddTransient<IUpdateService<Equipment>, UpdateService<Equipment>>();
             builder.Services.AddTransient<IDeleteService<Equipment>, DeleteService<Equipment>>();
@@ -108,7 +108,7 @@ namespace ProjectGym
 
             #region Alias
             builder.Services.AddTransient<IReadService<Alias>, AliasReadService>();
-            builder.Services.AddTransient<ICreateService<Alias, int>, AliasCreateService>();
+            builder.Services.AddTransient<ICreateService<Alias>, AliasCreateService>();
             builder.Services.AddTransient<IDeleteService<Alias>, DeleteService<Alias>>();
             builder.Services.AddTransient<IEntityMapper<Alias, ExerciseAliasDTO>, AliasMapper>();
             builder.Services.AddTransient<IEntityMapperSync<Alias, ExerciseAliasDTO>, AliasMapper>();
@@ -116,14 +116,14 @@ namespace ProjectGym
 
             #region Note
             builder.Services.AddTransient<IReadService<Note>, NoteReadService>();
-            builder.Services.AddTransient<ICreateService<Note, int>, NoteCreateService>();
+            builder.Services.AddTransient<ICreateService<Note>, NoteCreateService>();
             builder.Services.AddTransient<IDeleteService<Note>, DeleteService<Note>>();
             builder.Services.AddTransient<IEntityMapper<Note, NoteDTO>, NoteMapper>();
             builder.Services.AddTransient<IEntityMapperSync<Note, NoteDTO>, NoteMapper>();
             #endregion
 
             #region Image
-            builder.Services.AddTransient<ICreateService<Image, int>, ImageCreateService>();
+            builder.Services.AddTransient<ICreateService<Image>, ImageCreateService>();
             builder.Services.AddTransient<IReadService<Image>, ImageReadService>();
             builder.Services.AddTransient<IDeleteService<Image>, DeleteService<Image>>();
             builder.Services.AddTransient<IEntityMapper<Image, ImageDTO>, ImageMapper>();
@@ -131,14 +131,14 @@ namespace ProjectGym
             #endregion
 
             #region Primary muscle group
-            builder.Services.AddTransient<ICreateService<PrimaryMuscleGroupInExercise, int>, PrimaryMuscleExerciseConnectionCreateService>();
+            builder.Services.AddTransient<ICreateService<PrimaryMuscleGroupInExercise>, PrimaryMuscleExerciseConnectionCreateService>();
             builder.Services.AddTransient<IReadService<PrimaryMuscleGroupInExercise>, PrimaryMuscleGroupReadService>();
             builder.Services.AddTransient<IDeleteService<PrimaryMuscleGroupInExercise>, DeleteService<PrimaryMuscleGroupInExercise>>();
             #endregion
 
             #region Secondary muscle group
             builder.Services.AddTransient<IReadService<SecondaryMuscleGroupInExercise>, SecondaryMuscleGroupReadService>();
-            builder.Services.AddTransient<ICreateService<SecondaryMuscleGroupInExercise, int>, SecondaryMuscleExerciseConnectionCreateService>();
+            builder.Services.AddTransient<ICreateService<SecondaryMuscleGroupInExercise>, SecondaryMuscleExerciseConnectionCreateService>();
             builder.Services.AddTransient<IDeleteService<SecondaryMuscleGroupInExercise>, DeleteService<SecondaryMuscleGroupInExercise>>();
             #endregion
 

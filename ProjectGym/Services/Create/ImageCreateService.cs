@@ -1,16 +1,16 @@
 ﻿using ProjectGym.Data;
 using ProjectGym.Models;
 using ProjectGym.Services.Read;
-using System.Diagnostics;
+using ProjectGym.Utilities;
 
 namespace ProjectGym.Services.Create
 {
-    public class ImageCreateService(IReadService<Exercise> exerciseReadService, ExerciseContext context) : ICreateService<Image, int>
+    public class ImageCreateService(IReadService<Exercise> exerciseReadService, ExerciseContext context) : ICreateService<Image>
     {
-        public async Task<int> Add(Image toAdd)
+        public async Task<object> Add(Image toAdd)
         {
             if (toAdd.ExerciseId < 1)
-                return default;
+                return default(int);
 
             try
             {
@@ -21,16 +21,10 @@ namespace ProjectGym.Services.Create
 
                 return toAdd.Id;
             }
-            catch (NullReferenceException)
-            {
-
-                Debug.WriteLine($"Exercise with Id {toAdd.ExerciseId} was not found");
-                return default;
-            }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error occured while trying to add Image: {ex.Message}");
-                return default;
+                LogDebugger.LogError(ex);
+                return default(int);
             }
         }
     }

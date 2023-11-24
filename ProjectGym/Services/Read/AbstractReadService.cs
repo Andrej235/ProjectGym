@@ -15,6 +15,19 @@ namespace ProjectGym.Services.Read
             return entity ?? throw new NullReferenceException();
         }
 
+        public async Task<T> Get(object id, string? include = "all")
+        {
+            IQueryable<T> entitesQueryable = GetIncluded(SplitIncludeString(include));
+            if (typeof(TPrimaryKey) == typeof(Guid))
+            {
+                var pk = Guid.Parse(Convert.ToString(id) ?? throw new NullReferenceException("Primary key is null"));
+                return await entitesQueryable.SingleOrDefaultAsync(e => EF.Property<object>(e, "Id").Equals(pk)) ?? throw new NullReferenceException();
+            }
+
+            T? entity = await entitesQueryable.SingleOrDefaultAsync(e => EF.Property<object>(e, "Id").Equals(id));
+            return entity ?? throw new NullReferenceException();
+        }
+
         public virtual async Task<List<T>> Get(Expression<Func<T, bool>> criteria, int? offset = 0, int? limit = -1, string? include = "all")
         {
             return await Task.Run(() =>

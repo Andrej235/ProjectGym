@@ -7,14 +7,14 @@ using System.Diagnostics;
 
 namespace ProjectGym.Services.Create
 {
-    public class MuscleGroupCreateService(ExerciseContext context, IReadService<MuscleGroup> readService) : ICreateService<MuscleGroup, int>
+    public class MuscleGroupCreateService(ExerciseContext context, IReadService<MuscleGroup> readService) : ICreateService<MuscleGroup>
     {
-        public async Task<int> Add(MuscleGroup toAdd)
+        public async Task<object> Add(MuscleGroup toAdd)
         {
             try
             {
                 await readService.Get(x => x.Name.ToLower().Trim() == toAdd.Name.ToLower().Trim(), "none");
-                return default;
+                return default(int);
             }
             catch (NullReferenceException)
             {
@@ -27,13 +27,13 @@ namespace ProjectGym.Services.Create
                 catch (Exception ex)
                 {
                     Debug.WriteLine($"---> Error occurred: {ex.Message} \n{ex.InnerException?.Message}");
-                    return default;
+                    return default(int);
                 }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"---> Error occurred: {ex.Message} \n{ex.InnerException?.Message}");
-                return default;
+                return default(int);
             }
         }
     }

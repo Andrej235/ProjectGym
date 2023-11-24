@@ -1,18 +1,18 @@
 ﻿using ProjectGym.Data;
 using ProjectGym.Models;
 using ProjectGym.Services.Read;
-using System.Diagnostics;
+using ProjectGym.Utilities;
 
 namespace ProjectGym.Services.Create
 {
-    public class UserCreateService(ExerciseContext context, IReadService<User> readService) : ICreateService<User, Guid>
+    public class UserCreateService(ExerciseContext context, IReadService<User> readService) : ICreateService<User>
     {
-        public async Task<Guid> Add(User toAdd)
+        public async Task<object> Add(User toAdd)
         {
             try
             {
                 await readService.Get(eq => eq.Email == toAdd.Email, "none");
-                return default;
+                return default(Guid);
             }
             catch (NullReferenceException)
             {
@@ -24,14 +24,14 @@ namespace ProjectGym.Services.Create
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"---> Error occurred: {ex.Message} \n{ex.InnerException?.Message}");
-                    return default;
+                    LogDebugger.LogError(ex);
+                    return default(Guid);
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"---> Error occurred: {ex.Message} \n{ex.InnerException?.Message}");
-                return default;
+                LogDebugger.LogError(ex);
+                return default(Guid);
             }
         }
     }

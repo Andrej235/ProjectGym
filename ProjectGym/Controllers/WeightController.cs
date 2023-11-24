@@ -10,11 +10,11 @@ namespace ProjectGym.Controllers
 {
     [ApiController]
     [Route("api/weight")]
-    public class WeightController(ICreateService<PersonalExerciseWeight, Guid> createService,
+    public class WeightController(ICreateService<PersonalExerciseWeight> createService,
                                   IEntityMapperSync<PersonalExerciseWeight, PersonalExerciseWeightDTO> mapper,
-                                  IReadService<PersonalExerciseWeight> readService) : ControllerBase, ICreateController<PersonalExerciseWeight, PersonalExerciseWeightDTO, Guid>, IReadController<PersonalExerciseWeight, PersonalExerciseWeightDTO, Guid>
+                                  IReadService<PersonalExerciseWeight> readService) : ControllerBase, ICreateController<PersonalExerciseWeight, PersonalExerciseWeightDTO>, IReadController<PersonalExerciseWeight, PersonalExerciseWeightDTO>
     {
-        public ICreateService<PersonalExerciseWeight, Guid> CreateService { get; } = createService;
+        public ICreateService<PersonalExerciseWeight> CreateService { get; } = createService;
         public IReadService<PersonalExerciseWeight> ReadService { get; } = readService;
         public IEntityMapperSync<PersonalExerciseWeight, PersonalExerciseWeightDTO> Mapper { get; } = mapper;
 
@@ -23,7 +23,7 @@ namespace ProjectGym.Controllers
         {
             try
             {
-                Guid newEntityId = await CreateService.Add(Mapper.Map(entityDTO));
+                var newEntityId = await CreateService.Add(Mapper.Map(entityDTO));
                 if (newEntityId != default)
                     return Ok(newEntityId);
                 else
@@ -37,11 +37,11 @@ namespace ProjectGym.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id, [FromQuery] string? include)
+        public async Task<IActionResult> Get(string id, [FromQuery] string? include)
         {
             try
             {
-                return Ok(Mapper.Map(await ReadService.Get(p => p.Id == id, include)));
+                return Ok(Mapper.Map(await ReadService.Get(id, include)));
             }
             catch (NullReferenceException)
             {
