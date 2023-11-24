@@ -1,6 +1,7 @@
 ﻿using ProjectGym.Data;
 using ProjectGym.Models;
 using ProjectGym.Services.Read;
+using ProjectGym.Utilities;
 using System.Diagnostics;
 
 namespace ProjectGym.Services.Create
@@ -23,16 +24,14 @@ namespace ProjectGym.Services.Create
             }
             catch (NullReferenceException)
             {
-
-                Debug.WriteLine($"Exercise with Id {toAdd.ExerciseId} was not found");
+                LogDebugger.LogError(new NullReferenceException($"Exercise with Id {toAdd.ExerciseId} was not found"));
                 return default;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error occured while trying to add Image: {ex.Message}");
+                LogDebugger.LogError(ex);
                 return default;
             }
         }
-
     }
 }

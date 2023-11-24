@@ -51,7 +51,7 @@ namespace ProjectGym.Services.Read
                 if (string.IsNullOrWhiteSpace(value))
                     throw new NullReferenceException("Value in a search query cannot be null or empty.");
 
-                return e => e.Name.ToLower().Contains(value.ToLower());
+                return e => e.Name.ToLower().Contains(value.ToLower()) || e.Aliases.Any(x => x.AliasName.ToLower().Contains(value.ToLower()));
             }
             else
             {

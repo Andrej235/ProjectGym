@@ -44,6 +44,7 @@ namespace ProjectGym
             builder.Services.AddTransient<ICreateService<Set, Guid>, SetCreateService>();
             builder.Services.AddTransient<IReadService<Set>, SetReadService>();
             builder.Services.AddTransient<IUpdateService<Set>, UpdateService<Set>>();
+            builder.Services.AddTransient<IDeleteService<Set>, DeleteService<Set>>();
             builder.Services.AddTransient<IEntityMapper<Set, SetDTO>, SetMapper>();
             builder.Services.AddTransient<IEntityMapperSync<Set, SetDTO>, SetMapper>();
             #endregion
@@ -73,15 +74,19 @@ namespace ProjectGym
             #endregion
 
             #region Muscle group
-            builder.Services.AddTransient<IReadService<MuscleGroup>, MuscleGroupReadService>();
             builder.Services.AddTransient<ICreateService<MuscleGroup, int>, MuscleGroupCreateService>();
+            builder.Services.AddTransient<IReadService<MuscleGroup>, MuscleGroupReadService>();
+            builder.Services.AddTransient<IUpdateService<MuscleGroup>, UpdateService<MuscleGroup>>();
+            builder.Services.AddTransient<IDeleteService<MuscleGroup>, DeleteService<MuscleGroup>>();
             builder.Services.AddTransient<IEntityMapper<MuscleGroup, MuscleGroupDTO>, MuscleGroupMapper>();
             builder.Services.AddTransient<IEntityMapperSync<MuscleGroup, MuscleGroupDTO>, MuscleGroupMapper>();
             #endregion
 
             #region Muscle
-            builder.Services.AddTransient<IReadService<Muscle>, MuscleReadService>();
             builder.Services.AddTransient<ICreateService<Muscle, int>, MuscleCreateService>();
+            builder.Services.AddTransient<IReadService<Muscle>, MuscleReadService>();
+            builder.Services.AddTransient<IUpdateService<Muscle>, UpdateService<Muscle>>();
+            builder.Services.AddTransient<IDeleteService<Muscle>, DeleteService<Muscle>>();
             builder.Services.AddTransient<IEntityMapper<Muscle, MuscleDTO>, MuscleMapper>();
             builder.Services.AddTransient<IEntityMapperSync<Muscle, MuscleDTO>, MuscleMapper>();
             #endregion
@@ -95,7 +100,7 @@ namespace ProjectGym
             #region Equipment
             builder.Services.AddTransient<ICreateService<Equipment, int>, EquipmentCreateService>();
             builder.Services.AddTransient<IReadService<Equipment>, EquipmentReadService>();
-            builder.Services.AddTransient<IUpdateService<Equipment>, EquipmentUpdateService>();
+            builder.Services.AddTransient<IUpdateService<Equipment>, UpdateService<Equipment>>();
             builder.Services.AddTransient<IDeleteService<Equipment>, DeleteService<Equipment>>();
             builder.Services.AddTransient<IEntityMapper<Equipment, EquipmentDTO>, EquipmentMapper>();
             builder.Services.AddTransient<IEntityMapperSync<Equipment, EquipmentDTO>, EquipmentMapper>();
@@ -104,6 +109,7 @@ namespace ProjectGym
             #region Alias
             builder.Services.AddTransient<IReadService<Alias>, AliasReadService>();
             builder.Services.AddTransient<ICreateService<Alias, int>, AliasCreateService>();
+            builder.Services.AddTransient<IDeleteService<Alias>, DeleteService<Alias>>();
             builder.Services.AddTransient<IEntityMapper<Alias, ExerciseAliasDTO>, AliasMapper>();
             builder.Services.AddTransient<IEntityMapperSync<Alias, ExerciseAliasDTO>, AliasMapper>();
             #endregion
@@ -111,6 +117,7 @@ namespace ProjectGym
             #region Note
             builder.Services.AddTransient<IReadService<Note>, NoteReadService>();
             builder.Services.AddTransient<ICreateService<Note, int>, NoteCreateService>();
+            builder.Services.AddTransient<IDeleteService<Note>, DeleteService<Note>>();
             builder.Services.AddTransient<IEntityMapper<Note, NoteDTO>, NoteMapper>();
             builder.Services.AddTransient<IEntityMapperSync<Note, NoteDTO>, NoteMapper>();
             #endregion
@@ -118,6 +125,7 @@ namespace ProjectGym
             #region Image
             builder.Services.AddTransient<ICreateService<Image, int>, ImageCreateService>();
             builder.Services.AddTransient<IReadService<Image>, ImageReadService>();
+            builder.Services.AddTransient<IDeleteService<Image>, DeleteService<Image>>();
             builder.Services.AddTransient<IEntityMapper<Image, ImageDTO>, ImageMapper>();
             builder.Services.AddTransient<IEntityMapperSync<Image, ImageDTO>, ImageMapper>();
             #endregion

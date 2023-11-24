@@ -2,6 +2,7 @@
 using ProjectGym.DTOs;
 using ProjectGym.Models;
 using ProjectGym.Services.Create;
+using ProjectGym.Services.Delete;
 using ProjectGym.Services.Mapping;
 using ProjectGym.Services.Read;
 using ProjectGym.Services.Update;
@@ -14,11 +15,13 @@ namespace ProjectGym.Controllers
     public class SetController(IReadService<Set> readService,
                                ICreateService<Set, Guid> createService,
                                IEntityMapperSync<Set, SetDTO> mapper,
-                               IUpdateService<Set> updateService) : ControllerBase, ICreateController<Set, SetDTO, Guid>, IReadController<Set, SetDTO, Guid>, IUpdateController<Set, SetDTO>
+                               IUpdateService<Set> updateService,
+                               IDeleteService<Set> deleteService) : ControllerBase, ICreateController<Set, SetDTO, Guid>, IReadController<Set, SetDTO, Guid>, IUpdateController<Set, SetDTO>, IDeleteController<Set, Guid>
     {
         public IReadService<Set> ReadService { get; } = readService;
         public ICreateService<Set, Guid> CreateService { get; } = createService;
         public IUpdateService<Set> UpdateService { get; } = updateService;
+        public IDeleteService<Set> DeleteService { get; } = deleteService;
         public IEntityMapperSync<Set, SetDTO> Mapper { get; } = mapper;
 
         [HttpPost]
@@ -31,6 +34,21 @@ namespace ProjectGym.Controllers
                     return Ok(newEntityId);
                 else
                     return BadRequest("Entity already exists.");
+            }
+            catch (Exception ex)
+            {
+                LogDebugger.LogError(ex);
+                return BadRequest(LogDebugger.GetErrorMessage(ex));
+            }
+        }
+
+        [HttpDelete("{primaryKey}")]
+        public async Task<IActionResult> Delete(Guid primaryKey)
+        {
+            try
+            {
+                await DeleteService.DeleteFirst(x => x.Id == primaryKey);
+                return Ok("Successfully deleted entity.");
             }
             catch (Exception ex)
             {

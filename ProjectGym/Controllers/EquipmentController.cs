@@ -6,6 +6,7 @@ using ProjectGym.Services.Delete;
 using ProjectGym.Services.Mapping;
 using ProjectGym.Services.Read;
 using ProjectGym.Services.Update;
+using ProjectGym.Utilities;
 
 namespace ProjectGym.Controllers
 {
@@ -15,11 +16,12 @@ namespace ProjectGym.Controllers
                                      IReadService<Equipment> readService,
                                      ICreateService<Equipment, int> createService,
                                      IUpdateService<Equipment> updateService,
-                                     IDeleteService<Equipment> deleteService) : ControllerBase,
-                                                                                IReadController<Equipment, EquipmentDTO, int>,
-                                                                                ICreateController<Equipment, EquipmentDTO, int>,
-                                                                                IUpdateController<Equipment, EquipmentDTO>,
-                                                                                IDeleteController<Equipment, int>
+                                     IDeleteService<Equipment> deleteService) : 
+        ControllerBase,
+        IReadController<Equipment, EquipmentDTO, int>,
+        ICreateController<Equipment, EquipmentDTO, int>,
+        IUpdateController<Equipment, EquipmentDTO>,
+        IDeleteController<Equipment, int>
     {
         public IEntityMapperSync<Equipment, EquipmentDTO> Mapper { get; } = mapper;
         public IReadService<Equipment> ReadService { get; } = readService;
@@ -32,20 +34,29 @@ namespace ProjectGym.Controllers
         {
             try
             {
-                return Ok(Mapper.Map(await ReadService.Get(p => p.Id == id, include)));
-            }
-            catch (NullReferenceException)
-            {
-                return NotFound($"Entity with id {id} was not found.");
+                return Ok(Mapper.Map(await ReadService.Get(x => x.Id == id, include)));
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                LogDebugger.LogError(ex);
+                return BadRequest(LogDebugger.GetErrorMessage(ex));
             }
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] int? offset, [FromQuery] int? limit, [FromQuery] string? include, [FromQuery] string? q) => Ok((await ReadService.Get(q, offset, limit, include)).Select(Mapper.Map));
+        public async Task<IActionResult> Get([FromQuery] int? offset, [FromQuery] int? limit, [FromQuery] string? include, [FromQuery] string? q)
+        {
+            try
+            {
+                var entities = (await ReadService.Get(q, offset, limit, include)).Select(Mapper.Map);
+                return Ok(entities);
+            }
+            catch (Exception ex)
+            {
+                LogDebugger.LogError(ex);
+                return BadRequest(LogDebugger.GetErrorMessage(ex));
+            }
+        }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] EquipmentDTO entityDTO)
@@ -60,7 +71,8 @@ namespace ProjectGym.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                LogDebugger.LogError(ex);
+                return BadRequest(LogDebugger.GetErrorMessage(ex));
             }
         }
 
@@ -69,13 +81,13 @@ namespace ProjectGym.Controllers
         {
             try
             {
-                var entity = Mapper.Map(updatedEntity);
-                await UpdateService.Update(entity);
+                await UpdateService.Update(Mapper.Map(updatedEntity));
                 return Ok("Successfully updated entity");
             }
             catch (Exception ex)
             {
-                return BadRequest($"Error occurred: {ex.Message}");
+                LogDebugger.LogError(ex);
+                return BadRequest(LogDebugger.GetErrorMessage(ex));
             }
         }
 
@@ -85,11 +97,12 @@ namespace ProjectGym.Controllers
             try
             {
                 await DeleteService.DeleteFirst(x => x.Id == primaryKey);
-                return Ok($"Entity with primary key {primaryKey} has been successfully deleted.");
+                return Ok("Successfully deleted entity.");
             }
             catch (Exception ex)
             {
-                return BadRequest($"Error occurred: {ex.Message}");
+                LogDebugger.LogError(ex);
+                return BadRequest(LogDebugger.GetErrorMessage(ex));
             }
         }
     }

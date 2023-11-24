@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProjectGym.Data;
-using ProjectGym.Services.Read;
-using ProjectGym.Utilities;
 
 namespace ProjectGym.Services.Update
 {
