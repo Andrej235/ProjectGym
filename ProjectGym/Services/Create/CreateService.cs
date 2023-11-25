@@ -1,6 +1,5 @@
-﻿
-using Microsoft.EntityFrameworkCore;
-using ProjectGym.Data;
+﻿using ProjectGym.Data;
+using ProjectGym.Exceptions;
 using ProjectGym.Utilities;
 
 namespace ProjectGym.Services.Create
@@ -22,7 +21,7 @@ namespace ProjectGym.Services.Create
                 await context.SaveChangesAsync();
 
                 var id = toAdd.GetType().GetProperty("Id")?.GetValue(toAdd);
-                return id ?? throw new NullReferenceException("Entity doesn't have an Id property.");
+                return id ?? throw new PropertyNotFoundException("Entity doesn't have an Id property");
             }
             catch (Exception ex)
             {

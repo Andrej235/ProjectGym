@@ -1,4 +1,5 @@
 ﻿using ProjectGym.Data;
+using ProjectGym.Exceptions;
 using ProjectGym.Models;
 using ProjectGym.Services.Read;
 
@@ -11,7 +12,7 @@ namespace ProjectGym.Services.Create
             try
             {
                 if (entity.ExerciseId < 1)
-                    return new NullReferenceException($"Exercise with Id {entity.ExerciseId} was not found");
+                    return new EntityNotFoundException($"Exercise with Id {entity.ExerciseId} was not found");
                 
                 await exerciseReadService.Get(x => x.Id == entity.ExerciseId, "none");
                 return null;

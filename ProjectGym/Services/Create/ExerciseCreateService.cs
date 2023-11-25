@@ -1,4 +1,5 @@
 ﻿using ProjectGym.Data;
+using ProjectGym.Exceptions;
 using ProjectGym.Models;
 using ProjectGym.Services.Read;
 using ProjectGym.Utilities;
@@ -12,7 +13,7 @@ namespace ProjectGym.Services.Create
             try
             {
                 await readService.Get(x => x.Name.ToLower().Equals(toAdd.Name.ToLower()), "none");
-                throw new Exception("Entity already exists");
+                throw new EntityAlreadyExistsException();
             }
             catch (NullReferenceException)
             {
