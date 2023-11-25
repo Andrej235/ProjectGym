@@ -5,23 +5,8 @@ using System.Linq.Expressions;
 
 namespace ProjectGym.Services.Read
 {
-    public class WorkoutReadService(ExerciseContext context) : AbstractReadService<Workout, Guid>
+    public class WorkoutReadService(ExerciseContext context) : ReadService<Workout>(context)
     {
-        protected override Func<Workout, Guid> PrimaryKey => x => x.Id;
-
-        protected override IQueryable<Workout> GetIncluded(IEnumerable<string>? include)
-        {
-            var entitiesIncluded = context.Workouts.AsQueryable();
-
-            if (include is null || !include.Any() || include.Contains("none"))
-                return entitiesIncluded;
-
-            if (include.Contains("all") || include.Contains("sets") || include.Contains("workoutsets"))
-                return entitiesIncluded.Include(x => x.WorkoutSets);
-
-            return entitiesIncluded;
-        }
-
         protected override Expression<Func<Workout, bool>> TranslateKeyValueToExpression(string key, string value)
         {
             if (int.TryParse(value, out int valueId))

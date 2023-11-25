@@ -1,37 +1,25 @@
 ﻿using ProjectGym.Data;
 using ProjectGym.Models;
 using ProjectGym.Services.Read;
-using ProjectGym.Utilities;
 
 namespace ProjectGym.Services.Create
 {
-    public class SecondaryMuscleExerciseConnectionCreateService(ExerciseContext context, IReadService<SecondaryMuscleGroupInExercise> readService) : ICreateService<SecondaryMuscleGroupInExercise>
+    public class SecondaryMuscleExerciseConnectionCreateService(ExerciseContext context, IReadService<SecondaryMuscleGroupInExercise> readService) : CreateService<SecondaryMuscleGroupInExercise>(context)
     {
-        public async Task<object> Add(SecondaryMuscleGroupInExercise toAdd)
+        protected override async Task<Exception?> IsEntityValid(SecondaryMuscleGroupInExercise entity)
         {
             try
             {
-                await readService.Get(x => x.MuscleGroupId == toAdd.MuscleGroupId && x.ExerciseId == toAdd.ExerciseId, "none");
+                await readService.Get(x => x.MuscleGroupId == entity.MuscleGroupId && x.ExerciseId == entity.ExerciseId, "none");
                 throw new Exception("Entity already exists");
             }
             catch (NullReferenceException)
             {
-                try
-                {
-                    await context.SecondaryMuscleGroups.AddAsync(toAdd);
-                    await context.SaveChangesAsync();
-                    return toAdd.Id;
-                }
-                catch (Exception ex)
-                {
-                    LogDebugger.LogError(ex);
-                    throw;
-                }
+                return null;
             }
             catch (Exception ex)
             {
-                LogDebugger.LogError(ex);
-                throw;
+                return ex;
             }
         }
     }

@@ -4,10 +4,8 @@ using System.Linq.Expressions;
 
 namespace ProjectGym.Services.Read
 {
-    public abstract class AbstractReadService<T, TPrimaryKey> : IReadService<T> where T : class
+    public abstract class AbstractReadService<T> : IReadService<T> where T : class
     {
-        protected abstract Func<T, TPrimaryKey> PrimaryKey { get; }
-
         public virtual async Task<T> Get(Expression<Func<T, bool>> criteria, string? include = "all")
         {
             IQueryable<T> entitesQueryable = GetIncluded(SplitIncludeString(include));
@@ -17,15 +15,21 @@ namespace ProjectGym.Services.Read
 
         public async Task<T> Get(object id, string? include = "all")
         {
-            IQueryable<T> entitesQueryable = GetIncluded(SplitIncludeString(include));
-            if (typeof(TPrimaryKey) == typeof(Guid))
+            return await Task.Run(() =>
             {
-                var pk = Guid.Parse(Convert.ToString(id) ?? throw new NullReferenceException("Primary key is null"));
-                return await entitesQueryable.SingleOrDefaultAsync(e => EF.Property<object>(e, "Id").Equals(pk)) ?? throw new NullReferenceException();
-            }
+                IQueryable<T> entitesQueryable = GetIncluded(SplitIncludeString(include));
+                bool CheckPrimaryKey(T e)
+                {
+                    var idProp = e.GetType().GetProperty("Id");
+                    if(idProp == null)
+                        return false;
 
-            T? entity = await entitesQueryable.SingleOrDefaultAsync(e => EF.Property<object>(e, "Id").Equals(id));
-            return entity ?? throw new NullReferenceException();
+                    return Convert.ToString(idProp.GetValue(e)) == Convert.ToString(id);
+                }
+
+                T? entity = entitesQueryable.AsEnumerable().FirstOrDefault(CheckPrimaryKey);
+                return entity ?? throw new NullReferenceException();
+            });
         }
 
         public virtual async Task<List<T>> Get(Expression<Func<T, bool>> criteria, int? offset = 0, int? limit = -1, string? include = "all")
@@ -122,12 +126,12 @@ namespace ProjectGym.Services.Read
         protected virtual IQueryable<T> ApplyNonStrictCriterias(IQueryable<T> entitiesQueryable, IEnumerable<Expression<Func<T, bool>>> criterias) => criterias
             .Where(x => x.Body is not ConstantExpression)
             .Select(x => entitiesQueryable.Where(x))
-            .SelectMany(q => q)
-            .GroupBy(PrimaryKey)
+            .SelectMany(x => x)
+            .GroupBy(x => x)
             .OrderByDescending(g => g.Count())
-            .SelectMany(g => g)
-            .DistinctBy(PrimaryKey)
+            .Select(x => x.First())
             .AsQueryable();
+
         protected List<T> ApplyOffsetAndLimit(IQueryable<T> queryable, int? offset = 0, int? limit = -1)
         {
             queryable = queryable.Skip(offset ?? 0);

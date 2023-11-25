@@ -34,7 +34,6 @@ namespace ProjectGym.Controllers
         {
             try
             {
-                //TODO: change create service to throw errors instead of default(TPK);
                 var newEntityId = await CreateService.Add(Mapper.Map(entityDTO));
                 return Ok(newEntityId);
             }

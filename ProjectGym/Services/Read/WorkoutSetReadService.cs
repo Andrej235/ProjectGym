@@ -4,17 +4,10 @@ using System.Linq.Expressions;
 
 namespace ProjectGym.Services.Read
 {
-    public class WorkoutSetReadService(ExerciseContext context) : AbstractReadService<WorkoutSet, Guid>
+    public class WorkoutSetReadService(ExerciseContext context) : ReadService<WorkoutSet>(context)
     {
-        protected override Func<WorkoutSet, Guid> PrimaryKey => x => x.Id;
-
-        protected override IQueryable<WorkoutSet> GetIncluded(IEnumerable<string>? include) => context.WorkoutSets.AsQueryable();
-
         protected override Expression<Func<WorkoutSet, bool>> TranslateKeyValueToExpression(string key, string value)
         {
-            /*TODO: 
-                -Update services for sets and workout sets
-             */
             if (int.TryParse(value, out int valueId))
             {
                 return key switch

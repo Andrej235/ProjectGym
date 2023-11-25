@@ -1,31 +1,24 @@
 ﻿using ProjectGym.Data;
 using ProjectGym.Models;
 using ProjectGym.Services.Read;
-using ProjectGym.Utilities;
-using System.Diagnostics;
 
 namespace ProjectGym.Services.Create
 {
-    public class NoteCreateService(ExerciseContext context, IReadService<Exercise> exerciseReadService) : ICreateService<Note>
+    public class NoteCreateService(ExerciseContext context, IReadService<Exercise> exerciseReadService) : CreateService<Note>(context)
     {
-        public async Task<object> Add(Note toAdd)
+        protected override async Task<Exception?> IsEntityValid(Note entity)
         {
-            if (toAdd.ExerciseId < 1)
-                throw new NullReferenceException($"Exercise with Id {toAdd.ExerciseId} was not found");
-
             try
             {
-                await exerciseReadService.Get(x => x.Id == toAdd.ExerciseId, "none");
+                if (entity.ExerciseId < 1)
+                    return new NullReferenceException($"Exercise with Id {entity.ExerciseId} was not found");
 
-                await context.Notes.AddAsync(toAdd);
-                await context.SaveChangesAsync();
-
-                return toAdd.Id;
+                await exerciseReadService.Get(x => x.Id == entity.ExerciseId, "none");
+                return null;
             }
             catch (Exception ex)
             {
-                LogDebugger.LogError(ex);
-                throw;
+                return ex;
             }
         }
     }

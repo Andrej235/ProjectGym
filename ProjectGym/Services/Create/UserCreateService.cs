@@ -1,37 +1,25 @@
 ﻿using ProjectGym.Data;
 using ProjectGym.Models;
 using ProjectGym.Services.Read;
-using ProjectGym.Utilities;
 
 namespace ProjectGym.Services.Create
 {
-    public class UserCreateService(ExerciseContext context, IReadService<User> readService) : ICreateService<User>
+    public class UserCreateService(ExerciseContext context, IReadService<User> readService) : CreateService<User>(context)
     {
-        public async Task<object> Add(User toAdd)
+        protected override async Task<Exception?> IsEntityValid(User entity)
         {
             try
             {
-                await readService.Get(eq => eq.Email == toAdd.Email, "none");
+                await readService.Get(eq => eq.Email == entity.Email, "none");
                 throw new Exception("Entity already exists");
             }
             catch (NullReferenceException)
             {
-                try
-                {
-                    await context.AddAsync(toAdd);
-                    await context.SaveChangesAsync();
-                    return toAdd.Id;
-                }
-                catch (Exception ex)
-                {
-                    LogDebugger.LogError(ex);
-                    throw;
-                }
+                return null;
             }
             catch (Exception ex)
             {
-                LogDebugger.LogError(ex);
-                throw;
+                return ex;
             }
         }
     }

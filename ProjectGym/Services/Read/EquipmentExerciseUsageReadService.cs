@@ -4,12 +4,8 @@ using System.Linq.Expressions;
 
 namespace ProjectGym.Services.Read
 {
-    public class EquipmentExerciseUsageReadService(ExerciseContext context) : AbstractReadService<EquipmentUsage, int>
+    public class EquipmentExerciseUsageReadService(ExerciseContext context) : ReadService<EquipmentUsage>(context)
     {
-        protected override Func<EquipmentUsage, int> PrimaryKey => x => x.Id;
-
-        protected override IQueryable<EquipmentUsage> GetIncluded(IEnumerable<string>? include) => context.EquipmentUsages.AsQueryable();
-
         protected override Expression<Func<EquipmentUsage, bool>> TranslateKeyValueToExpression(string key, string value)
         {
             if (int.TryParse(value, out int valueId))

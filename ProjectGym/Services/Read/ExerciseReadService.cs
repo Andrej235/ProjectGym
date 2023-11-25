@@ -1,49 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ProjectGym.Data;
+﻿using ProjectGym.Data;
 using ProjectGym.Models;
 using System.Linq.Expressions;
 
 namespace ProjectGym.Services.Read
 {
-    public class ExerciseReadService(ExerciseContext context) : AbstractReadService<Exercise, int>
+    public class ExerciseReadService(ExerciseContext context) : ReadService<Exercise>(context)
     {
-        protected override Func<Exercise, int> PrimaryKey => x => x.Id;
-
-        protected override IQueryable<Exercise> GetIncluded(IEnumerable<string>? include)
-        {
-            IQueryable<Exercise> exercisesIncluding = context.Exercises.AsQueryable();
-            if (include is null || !include.Any() || include.Contains("none"))
-                return exercisesIncluding;
-
-            if (include.Contains("all"))
-                return exercisesIncluding
-                    .Include(e => e.PrimaryMuscleGroups)
-                    .Include(e => e.SecondaryMuscleGroups)
-                    .Include(e => e.PrimaryMuscles)
-                    .Include(e => e.SecondaryMuscles)
-                    .Include(e => e.Equipment)
-                    .Include(e => e.Aliases)
-                    .Include(e => e.Notes)
-                    .Include(e => e.Images);
-
-            foreach (var inc in include)
-            {
-                exercisesIncluding = inc switch
-                {
-                    "images" => exercisesIncluding.Include(e => e.Images),
-                    "primarymuscles" => exercisesIncluding.Include(e => e.PrimaryMuscles),
-                    "secondarymuscles" => exercisesIncluding.Include(e => e.SecondaryMuscles),
-                    "primarymusclegroups" => exercisesIncluding.Include(e => e.PrimaryMuscleGroups),
-                    "secondarymusclegroups" => exercisesIncluding.Include(e => e.SecondaryMuscleGroups),
-                    "equipment" => exercisesIncluding.Include(e => e.Equipment),
-                    "aliases" => exercisesIncluding.Include(e => e.Aliases),
-                    "notes" => exercisesIncluding.Include(e => e.Notes),
-                    _ => exercisesIncluding
-                };
-            }
-            return exercisesIncluding;
-        }
-
         protected override Expression<Func<Exercise, bool>> TranslateKeyValueToExpression(string key, string value)
         {
             if (key == "name")

@@ -4,12 +4,8 @@ using System.Linq.Expressions;
 
 namespace ProjectGym.Services.Read
 {
-    public class SecondaryMuscleGroupReadService(ExerciseContext context) : AbstractReadService<SecondaryMuscleGroupInExercise, int>
+    public class SecondaryMuscleGroupReadService(ExerciseContext context) : ReadService<SecondaryMuscleGroupInExercise>(context)
     {
-        protected override Func<SecondaryMuscleGroupInExercise, int> PrimaryKey => x => x.Id;
-
-        protected override IQueryable<SecondaryMuscleGroupInExercise> GetIncluded(IEnumerable<string>? include) => context.SecondaryMuscleGroups.AsQueryable();
-
         protected override Expression<Func<SecondaryMuscleGroupInExercise, bool>> TranslateKeyValueToExpression(string key, string value)
         {
             if (int.TryParse(value, out int valueId))

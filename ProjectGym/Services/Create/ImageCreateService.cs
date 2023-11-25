@@ -5,26 +5,21 @@ using ProjectGym.Utilities;
 
 namespace ProjectGym.Services.Create
 {
-    public class ImageCreateService(IReadService<Exercise> exerciseReadService, ExerciseContext context) : ICreateService<Image>
+    public class ImageCreateService(IReadService<Exercise> exerciseReadService, ExerciseContext context) : CreateService<Image>(context)
     {
-        public async Task<object> Add(Image toAdd)
+        protected override async Task<Exception?> IsEntityValid(Image entity)
         {
-            if (toAdd.ExerciseId < 1)
-                return default(int);
-
             try
             {
-                await exerciseReadService.Get(x => x.Id == toAdd.ExerciseId, "none");
+                if (entity.ExerciseId < 1)
+                    return new NullReferenceException("Exercise was not found");
 
-                await context.Images.AddAsync(toAdd);
-                await context.SaveChangesAsync();
-
-                return toAdd.Id;
+                await exerciseReadService.Get(x => x.Id == entity.ExerciseId, "none");
+                return null;
             }
             catch (Exception ex)
             {
-                LogDebugger.LogError(ex);
-                throw;
+                return ex;
             }
         }
     }

@@ -5,12 +5,8 @@ using System.Linq.Expressions;
 
 namespace ProjectGym.Services.Read
 {
-    public class WeightReadService(ExerciseContext context) : AbstractReadService<PersonalExerciseWeight, Guid>
+    public class WeightReadService(ExerciseContext context) : ReadService<PersonalExerciseWeight>(context)
     {
-        protected override Func<PersonalExerciseWeight, Guid> PrimaryKey => x => x.Id;
-
-        protected override IQueryable<PersonalExerciseWeight> GetIncluded(IEnumerable<string>? include) => context.Weights.AsQueryable();
-
         protected override Expression<Func<PersonalExerciseWeight, bool>> TranslateKeyValueToExpression(string key, string value)
         {
             if (key == "exercise" && int.TryParse(value, out var exerciseId))

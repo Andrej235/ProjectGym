@@ -7,22 +7,8 @@ using System.Linq.Expressions;
 
 namespace ProjectGym.Services.Read
 {
-    public class AliasReadService(ExerciseContext context) : AbstractReadService<Alias, int>
+    public class AliasReadService(ExerciseContext context) : ReadService<Alias>(context)
     {
-        protected override Func<Alias, int> PrimaryKey => a => a.Id;
-
-        protected override IQueryable<Alias> GetIncluded(IEnumerable<string>? include)
-        {
-            IQueryable<Alias> entitiesIncluding = context.Aliases.AsQueryable();
-            if (include is null || !include.Any() || include.Contains("none"))
-                return entitiesIncluding;
-
-            if (include.Contains("all") || include.Contains("exercise"))
-                return entitiesIncluding.Include(x => x.Exercise);
-
-            return entitiesIncluding;
-        }
-
         protected override Expression<Func<Alias, bool>> TranslateKeyValueToExpression(string key, string value)
         {
             if (key == "name")
