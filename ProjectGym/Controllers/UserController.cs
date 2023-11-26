@@ -81,7 +81,7 @@ namespace ProjectGym.Controllers
         {
             try
             {
-                Client client = await ClientReadService.Get(c => c.Id == guid, "user");
+                Client client = await ClientReadService.Get(guid, "user");
 
                 if (client.User is null)
                     return NotFound($"Client with id: {guid} is not logged in.");

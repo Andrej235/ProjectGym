@@ -1,12 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using ProjectGym.Data;
-using ProjectGym.Models;
-using System.Dynamic;
+using ProjectGym.Utilities;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace ProjectGym.Controllers
 {
@@ -14,75 +9,37 @@ namespace ProjectGym.Controllers
     [Route("api/backup")]
     public class Backup(ExerciseContext context) : ControllerBase
     {
+        struct OldNewIdPairs(object oldId, object newId)
+        {
+            public object oldId = oldId;
+            public object newId = newId;
+        }
+
         [HttpGet]
         public IActionResult Get()
         {
-            var tablesProperty = context
-                .GetType()
-                .GetProperties()
-                .Where(x => x.PropertyType.IsGenericType && x.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>));
-
-            string resultingJSON = "{\n";
-            resultingJSON += string.Join(", \n", tablesProperty.Select(property =>
+            try
             {
-                if (property.GetValue(context) is IEnumerable<object> entities)
-                {
-                    string entitiesJSON = string.Join(", \n", entities.Select(Serialize));
-                    string table = $"\"{property.Name}\": [\n{entitiesJSON}\n]";
-                    return table;
-                }
-
-                return "";
-            }));
-            resultingJSON += "\n}";
-
-            return Ok(resultingJSON);
+                return Ok(DatabaseSerializationService.Serialize(context));
+            }
+            catch (Exception ex)
+            {
+                LogDebugger.LogError(ex);
+                return BadRequest(LogDebugger.GetErrorMessage(ex));
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> LoadAsync()
         {
+            await context.Database.EnsureCreatedAsync();
+            await context.Database.EnsureDeletedAsync();
+            await context.Database.EnsureCreatedAsync();
+
             StreamReader reader = new(Request.Body, Encoding.UTF8);
-            string plainText = await reader.ReadToEndAsync();
+            await DatabaseDeserializationService.LoadDatabaseAsync(context, await reader.ReadToEndAsync(), new KeyValuePair<string, string>("Creator", "User"));
 
-            var tablesProperty = context
-                 .GetType()
-                 .GetProperties()
-                 .Where(x => x.PropertyType.IsGenericType && x.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>));
-
-            dynamic expandoObject = new ExpandoObject();
-
-            Dictionary<string, object>? keyValues = JsonSerializer.Deserialize<Dictionary<string, object>>(plainText);
-            if (keyValues is null)
-                return Ok();
-
-            foreach (var kvp in keyValues)
-            {
-                ((IDictionary<string, object>)expandoObject).Add(kvp);
-            }
-
-            return Ok(expandoObject.Exercises);
-        }
-
-
-        private string Serialize(object entity)
-        {
-            var properties = entity.GetType().GetProperties().Where(x => !x.PropertyType.IsGenericType);
-            var resultingJSON = "{\n"
-                + string.Join(", \n", properties.Select(property =>
-                  {
-                      string value = "";
-                      if (property.PropertyType == typeof(string))
-                          value = $"\"{property.GetValue(entity)}\"";
-                      else if (property.PropertyType == typeof(int) || property.PropertyType == typeof(bool))
-                          value = $"{property.GetValue(entity)}".ToLower();
-                      else
-                          value = "\"Not implemented\"";
-
-                      return $"\"{property.Name}\": {value}";
-                  }))
-                + "\n}";
-            return resultingJSON;
+            return Ok();
         }
 
         public class StringDTO
