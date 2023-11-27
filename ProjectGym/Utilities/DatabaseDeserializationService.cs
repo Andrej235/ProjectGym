@@ -27,26 +27,42 @@ namespace ProjectGym.Utilities
         ///     <br/>Key - Alias
         ///     <br/>Value - Name of the aliased table
         /// </param>
-        /// <returns></returns>
         /// <exception cref="ArgumentNullException">asdsad</exception>
         public static async Task LoadDatabaseAsync<TContext>(TContext context, string jsonEncodedDataBase, params KeyValuePair<string, string>[] tableAliases) where TContext : DbContext
         {
             IEnumerable<PropertyInfo> tablesAsProperties = GetTablesAsProperties(context);
             Dictionary<string, object> jsonBackupKeyValuePairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonEncodedDataBase) ?? throw new ArgumentNullException(nameof(jsonEncodedDataBase));
             Dictionary<string, IEnumerable<OldNewIdPairs>> idPairs = [];
-
-            foreach (PropertyInfo tableProperty in tablesAsProperties)
-            {
-                Type entityType = tableProperty.PropertyType.GetGenericArguments()[0];
-                if (jsonBackupKeyValuePairs[tableProperty.Name] is not JsonElement tableAsJsonElement)
-                    continue;
-
-                var currentTableIdPairs = await LoadTableAsync(context, ProcessJSON(tableAsJsonElement), entityType, idPairs, tableAliases);
-                idPairs.Add(tableProperty.Name, currentTableIdPairs);
-            }
+            await LoadTablesFromProperties(context, tablesAsProperties, jsonBackupKeyValuePairs, idPairs, 0, tableAliases);
         }
 
-        private static async Task<IEnumerable<OldNewIdPairs>> LoadTableAsync<TContext>(TContext context, dynamic table, Type entityType, IDictionary<string, IEnumerable<OldNewIdPairs>> idPairs, KeyValuePair<string, string>[] aliases) where TContext : DbContext
+        private static async Task LoadTablesFromProperties<TContext>(TContext context, IEnumerable<PropertyInfo> tablesAsProperties, Dictionary<string, object> jsonDataToLoad, Dictionary<string, IEnumerable<OldNewIdPairs>> idPairs, int currentTrial = 0, params KeyValuePair<string, string>[] tableAliases) where TContext : DbContext
+        {
+            List<PropertyInfo> tableBuffer = [];
+            foreach (PropertyInfo tableProperty in tablesAsProperties)
+            {
+                try
+                {
+                    Type entityType = tableProperty.PropertyType.GetGenericArguments()[0];
+                    if (jsonDataToLoad[tableProperty.Name] is not JsonElement tableAsJsonElement)
+                        continue;
+
+                    var currentTableIdPairs = await LoadTable(context, ProcessJSON(tableAsJsonElement), entityType, idPairs, tableAliases);
+                    idPairs.Add(tableProperty.Name, currentTableIdPairs);
+                }
+                catch (UnresolvedDependencyException)
+                {
+                    if (currentTrial > 32)
+                        throw new UnresolvedDependencyException($"Error while injecting json data into database: Missing a dependency, tried resolving {currentTrial} times");
+
+                    tableBuffer.Add(tableProperty);
+                }
+            }
+            if (tableBuffer.Count != 0)
+                await LoadTablesFromProperties(context, tableBuffer, jsonDataToLoad, idPairs, currentTrial + 1, tableAliases);
+        }
+
+        private static async Task<IEnumerable<OldNewIdPairs>> LoadTable<TContext>(TContext context, dynamic table, Type entityType, IDictionary<string, IEnumerable<OldNewIdPairs>> idPairs, KeyValuePair<string, string>[] aliases) where TContext : DbContext
         {
             List<OldNewIdPairs> tableIdPairs = [];
             foreach (var entity in table)
@@ -77,10 +93,10 @@ namespace ProjectGym.Utilities
                         {
                             var tableAliases = aliases.Where(x => x.Key == specificTableName || x.Key == specificTableName + "s").ToList();
                             if (tableAliases.Count == 0)
-                                throw new PropertyNotFoundException();
+                                throw new UnresolvedDependencyException();
 
                             if (!idPairs.TryGetValue(tableAliases.First().Value + "s", out idPairsOfSpecificTable) && !idPairs.TryGetValue(tableAliases.First().Value, out idPairsOfSpecificTable))
-                                throw new PropertyNotFoundException();
+                                throw new UnresolvedDependencyException();
                         }
 
                         OldNewIdPairs specificIdPair = idPairsOfSpecificTable.First(x => Convert.ToString(x.oldId) == Convert.ToString(propertyValue));
@@ -90,7 +106,7 @@ namespace ProjectGym.Utilities
 
                     if (entityPropertyInfo.PropertyType.IsArray && entityPropertyInfo.PropertyType.GetElementType() == typeof(byte))
                     {
-                        entityPropertyInfo.SetValue(newEntityInstance, Convert.FromBase64String(Convert.ToString(propertyValue) ?? throw new Exception($"Property: {property.Key} is entered as an empty string. (byte[])")));
+                        entityPropertyInfo.SetValue(newEntityInstance, Convert.FromBase64String(Convert.ToString(propertyValue) ?? throw new Exception($"Value of property: {property.Key} is entered as an empty string. (byte[])")));
                         continue;
                     }
 
@@ -112,12 +128,12 @@ namespace ProjectGym.Utilities
                 }
 
                 if (oldId == null)
-                    throw new PropertyNotFoundException("Id");
+                    throw new MissingIdColumnException();
 
                 await context.AddAsync(newEntityInstance);
                 await context.SaveChangesAsync();
 
-                object newId = newEntityInstance.GetType().GetProperty("Id")?.GetValue(newEntityInstance) ?? throw new PropertyNotFoundException("Id");
+                object newId = newEntityInstance.GetType().GetProperty("Id")?.GetValue(newEntityInstance) ?? throw new MissingIdColumnException();
                 tableIdPairs.Add(new OldNewIdPairs(oldId, newId));
             }
             return tableIdPairs;
@@ -157,21 +173,11 @@ namespace ProjectGym.Utilities
                 case JsonValueKind.Null:
                     throw new NullReferenceException();
                 default:
-                    break;
+                    throw new NullReferenceException();
             }
-
-            return jsonElement.ValueKind switch
-            {
-                JsonValueKind.Number => jsonElement.GetInt32(),
-                JsonValueKind.String => jsonElement.GetString() ?? "",
-                JsonValueKind.False or JsonValueKind.True => jsonElement.GetBoolean(),
-                _ => throw new NotImplementedException()
-            };
         }
     }
 }
-
-
 
 /*        static bool IsNullable(Type type)
         {
