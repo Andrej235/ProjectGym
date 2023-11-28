@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ProjectGym.Exceptions;
+using ProjectGym.Services.DatabaseSerialization.Exceptions;
 using System.Dynamic;
 using System.Reflection;
 using System.Text.Json;
 
-namespace ProjectGym.Utilities
+namespace ProjectGym.Services.DatabaseSerialization
 {
     public static class DatabaseDeserializationService
     {
@@ -20,22 +20,26 @@ namespace ProjectGym.Utilities
         /// <typeparam name="TContext">Type of a database context in which the data will be injected</typeparam>
         /// <param name="context">Instance of TContext which will be used to inject data into the database</param>
         /// <param name="jsonEncodedDataBase">Data in a json format, will be translated into objects and injected into the database</param>
-        /// <param name="tableAliases">
-        /// Each table can have multiple aliases
-        /// <br/>Each alias is a KeyValuePair<string, string> where
-        ///     <br/>Key - Alias
-        ///     <br/>Value - Name of the aliased table
-        /// </param>
-        /// <exception cref="ArgumentNullException">asdsad</exception>
-        public static async Task LoadDatabaseAsync<TContext>(TContext context, string jsonEncodedDataBase, params KeyValuePair<string, string>[] tableAliases) where TContext : DbContext
+        /// <param name="modelNameToTableName">Calls this function every time it reaches a property marked as [ModelReference()] in order to find the name of that models table</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task LoadDatabase<TContext>(TContext context, string jsonEncodedDataBase, Func<string, string> modelNameToTableName) where TContext : DbContext
         {
             IEnumerable<PropertyInfo> tablesAsProperties = GetTablesAsProperties(context);
             Dictionary<string, object> jsonBackupKeyValuePairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonEncodedDataBase) ?? throw new ArgumentNullException(nameof(jsonEncodedDataBase));
             Dictionary<string, IEnumerable<OldNewIdPairs>> idPairs = [];
-            await LoadTablesFromProperties(context, tablesAsProperties, jsonBackupKeyValuePairs, idPairs, 0, tableAliases);
+            await LoadTablesFromProperties(context, tablesAsProperties, jsonBackupKeyValuePairs, idPairs, modelNameToTableName, 0);
         }
 
-        private static async Task LoadTablesFromProperties<TContext>(TContext context, IEnumerable<PropertyInfo> tablesAsProperties, Dictionary<string, object> jsonDataToLoad, Dictionary<string, IEnumerable<OldNewIdPairs>> idPairs, int currentTrial = 0, params KeyValuePair<string, string>[] tableAliases) where TContext : DbContext
+        /// <summary>
+        /// Loads the given data into the given database (context)
+        /// </summary>
+        /// <typeparam name="TContext">Type of a database context in which the data will be injected</typeparam>
+        /// <param name="context">Instance of TContext which will be used to inject data into the database</param>
+        /// <param name="jsonEncodedDataBase">Data in a json format, will be translated into objects and injected into the database</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task LoadDatabase<TContext>(TContext context, string jsonEncodedDataBase) where TContext : DbContext => await LoadDatabase(context, jsonEncodedDataBase, x => x + "s");
+
+        private static async Task LoadTablesFromProperties<TContext>(TContext context, IEnumerable<PropertyInfo> tablesAsProperties, Dictionary<string, object> jsonDataToLoad, Dictionary<string, IEnumerable<OldNewIdPairs>> idPairs, Func<string, string> modelNameToTableName, int currentAttempt = 0) where TContext : DbContext
         {
             List<PropertyInfo> tableBuffer = [];
             foreach (PropertyInfo tableProperty in tablesAsProperties)
@@ -46,22 +50,22 @@ namespace ProjectGym.Utilities
                     if (jsonDataToLoad[tableProperty.Name] is not JsonElement tableAsJsonElement)
                         continue;
 
-                    var currentTableIdPairs = await LoadTable(context, ProcessJSON(tableAsJsonElement), entityType, idPairs, tableAliases);
+                    var currentTableIdPairs = await LoadTable(context, ProcessJSON(tableAsJsonElement), entityType, idPairs, modelNameToTableName);
                     idPairs.Add(tableProperty.Name, currentTableIdPairs);
                 }
-                catch (UnresolvedDependencyException)
+                catch (UnresolvedDependencyException ex)
                 {
-                    if (currentTrial > 32)
-                        throw new UnresolvedDependencyException($"Error while injecting json data into database: Missing a dependency, tried resolving {currentTrial} times");
+                    if (currentAttempt > 32)
+                        throw new UnresolvedDependencyException($"Error while injecting json data into database: Missing a dependency, tried resolving {currentAttempt} times", ex);
 
                     tableBuffer.Add(tableProperty);
                 }
             }
             if (tableBuffer.Count != 0)
-                await LoadTablesFromProperties(context, tableBuffer, jsonDataToLoad, idPairs, currentTrial + 1, tableAliases);
+                await LoadTablesFromProperties(context, tableBuffer, jsonDataToLoad, idPairs, modelNameToTableName, currentAttempt + 1);
         }
 
-        private static async Task<IEnumerable<OldNewIdPairs>> LoadTable<TContext>(TContext context, dynamic table, Type entityType, IDictionary<string, IEnumerable<OldNewIdPairs>> idPairs, KeyValuePair<string, string>[] aliases) where TContext : DbContext
+        private static async Task<IEnumerable<OldNewIdPairs>> LoadTable<TContext>(TContext context, dynamic table, Type entityType, IDictionary<string, IEnumerable<OldNewIdPairs>> idPairs, Func<string, string> modelNameToTableName) where TContext : DbContext
         {
             List<OldNewIdPairs> tableIdPairs = [];
             foreach (var entity in table)
@@ -85,18 +89,14 @@ namespace ProjectGym.Utilities
                         continue;
                     }
 
-                    if (propertyName.Contains("Id"))
+                    var modelReferenceAttribute = Attribute.GetCustomAttribute(entityPropertyInfo, typeof(ModelReferenceAttribute));
+                    if (modelReferenceAttribute != null)
                     {
-                        string specificTableName = propertyName.Replace("Id", "");
-                        if (!idPairs.TryGetValue(specificTableName + "s", out IEnumerable<OldNewIdPairs>? idPairsOfSpecificTable) && !idPairs.TryGetValue(specificTableName, out idPairsOfSpecificTable))
-                        {
-                            var tableAliases = aliases.Where(x => x.Key == specificTableName || x.Key == specificTableName + "s").ToList();
-                            if (tableAliases.Count == 0)
-                                throw new UnresolvedDependencyException();
+                        var modelNameProperty = modelReferenceAttribute.GetType().GetProperty("PositionalString") ?? throw new NullReferenceException();
 
-                            if (!idPairs.TryGetValue(tableAliases.First().Value + "s", out idPairsOfSpecificTable) && !idPairs.TryGetValue(tableAliases.First().Value, out idPairsOfSpecificTable))
-                                throw new UnresolvedDependencyException();
-                        }
+                        string? referencedModelName = Convert.ToString(modelNameProperty.GetValue(modelReferenceAttribute)) ?? "";
+                        if (referencedModelName == null || (!idPairs.TryGetValue(modelNameToTableName(referencedModelName), out IEnumerable<OldNewIdPairs>? idPairsOfSpecificTable) && !idPairs.TryGetValue(referencedModelName, out idPairsOfSpecificTable)))
+                            throw new UnresolvedDependencyException(referencedModelName ?? "");
 
                         OldNewIdPairs specificIdPair = idPairsOfSpecificTable.First(x => Convert.ToString(x.oldId) == Convert.ToString(propertyValue));
                         entityPropertyInfo.SetValue(newEntityInstance, specificIdPair.newId);

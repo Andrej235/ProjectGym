@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ProjectGym.Services.DatabaseSerialization;
+using System.ComponentModel.DataAnnotations;
 
 namespace ProjectGym.Models
 {
@@ -10,6 +11,7 @@ namespace ProjectGym.Models
         public bool IsPublic { get; set; }
 
         public User Creator { get; set; } = null!;
+        [ModelReference("User")]
         public Guid CreatorId { get; set; }
 
         public IEnumerable<WorkoutSet> WorkoutSets { get; set; } = new List<WorkoutSet>();

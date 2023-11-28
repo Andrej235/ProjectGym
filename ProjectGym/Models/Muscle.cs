@@ -1,4 +1,6 @@
-﻿namespace ProjectGym.Models
+﻿using ProjectGym.Services.DatabaseSerialization;
+
+namespace ProjectGym.Models
 {
     public class Muscle
     {
@@ -6,7 +8,8 @@
         public string Name { get; set; } = null!;
         public string ImageUrl { get; set; } = null!;
 
-        public int MuscleGroupId { get; set; }
         public MuscleGroup MuscleGroup { get; set; } = null!;
+        [ModelReference("MuscleGroup")]
+        public int MuscleGroupId { get; set; }
     }
 }

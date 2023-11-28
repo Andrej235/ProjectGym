@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Text;
 
-namespace ProjectGym.Utilities
+namespace ProjectGym.Services.DatabaseSerialization
 {
     public static class DatabaseSerializationService
     {

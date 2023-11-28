@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProjectGym.Data;
+using ProjectGym.Services.DatabaseSerialization;
 using ProjectGym.Utilities;
 using System.Text;
 
@@ -39,7 +40,7 @@ namespace ProjectGym.Controllers
                 await context.Database.EnsureCreatedAsync();
 
                 StreamReader reader = new(Request.Body, Encoding.UTF8);
-                await DatabaseDeserializationService.LoadDatabaseAsync(context, await reader.ReadToEndAsync(), new KeyValuePair<string, string>("Creator", "User"));
+                await DatabaseDeserializationService.LoadDatabase(context, await reader.ReadToEndAsync());
 
                 return Ok();
             }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ProjectGym.Services.DatabaseSerialization;
+using System.ComponentModel.DataAnnotations;
 
 namespace ProjectGym.Models
 {
@@ -11,9 +12,11 @@ namespace ProjectGym.Models
         public DateTime DateOfAchieving { get; set; }
 
         public Exercise Exercise { get; set; } = null!;
+        [ModelReference("Exercise")]
         public int ExerciseId { get; set; }
 
         public User User { get; set; } = null!;
-        public Guid UserId { get; set; } 
+        [ModelReference("User")]
+        public Guid UserId { get; set; }
     }
 }

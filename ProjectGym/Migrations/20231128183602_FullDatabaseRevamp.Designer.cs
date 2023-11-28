@@ -12,7 +12,7 @@ using ProjectGym.Data;
 namespace ProjectGym.Migrations
 {
     [DbContext(typeof(ExerciseContext))]
-    [Migration("20231122174649_FullDatabaseRevamp")]
+    [Migration("20231128183602_FullDatabaseRevamp")]
     partial class FullDatabaseRevamp
     {
         /// <inheritdoc />
