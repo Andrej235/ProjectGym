@@ -81,12 +81,14 @@ namespace ProjectGym.Controllers
         {
             try
             {
-                Client client = await ClientReadService.Get(guid, "user");
+                Client client = await ClientReadService.Get(guid, "none");
 
-                if (client.User is null)
+                if (client.UserGUID is null)
                     return NotFound($"Client with id: {guid} is not logged in.");
 
-                return Ok(Mapper.Map(client.User));
+                User user = await ReadService.Get(client.UserGUID);
+
+                return Ok(Mapper.Map(user));
             }
             catch (NullReferenceException)
             {
@@ -105,7 +107,7 @@ namespace ProjectGym.Controllers
             {
                 try
                 {
-                    var client = await ClientReadService.Get(c => c.Id == clientGuid, "user");
+                    var client = await ClientReadService.Get(clientGuid, "user");
                     client.User = user;
                     await ClientUpdateService.Update(client);
                     res = (Guid)clientGuid;

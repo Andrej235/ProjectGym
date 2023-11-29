@@ -10,14 +10,8 @@ using Image = AppProjectGym.Models.Image;
 
 namespace AppProjectGym.Services
 {
-    public class ExerciseDisplayMapper
+    public class ExerciseDisplayMapper(IReadService readService)
     {
-        private readonly IReadService<Image> imageReadService;
-        public ExerciseDisplayMapper(IReadService<Image> imageReadService)
-        {
-            this.imageReadService = imageReadService;
-        }
-
         public async Task<ExerciseDisplay> Map(Exercise exercise)
         {
             var imgUrl = "";
@@ -25,7 +19,7 @@ namespace AppProjectGym.Services
             {
                 var id = exercise.ImageIds.FirstOrDefault();
                 if (id != 0)
-                    imgUrl = (await imageReadService.Get(id.ToString(), "none")).ImageURL;
+                    imgUrl = (await readService.Get<Image>("none", $"image/{id}")).ImageURL;
             }
             catch (Exception ex)
             {

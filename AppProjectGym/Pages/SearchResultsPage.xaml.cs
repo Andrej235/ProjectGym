@@ -8,17 +8,15 @@ namespace AppProjectGym.Pages;
 
 public partial class SearchResultsPage : ContentPage, IQueryAttributable
 {
-    public SearchResultsPage(IReadService<Image> imageReadService, IReadService<Exercise> exerciseReadService, ExerciseDisplayMapper exerciseDisplayMapper)
+    public SearchResultsPage(IReadService readService, ExerciseDisplayMapper exerciseDisplayMapper)
     {
         InitializeComponent();
         BindingContext = this;
 
-        this.imageReadService = imageReadService;
-        this.exerciseReadService = exerciseReadService;
+        this.readService = readService;
         this.exerciseDisplayMapper = exerciseDisplayMapper;
     }
-    private readonly IReadService<Image> imageReadService;
-    private readonly IReadService<Exercise> exerciseReadService;
+    private readonly IReadService readService;
     private readonly ExerciseDisplayMapper exerciseDisplayMapper;
 
     public List<Exercise> Exercises
@@ -69,14 +67,14 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
 
     public async void LoadExercises()
     {
-        if (searchQuery is null)
+        if (searchQuery is null) //Add query support
             return;
 
         if (isWaitingForData)
             return;
 
         isWaitingForData = true;
-        var exercisesToLoad = await exerciseReadService.Get(searchQuery, (pageNumber - 1) * exercisesPerPage, exercisesPerPage, "images");
+        var exercisesToLoad = await readService.Get<List<Exercise>>("images", ReadService.TranslateEndPoint("exercise", (pageNumber - 1) * exercisesPerPage, exercisesPerPage));
         if (exercisesToLoad is null || exercisesToLoad.Count == 0)
         {
             PageNumber--;

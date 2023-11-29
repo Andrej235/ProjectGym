@@ -10,12 +10,9 @@ namespace AppProjectGym
 {
     public partial class MainPage : ContentPage
     {
-        private readonly IReadService<Exercise> exerciseReadService;
-        private readonly IReadService<Muscle> muscleReadService;
-        private readonly IReadService<Equipment> equipmentReadService;
+        private readonly IReadService readService;
         private readonly ExerciseDisplayMapper exerciseDisplayMapper;
 
-        private readonly JsonSerializerOptions serializerOptions;
         public static List<Exercise> Exercises { get => exercises; set => exercises = value; }
         private static List<Exercise> exercises;
 
@@ -59,22 +56,13 @@ namespace AppProjectGym
 
         public MainPage(
             ExerciseDisplayMapper exerciseDisplayMapper,
-            IReadService<Exercise> exerciseReadService,
-            IReadService<Muscle> muscleReadService,
-            IReadService<Equipment> equipmentReadService)
+            IReadService readService)
         {
             InitializeComponent();
 
-            serializerOptions = new JsonSerializerOptions()
-            {
-                PropertyNameCaseInsensitive = true,
-            };
-
             BindingContext = this;
-            this.exerciseReadService = exerciseReadService;
+            this.readService = readService;
             this.exerciseDisplayMapper = exerciseDisplayMapper;
-            this.muscleReadService = muscleReadService;
-            this.equipmentReadService = equipmentReadService;
 
             PageNumber = 1;
             exercisesPerPage = 15;
@@ -105,7 +93,7 @@ namespace AppProjectGym
                 return;
 
             isWaitingForExerciseData = true;
-            var loadedExercises = await exerciseReadService.Get("", (pageNumber - 1) * exercisesPerPage, exercisesPerPage, "images");
+            var loadedExercises = await readService.Get<List<Exercise>>("images", ReadService.TranslateEndPoint("exercise", (pageNumber - 1) * exercisesPerPage, exercisesPerPage));
             if (loadedExercises is null || loadedExercises.Count == 0)
             {
                 PageNumber--; //If the page number is 1 the previous button can't even be pressed / won't invoke this method
@@ -125,9 +113,9 @@ namespace AppProjectGym
             isWaitingForExerciseData = false;
         }
 
-        private async void LoadMuscles() => Muscles = await muscleReadService.Get("", 0, -1, "none");
+        private async void LoadMuscles() => Muscles = await readService.Get<List<Muscle>>();
 
-        private async void LoadEquipment() => Equipment = await equipmentReadService.Get("", 0, -1, "none");
+        private async void LoadEquipment() => Equipment = await readService.Get<List<Equipment>>();
 
         protected override void OnAppearing()
         {

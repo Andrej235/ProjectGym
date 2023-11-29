@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AppProjectGym.Services.Create
+﻿namespace AppProjectGym.Services.Create
 {
-    public interface ICreateService<TEntity, TPK> where TEntity : class
+    public interface ICreateService
     {
-        Task<TPK> Add(TEntity entityToAdd);
+        Task<string> Add<T>(T entityToAdd, string endPoint = "");
     }
 }

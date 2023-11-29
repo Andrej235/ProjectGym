@@ -8,25 +8,13 @@ namespace AppProjectGym.Pages
 {
     public partial class FullScreenExercise : ContentPage, IQueryAttributable
     {
-        private readonly IReadService<Exercise> exerciseReadService;
-        private readonly IReadService<Image> imageReadService;
-        private readonly IReadService<Muscle> muscleReadService;
-        private readonly IReadService<Note> notesReadService;
-        private readonly IReadService<Equipment> equipmentReadService;
+        private readonly IReadService readService;
 
-        public FullScreenExercise(IReadService<Exercise> exerciseReadService,
-                                  IReadService<Image> imageReadService,
-                                  IReadService<Muscle> muscleReadService,
-                                  IReadService<Note> notesReadService,
-                                  IReadService<Equipment> equipmentReadService)
+        public FullScreenExercise(IReadService readService)
         {
             InitializeComponent();
             BindingContext = this;
-            this.exerciseReadService = exerciseReadService;
-            this.imageReadService = imageReadService;
-            this.muscleReadService = muscleReadService;
-            this.notesReadService = notesReadService;
-            this.equipmentReadService = equipmentReadService;
+            this.readService = readService;
         }
 
 
@@ -102,11 +90,11 @@ namespace AppProjectGym.Pages
         public async void ApplyQueryAttributes(IDictionary<string, object> query)
         {
             int id = Convert.ToInt32(query["id"]);
-            Exercise = await exerciseReadService.Get(id.ToString(), "all");
+            Exercise = await readService.Get<Exercise>("all", $"exercise/{id}");
 
             if (exercise.ImageIds.Any())
             {
-                var image = await imageReadService.Get(exercise.ImageIds.First().ToString(), "all");
+                var image = await readService.Get<Image>("all", $"image/{exercise.ImageIds.First()}");
                 MainImage = image;
             }
             OnOpen();
@@ -120,13 +108,13 @@ namespace AppProjectGym.Pages
             LoadEquipment();
         }
 
-        private async void LoadPrimaryMuscles() => PrimaryMuscles = (await Task.WhenAll(Exercise.PrimaryMuscleIds.Select(x => muscleReadService.Get(x.ToString(), "none"))).ConfigureAwait(false)).ToList();
+        private async void LoadPrimaryMuscles() => PrimaryMuscles = [.. await Task.WhenAll(Exercise.PrimaryMuscleIds.Select(x => readService.Get<Muscle>("none", $"muscle/{x}")))];
 
-        private async void LoadSecondaryMuscles() => SecondaryMuscles = (await Task.WhenAll(Exercise.SecondaryMuscleIds.Select(x => muscleReadService.Get(x.ToString(), "none"))).ConfigureAwait(false)).ToList();
+        private async void LoadSecondaryMuscles() => SecondaryMuscles = [.. await Task.WhenAll(Exercise.SecondaryMuscleIds.Select(x => readService.Get<Muscle>("none", $"muscle/{x}")))];
 
-        private async void LoadNotes() => Notes = (await Task.WhenAll(Exercise.NoteIds.Select(x => notesReadService.Get(x.ToString(), "none")))).ToList();
+        private async void LoadNotes() => Notes = [.. await Task.WhenAll(Exercise.NoteIds.Select(x => readService.Get<Note>("none", $"note/{x}")))];
 
-        private async void LoadEquipment() => Equipment = (await Task.WhenAll(Exercise.EquipmentIds.Select(x => equipmentReadService.Get(x.ToString(), "none")))).ToList();
+        private async void LoadEquipment() => Equipment = [.. await Task.WhenAll(Exercise.EquipmentIds.Select(x => readService.Get<Equipment>("none", $"equipment/{x}")))];
 
 
 

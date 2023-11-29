@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Maui.Storage;
+using AppProjectGym.Utilities;
 
 namespace AppProjectGym.Information
 {
@@ -69,11 +70,11 @@ namespace AppProjectGym.Information
                 var userClient = JsonSerializer.Deserialize<LoggedInDTO>(content, AppInfo.DeserializationOptions);
                 ClientGuid = userClient.ClientGuid;
                 User = userClient.User;
-                return user is not null;
+                return User != null;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"---> Exception occured: {ex}");
+                LogDebugger.LogError(ex);
                 return false;
             }
         }
@@ -92,11 +93,11 @@ namespace AppProjectGym.Information
                 User user = JsonSerializer.Deserialize<User>(content, AppInfo.DeserializationOptions);
 
                 User = user;
-                return User is not null;
+                return User != null;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"---> Exception occured: {ex}");
+                LogDebugger.LogError(ex);
                 return false;
             }
         }

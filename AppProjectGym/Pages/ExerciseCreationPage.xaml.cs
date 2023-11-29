@@ -1,6 +1,7 @@
 using AppProjectGym.Models;
 using AppProjectGym.Services.Create;
 using AppProjectGym.Services.Read;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Image = AppProjectGym.Models.Image;
 
@@ -8,28 +9,23 @@ namespace AppProjectGym.Pages;
 
 public partial class ExerciseCreationPage : ContentPage
 {
-    private readonly IReadService<Muscle> muscleReadService;
-    private readonly IReadService<Equipment> equipmentReadService;
-    private readonly ICreateService<Exercise, int> exerciseCreateService;
-    private readonly ICreateService<Image, int> imageCreateService;
+    private readonly IReadService readService;
+    private readonly ICreateService createService;
 
-    public ExerciseCreationPage(IReadService<Muscle> muscleReadService, IReadService<Equipment> equipmentReadService, ICreateService<Exercise, int> exerciseCreateService, ICreateService<Image, int> imageCreateService)
+    public ExerciseCreationPage(IReadService readService, ICreateService createService)
     {
         InitializeComponent();
         BindingContext = this;
 
-        this.muscleReadService = muscleReadService;
-        this.equipmentReadService = equipmentReadService;
-
-        this.exerciseCreateService = exerciseCreateService;
-        this.imageCreateService = imageCreateService;
+        this.readService = readService;
+        this.createService = createService;
         OnOpen();
     }
 
     private async void OnOpen()
     {
-        Muscles = await muscleReadService.Get("", 0, -1, "none");
-        Equipment = await equipmentReadService.Get("", 0, -1, "none");
+        Muscles = await readService.Get<List<Muscle>>();
+        Equipment = await readService.Get<List<Equipment>>();
     }
 
     public List<Muscle> Muscles
@@ -82,12 +78,14 @@ public partial class ExerciseCreationPage : ContentPage
             NoteIds = new List<int>(),
         };
 
-        var exerciseId = await exerciseCreateService.Add(exercise);
+        var exerciseId = await createService.Add(exercise);
+        if (exerciseId == "")
+            return;
 
-        await imageCreateService.Add(new()
+        await createService.Add(new Image()
         {
             ImageURL = imageURL,
-            ExerciseId = exerciseId, //can't get id - restructuring required
+            ExerciseId = int.Parse(exerciseId),
         });
     }
 }
