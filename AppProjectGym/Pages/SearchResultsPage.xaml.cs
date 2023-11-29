@@ -67,14 +67,14 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
 
     public async void LoadExercises()
     {
-        if (searchQuery is null) //Add query support
+        if (searchQuery is null)
             return;
 
         if (isWaitingForData)
             return;
 
         isWaitingForData = true;
-        var exercisesToLoad = await readService.Get<List<Exercise>>("images", ReadService.TranslateEndPoint("exercise", (pageNumber - 1) * exercisesPerPage, exercisesPerPage));
+        var exercisesToLoad = await readService.Get<List<Exercise>>("images", ReadService.TranslateEndPoint("exercise", (pageNumber - 1) * exercisesPerPage, exercisesPerPage), searchQuery);
         if (exercisesToLoad is null || exercisesToLoad.Count == 0)
         {
             PageNumber--;

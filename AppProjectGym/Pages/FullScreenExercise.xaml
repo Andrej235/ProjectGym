@@ -33,39 +33,69 @@
                 <Label Text="{Binding Exercise.Description}" Grid.Row="1" FontSize="Caption"/>
             </Grid>
 
-            <Grid x:Name="primaryMusclesWrapper" RowDefinitions="Auto, Auto" IsVisible="{Binding PrimaryMuscles, Converter={StaticResource IsCollectionNotEmpty}}">
+            <Grid x:Name="primaryMusclesWrapper" RowDefinitions="Auto, Auto" IsVisible="{Binding PrimaryMuscleDisplays, Converter={StaticResource IsCollectionNotEmpty}}">
                 <Label Text="Primary Muscles:" Grid.Row="0" FontSize="Title"/>
-                <CollectionView ItemsSource="{Binding PrimaryMuscles}"
+                <CollectionView ItemsSource="{Binding PrimaryMuscleDisplays}"
                                 Grid.Row="1"
                                 SelectionMode="Single"
-                                SelectionChanged="OnPrimaryMuscleSearch">
+                                SelectionChanged="OnPrimaryMuscleGroupSearch">
 
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="Models:Muscle">
-                            <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="30, 3, 5, 3">
-                                <Label Text="{Binding Name}" 
+                        <DataTemplate x:DataType="Models:MuscleGroupDisplay">
+                            <Grid RowDefinitions="auto, auto">
+                                <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="30, 3, 5, 3" Grid.Row="0">
+                                    <Label Text="{Binding Name}" 
                                        VerticalTextAlignment="Center"
                                        HorizontalTextAlignment="Center"/>
-                            </Border>
+                                </Border>
+
+                                <CollectionView Grid.Row="1" ItemsSource="{Binding Muscles}">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate x:DataType="Models:Muscle">
+                                            <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="90, 3, 65, 3" Grid.Row="0">
+                                                <Label Text="{Binding Name}"
+                                                       FontSize="Caption"
+                                                       VerticalTextAlignment="Center"
+                                                       HorizontalTextAlignment="Center"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </Grid>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
             </Grid>
 
-            <Grid x:Name="secondaryMusclesWrapper" RowDefinitions="Auto, Auto" IsVisible="{Binding SecondaryMuscles, Converter={StaticResource IsCollectionNotEmpty}}">
+            <Grid x:Name="secondaryMusclesWrapper" RowDefinitions="Auto, Auto" IsVisible="{Binding SecondaryMuscleDisplays, Converter={StaticResource IsCollectionNotEmpty}}">
                 <Label Text="Secondary Muscles:" Grid.Row="0" FontSize="Title"/>
-                <CollectionView ItemsSource="{Binding SecondaryMuscles}"
+                <CollectionView ItemsSource="{Binding SecondaryMuscleDisplays}"
                                 Grid.Row="1"
                                 SelectionMode="Single"
-                                SelectionChanged="OnSecondaryMuscleSearch">
+                                SelectionChanged="OnPrimaryMuscleGroupSearch">
 
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="Models:Muscle">
-                            <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="30, 3, 5, 3">
-                                <Label Text="{Binding Name}" 
-                                               VerticalTextAlignment="Center"
-                                               HorizontalTextAlignment="Center"/>
-                            </Border>
+                        <DataTemplate x:DataType="Models:MuscleGroupDisplay">
+                            <Grid RowDefinitions="auto, auto">
+                                <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="30, 3, 5, 3" Grid.Row="0">
+                                    <Label Text="{Binding Name}" 
+                                       VerticalTextAlignment="Center"
+                                       HorizontalTextAlignment="Center"/>
+                                </Border>
+
+                                <CollectionView Grid.Row="1" ItemsSource="{Binding Muscles}">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate x:DataType="Models:Muscle">
+                                            <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="90, 3, 65, 3" Grid.Row="0">
+                                                <Label Text="{Binding Name}"
+                                                       FontSize="Caption"
+                                                       VerticalTextAlignment="Center"
+                                                       HorizontalTextAlignment="Center"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </Grid>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
