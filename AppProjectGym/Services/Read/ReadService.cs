@@ -1,21 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AppProjectGym.Utilities;
+using AppInfo = AppProjectGym.Information.AppInfo;
+using System.Text.Json;
 
 namespace AppProjectGym.Services.Read
 {
-    public class ReadService<T> : IReadService<T> where T : class
+    public class ReadService<T>(HttpClient client) : IEntityReadService<T> where T : class
     {
-        public Task<T> Get(string primaryKey, string include = "all")
+        public async Task<T> Get(string endPoint, string include = "all", params string[] query)
         {
-            throw new NotImplementedException();
-        }
+            try
+            {
+                string url = AppInfo.BaseApiURL + endPoint + include + string.Join(";", query);
+                HttpResponseMessage response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
 
-        public Task<List<T>> Get(string query, int? offset = 0, int? limit = -1, string include = "all")
-        {
-            throw new NotImplementedException();
+                string content = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<T>(content);
+            }
+            catch (Exception ex)
+            {
+                LogDebugger.LogError(ex);
+                throw;
+            }
         }
     }
 }

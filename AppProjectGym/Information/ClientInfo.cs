@@ -8,16 +8,12 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Maui.Storage;
 
 namespace AppProjectGym.Information
 {
     public static class ClientInfo
     {
-        private static readonly JsonSerializerOptions jsonSerializerOptions = new()
-        {
-            PropertyNameCaseInsensitive = true
-        };
-
         private static User user;
         public static User User
         {
@@ -51,7 +47,7 @@ namespace AppProjectGym.Information
                 ClientGuid = ClientGuid,
                 Email = email,
                 Password = password,
-            }, new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            }, AppInfo.SerializationOptions);
 
             var request = new HttpRequestMessage
             {
@@ -70,7 +66,7 @@ namespace AppProjectGym.Information
             {
                 var response = await client.SendAsync(request);
                 var content = await response.Content.ReadAsStringAsync();
-                var userClient = JsonSerializer.Deserialize<LoggedInDTO>(content, jsonSerializerOptions);
+                var userClient = JsonSerializer.Deserialize<LoggedInDTO>(content, AppInfo.DeserializationOptions);
                 ClientGuid = userClient.ClientGuid;
                 User = userClient.User;
                 return user is not null;
@@ -93,7 +89,7 @@ namespace AppProjectGym.Information
                 var response = await client.GetAsync($"{AppInfo.BaseApiURL}/user/client/{ClientGuid}");
                 response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync();
-                User user = JsonSerializer.Deserialize<User>(content, jsonSerializerOptions);
+                User user = JsonSerializer.Deserialize<User>(content, AppInfo.DeserializationOptions);
 
                 User = user;
                 return User is not null;

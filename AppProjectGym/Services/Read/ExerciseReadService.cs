@@ -2,10 +2,8 @@
 
 namespace AppProjectGym.Services.Read
 {
-    public class ExerciseReadService : AbstractReadService<Exercise>
+    public class ExerciseReadService(HttpClient client) : AbstractReadService<Exercise>(client)
     {
-        public ExerciseReadService(HttpClient client) : base(client) { }
-
         protected override string URLExtension => "exercise";
     }
 }

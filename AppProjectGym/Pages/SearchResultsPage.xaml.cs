@@ -35,11 +35,11 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
 
     private async void SetExerciseDisplays()
     {
-        List<ExerciseDisplay> newExerciseDisplays = new();
+        List<ExerciseDisplay> newExerciseDisplays = [];
         foreach (var e in exercises)
             newExerciseDisplays.Add(await exerciseDisplayMapper.Map(e));
 
-        exerciseDisplays = newExerciseDisplays.OrderBy(x => x.ImageUrl == "").ToList();
+        exerciseDisplays = [.. newExerciseDisplays.OrderBy(x => x.ImageUrl == "")];
         exercisesCollection.ItemsSource = null;
         exercisesCollection.ItemsSource = exerciseDisplays;
         isWaitingForData = false;
@@ -77,7 +77,7 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
 
         isWaitingForData = true;
         var exercisesToLoad = await exerciseReadService.Get(searchQuery, (pageNumber - 1) * exercisesPerPage, exercisesPerPage, "images");
-        if (exercisesToLoad is null || !exercisesToLoad.Any())
+        if (exercisesToLoad is null || exercisesToLoad.Count == 0)
         {
             PageNumber--;
             isWaitingForData = false;

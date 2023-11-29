@@ -106,7 +106,7 @@ namespace AppProjectGym
 
             isWaitingForExerciseData = true;
             var loadedExercises = await exerciseReadService.Get("", (pageNumber - 1) * exercisesPerPage, exercisesPerPage, "images");
-            if (loadedExercises is null || !loadedExercises.Any())
+            if (loadedExercises is null || loadedExercises.Count == 0)
             {
                 PageNumber--; //If the page number is 1 the previous button can't even be pressed / won't invoke this method
                 isWaitingForExerciseData = false;
@@ -118,7 +118,7 @@ namespace AppProjectGym
             foreach (var e in Exercises)
                 newExerciseDisplays.Add(await exerciseDisplayMapper.Map(e));
 
-            exerciseDisplays = newExerciseDisplays.OrderByDescending(x => x.ImageUrl != "").ToList();
+            exerciseDisplays = [.. newExerciseDisplays.OrderByDescending(x => x.ImageUrl != "")];
             exerciseCollectionView.ItemsSource = null;
             exerciseCollectionView.ItemsSource = exerciseDisplays;
             await exerciseCollectionScrollView.ScrollToAsync(0, 0, true);

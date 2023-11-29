@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
 using AppInfo = AppProjectGym.Information.AppInfo;
+using Microsoft.Maui.ApplicationModel;
 
 namespace AppProjectGym.Services.Read
 {

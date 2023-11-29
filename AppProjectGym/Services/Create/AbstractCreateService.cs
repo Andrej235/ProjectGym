@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
 using AppInfo = AppProjectGym.Information.AppInfo;
+using Microsoft.Maui.ApplicationModel;
 
 namespace AppProjectGym.Services.Create
 {
@@ -29,7 +30,7 @@ namespace AppProjectGym.Services.Create
         {
             try
             {
-                var toAddJSON = JsonSerializer.Serialize(entityToAdd, AppInfo.SerializerOptions);
+                var toAddJSON = JsonSerializer.Serialize(entityToAdd, AppInfo.SerializationOptions);
                 HttpRequestMessage request = new()
                 {
                     Method = HttpMethod.Post,
