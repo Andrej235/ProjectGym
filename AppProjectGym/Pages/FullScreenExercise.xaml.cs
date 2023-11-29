@@ -11,15 +11,13 @@ namespace AppProjectGym.Pages
         private readonly IReadService<Exercise> exerciseReadService;
         private readonly IReadService<Image> imageReadService;
         private readonly IReadService<Muscle> muscleReadService;
-        private readonly IReadService<ExerciseCategory> categoryReadService;
-        private readonly IReadService<ExerciseNote> notesReadService;
+        private readonly IReadService<Note> notesReadService;
         private readonly IReadService<Equipment> equipmentReadService;
 
         public FullScreenExercise(IReadService<Exercise> exerciseReadService,
                                   IReadService<Image> imageReadService,
                                   IReadService<Muscle> muscleReadService,
-                                  IReadService<ExerciseCategory> categoryReadService,
-                                  IReadService<ExerciseNote> notesReadService,
+                                  IReadService<Note> notesReadService,
                                   IReadService<Equipment> equipmentReadService)
         {
             InitializeComponent();
@@ -27,7 +25,6 @@ namespace AppProjectGym.Pages
             this.exerciseReadService = exerciseReadService;
             this.imageReadService = imageReadService;
             this.muscleReadService = muscleReadService;
-            this.categoryReadService = categoryReadService;
             this.notesReadService = notesReadService;
             this.equipmentReadService = equipmentReadService;
         }
@@ -89,18 +86,7 @@ namespace AppProjectGym.Pages
         }
         private List<Equipment> equipment;
 
-        public ExerciseCategory Category
-        {
-            get => category;
-            set
-            {
-                category = value;
-                OnPropertyChanged();
-            }
-        }
-        private ExerciseCategory category;
-
-        public List<ExerciseNote> Notes
+        public List<Note> Notes
         {
             get => notes;
             set
@@ -109,7 +95,7 @@ namespace AppProjectGym.Pages
                 OnPropertyChanged();
             }
         }
-        private List<ExerciseNote> notes;
+        private List<Note> notes;
 
 
 
@@ -130,7 +116,6 @@ namespace AppProjectGym.Pages
         {
             LoadPrimaryMuscles();
             LoadSecondaryMuscles();
-            LoadCategory();
             LoadNotes();
             LoadEquipment();
         }
@@ -139,25 +124,11 @@ namespace AppProjectGym.Pages
 
         private async void LoadSecondaryMuscles() => SecondaryMuscles = (await Task.WhenAll(Exercise.SecondaryMuscleIds.Select(x => muscleReadService.Get(x.ToString(), "none"))).ConfigureAwait(false)).ToList();
 
-        private async void LoadCategory() => Category = await categoryReadService.Get(Exercise.CategoryId.ToString(), "none");
-
         private async void LoadNotes() => Notes = (await Task.WhenAll(Exercise.NoteIds.Select(x => notesReadService.Get(x.ToString(), "none")))).ToList();
 
         private async void LoadEquipment() => Equipment = (await Task.WhenAll(Exercise.EquipmentIds.Select(x => equipmentReadService.Get(x.ToString(), "none")))).ToList();
 
 
-
-        private async void OnCategorySearch(object sender, EventArgs e)
-        {
-            var category = (sender as Button).BindingContext as ExerciseCategory;
-            Dictionary<string, object> navigationParameter = new()
-            {
-                {"q", $"category={category.Id}"}
-            };
-
-            await Shell.Current.GoToAsync(nameof(SearchResultsPage), navigationParameter);
-            Debug.WriteLine($"---> Category clicked {category.Name}");
-        }
 
         private async void OnPrimaryMuscleSearch(object sender, SelectionChangedEventArgs e)
         {

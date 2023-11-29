@@ -48,51 +48,6 @@
                              ScaleY="0"
                              IsVisible="False"
                              Background="#121212">
-            <toolkit:Expander x:Name="categoryFilterExpander">
-                <toolkit:Expander.Header>
-                    <Grid ColumnDefinitions="*, 50" 
-                              Padding="10">
-                        <Label Text="Categories" 
-                                   Grid.Column="0" 
-                                   VerticalOptions="Center"
-                                   VerticalTextAlignment="Center"
-                                   HorizontalTextAlignment="Start"
-                                   FontSize="Subtitle"/>
-
-                        <Image Grid.Column="1" Source="downarrow.png" VerticalOptions="FillAndExpand">
-                            <Image.Triggers>
-                                <DataTrigger TargetType="Image" Binding="{Binding Source={x:Reference categoryFilterExpander}, Path=IsExpanded}" Value="True">
-                                    <Setter Property="RotationX" Value="180"/>
-                                </DataTrigger>
-                            </Image.Triggers>
-                        </Image>
-                    </Grid>
-                </toolkit:Expander.Header>
-
-                <Grid Padding="10"
-                          BackgroundColor="#121212" 
-                          HorizontalOptions="FillAndExpand">
-                    <CollectionView x:Name="categoryFilter"
-                                        ItemsLayout="VerticalList"
-                                        ItemsSource="{Binding Categories}"
-                                        SelectionMode="Multiple"
-                                        Margin="0, 5, 0, 5"
-                                        HorizontalOptions="FillAndExpand">
-
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="Models:ExerciseCategory">
-                                <Border Padding="10" StrokeShape="RoundRectangle 10" MinimumWidthRequest="{Binding Source={RelativeSource AncestorType={x:Type CollectionView}}, Path=WidthRequest}">
-                                    <Grid RowDefinitions="25" ColumnDefinitions="*">
-                                        <Label Text="{Binding Name}" 
-                                                   VerticalTextAlignment="Center"
-                                                   HorizontalTextAlignment="Center"/>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </Grid>
-            </toolkit:Expander>
 
             <toolkit:Expander x:Name="equipmentFilterExpander">
                 <toolkit:Expander.Header>

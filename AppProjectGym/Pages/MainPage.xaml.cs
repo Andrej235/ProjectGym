@@ -12,7 +12,6 @@ namespace AppProjectGym
     {
         private readonly IReadService<Exercise> exerciseReadService;
         private readonly IReadService<Muscle> muscleReadService;
-        private readonly IReadService<ExerciseCategory> categoryReadService;
         private readonly IReadService<Equipment> equipmentReadService;
         private readonly ExerciseDisplayMapper exerciseDisplayMapper;
 
@@ -45,17 +44,6 @@ namespace AppProjectGym
         }
         private List<Muscle> muscles;
 
-        public List<ExerciseCategory> Categories
-        {
-            get => categories;
-            set
-            {
-                categories = value;
-                OnPropertyChanged();
-            }
-        }
-        private List<ExerciseCategory> categories;
-
         public List<Equipment> Equipment
         {
             get => equipment;
@@ -73,7 +61,6 @@ namespace AppProjectGym
             ExerciseDisplayMapper exerciseDisplayMapper,
             IReadService<Exercise> exerciseReadService,
             IReadService<Muscle> muscleReadService,
-            IReadService<ExerciseCategory> categoryReadService,
             IReadService<Equipment> equipmentReadService)
         {
             InitializeComponent();
@@ -87,7 +74,6 @@ namespace AppProjectGym
             this.exerciseReadService = exerciseReadService;
             this.exerciseDisplayMapper = exerciseDisplayMapper;
             this.muscleReadService = muscleReadService;
-            this.categoryReadService = categoryReadService;
             this.equipmentReadService = equipmentReadService;
 
             PageNumber = 1;
@@ -95,7 +81,6 @@ namespace AppProjectGym
 
             LoadExercises();
             LoadMuscles();
-            LoadCategories();
             LoadEquipment();
             CheckIfLoggedIn();
         }
@@ -142,8 +127,6 @@ namespace AppProjectGym
 
         private async void LoadMuscles() => Muscles = await muscleReadService.Get("", 0, -1, "none");
 
-        private async void LoadCategories() => Categories = await categoryReadService.Get("", 0, -1, "none");
-
         private async void LoadEquipment() => Equipment = await equipmentReadService.Get("", 0, -1, "none");
 
         protected override void OnAppearing()
@@ -173,18 +156,16 @@ namespace AppProjectGym
         {
             List<Muscle> primaryMusclesSelected = primaryMuscleFilter.SelectedItems.Where(x => x is Muscle).Cast<Muscle>().ToList();
             List<Muscle> secondaryMusclesSelected = secondaryMuscleFilter.SelectedItems.Where(x => x is Muscle).Cast<Muscle>().ToList();
-            List<ExerciseCategory> categoriesSelected = categoryFilter.SelectedItems.Where(x => x is ExerciseCategory).Cast<ExerciseCategory>().ToList();
             List<Equipment> equipmentSelected = equipmentFilter.SelectedItems.Where(x => x is Equipment).Cast<Equipment>().ToList();
 
             string nameQ = searchBar.Text == string.Empty ? string.Empty : $"name={searchBar.Text};";
             string primaryMusclesQ = $"primarymuscle={string.Join(',', primaryMusclesSelected.Select(m => m.Id))};";
             string secondaryMusclesQ = $"secondarymuscle={string.Join(',', secondaryMusclesSelected.Select(m => m.Id))};";
-            string categoriesQ = $"category={string.Join(',', categoriesSelected.Select(c => c.Id))};";
             string equipmentQ = $"equipment={string.Join(',', equipmentSelected.Select(eq => eq.Id))};";
 
             Dictionary<string, object> navigationParameter = new()
             {
-                {"q", $"{nameQ}{primaryMusclesQ}{secondaryMusclesQ}{categoriesQ}{equipmentQ}strict=false"}
+                {"q", $"{nameQ}{primaryMusclesQ}{secondaryMusclesQ}{equipmentQ}strict=false"}
             };
 
             searchBar.Text = "";
@@ -217,7 +198,6 @@ namespace AppProjectGym
         {
             primaryMuscleFilter.SelectedItems = null;
             secondaryMuscleFilter.SelectedItems = null;
-            categoryFilter.SelectedItems = null;
             equipmentFilter.SelectedItems = null;
         }
 

@@ -37,9 +37,8 @@ namespace AppProjectGym
 
             builder.Services.AddTransient<IReadService<Exercise>, ExerciseReadService>();
             builder.Services.AddTransient<IReadService<Image>, ImageReadService>();
-            builder.Services.AddTransient<IReadService<ExerciseNote>, NotesReadService>();
+            builder.Services.AddTransient<IReadService<Note>, NotesReadService>();
             builder.Services.AddTransient<IReadService<Equipment>, EquipmentReadService>();
-            builder.Services.AddTransient<IReadService<ExerciseCategory>, CategoryReadService>();
             builder.Services.AddTransient<IReadService<Muscle>, MuscleReadService>();
 
             builder.Services.AddTransient<ICreateService<Exercise, int>, ExerciseCreateService>();

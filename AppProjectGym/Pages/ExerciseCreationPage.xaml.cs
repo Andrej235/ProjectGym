@@ -9,18 +9,16 @@ namespace AppProjectGym.Pages;
 public partial class ExerciseCreationPage : ContentPage
 {
     private readonly IReadService<Muscle> muscleReadService;
-    private readonly IReadService<ExerciseCategory> categoryReadService;
     private readonly IReadService<Equipment> equipmentReadService;
     private readonly ICreateService<Exercise, int> exerciseCreateService;
     private readonly ICreateService<Image, int> imageCreateService;
 
-    public ExerciseCreationPage(IReadService<Muscle> muscleReadService, IReadService<ExerciseCategory> categoryReadService, IReadService<Equipment> equipmentReadService, ICreateService<Exercise, int> exerciseCreateService, ICreateService<Image, int> imageCreateService)
+    public ExerciseCreationPage(IReadService<Muscle> muscleReadService, IReadService<Equipment> equipmentReadService, ICreateService<Exercise, int> exerciseCreateService, ICreateService<Image, int> imageCreateService)
     {
         InitializeComponent();
         BindingContext = this;
 
         this.muscleReadService = muscleReadService;
-        this.categoryReadService = categoryReadService;
         this.equipmentReadService = equipmentReadService;
 
         this.exerciseCreateService = exerciseCreateService;
@@ -32,7 +30,6 @@ public partial class ExerciseCreationPage : ContentPage
     {
         Muscles = await muscleReadService.Get("", 0, -1, "none");
         Equipment = await equipmentReadService.Get("", 0, -1, "none");
-        Categories = await categoryReadService.Get("", 0, -1, "none");
     }
 
     public List<Muscle> Muscles
@@ -57,17 +54,6 @@ public partial class ExerciseCreationPage : ContentPage
     }
     private List<Equipment> equipment;
 
-    public List<ExerciseCategory> Categories
-    {
-        get => categories;
-        set
-        {
-            categories = value;
-            OnPropertyChanged();
-        }
-    }
-    private List<ExerciseCategory> categories;
-
     private async void OnCreateExercise(object sender, EventArgs e)
     {
         var name = nameInput.Text;
@@ -80,7 +66,6 @@ public partial class ExerciseCreationPage : ContentPage
             description == "" ||
             imageURL is null ||
             imageURL == "" ||
-            categorySelector.SelectedItem is null ||
             equipmentSelector.SelectedItems is null ||
             primaryMuscleSelector.SelectedItems is null)
             return;
@@ -89,15 +74,11 @@ public partial class ExerciseCreationPage : ContentPage
         {
             Name = name,
             Description = description,
-            CategoryId = (categorySelector.SelectedItem as ExerciseCategory).Id,
             EquipmentIds = equipmentSelector.SelectedItems.Select(x => (x as Equipment).Id),
             PrimaryMuscleIds = primaryMuscleSelector.SelectedItems.Select(x => (x as Muscle).Id),
             SecondaryMuscleIds = secondaryMuscleSelector.SelectedItems is not null ? secondaryMuscleSelector.SelectedItems.Select(x => (x as Muscle).Id) : new List<int>(),
             AliasIds = new List<int>(),
             ImageIds = new List<int>(),
-            VideoIds = new List<int>(),
-            IsVariationOfIds = new List<int>(),
-            VariationIds = new List<int>(),
             NoteIds = new List<int>(),
         };
 
@@ -107,8 +88,6 @@ public partial class ExerciseCreationPage : ContentPage
         {
             ImageURL = imageURL,
             ExerciseId = exerciseId, //can't get id - restructuring required
-            IsMain = true,
-            Style = "idk"
         });
     }
 }

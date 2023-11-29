@@ -17,8 +17,7 @@
         <VerticalStackLayout>
             <Border HorizontalOptions="FillAndExpand" StrokeThickness="3" Margin="10" Padding="5">
                 <Grid RowDefinitions="*">
-                    <Label Text="{Binding Category.Name, StringFormat='Category: {0}'}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" FontSize="Subtitle" Grid.Row="0"/>
-                    <Button BackgroundColor="Transparent" Grid.Row="0" BindingContext="{Binding Category}" Clicked="OnCategorySearch"/>
+                    <Label Text="This used to say category"/>
                 </Grid>
             </Border>
 
@@ -91,12 +90,12 @@
                     </CollectionView.ItemTemplate>
                 </CollectionView>
             </Grid>
-            
+
             <Grid Margin="10, 0, 10, 5" RowDefinitions="Auto, Auto" RowSpacing="5" ColumnDefinitions=".05*, *" IsVisible="{Binding Notes, Converter={StaticResource IsCollectionNotEmpty}}">
                 <Label Text="Notes:" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Subtitle"/>
                 <CollectionView ItemsSource="{Binding Notes}" Grid.Row="1" Grid.Column="1">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="Models:ExerciseNote">
+                        <DataTemplate x:DataType="Models:Note">
                             <Label Text="{Binding Comment, StringFormat='*{0}'}" HorizontalTextAlignment="Start" FontSize="Caption"/>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
