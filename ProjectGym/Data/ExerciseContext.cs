@@ -70,7 +70,7 @@ namespace ProjectGym.Data
 
             modelBuilder.Entity<Exercise>()
                 .HasMany(e => e.PrimaryMuscles)
-                .WithMany()
+                .WithMany(m => m.PrimaryInExercises)
                 .UsingEntity<PrimaryMuscleInExercise>(
                     j => j.HasOne<Muscle>().WithMany().HasForeignKey(m => m.MuscleId).OnDelete(DeleteBehavior.Cascade),
                     j => j.HasOne<Exercise>().WithMany().HasForeignKey(e => e.ExerciseId).OnDelete(DeleteBehavior.Cascade),
@@ -83,7 +83,7 @@ namespace ProjectGym.Data
 
             modelBuilder.Entity<Exercise>()
                 .HasMany(e => e.SecondaryMuscles)
-                .WithMany()
+                .WithMany(m => m.SecondaryInExercises)
                 .UsingEntity<SecondaryMuscleInExercise>(
                     j => j.HasOne<Muscle>().WithMany().HasForeignKey(m => m.MuscleId).OnDelete(DeleteBehavior.Cascade),
                     j => j.HasOne<Exercise>().WithMany().HasForeignKey(e => e.ExerciseId).OnDelete(DeleteBehavior.Cascade),

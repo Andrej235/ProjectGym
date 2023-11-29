@@ -25,9 +25,6 @@
                 </VisualStateGroupList>
             </Setter>
         </Style>
-
-        <ValueConverters:ExerciseImageURLConverter x:Key="exerciseToImage"/>
-        <ValueConverters:MuscleImageConverter x:Key="muscleIdToImage"/>
     </ContentPage.Resources>
 
     <Grid RowDefinitions="50, Auto, *, 90"

@@ -17,10 +17,8 @@ namespace AppProjectGym.Services.Read
                 }
 
                 string url = $"{AppInfo.BaseApiURL}/{endPoint}";
-                if (!endPoint.Contains('?'))
-                    url += "?";
-
-                url += include + string.Join(";", query);
+                url += !endPoint.Contains('?') ? "?" : "&";
+                url += $"include={include}&q={string.Join(";", query)}";
 
                 HttpResponseMessage response = await client.GetAsync(url);
                 response.EnsureSuccessStatusCode();
@@ -32,7 +30,7 @@ namespace AppProjectGym.Services.Read
             catch (Exception ex)
             {
                 LogDebugger.LogError(ex);
-                throw;
+                return null;
             }
         }
 

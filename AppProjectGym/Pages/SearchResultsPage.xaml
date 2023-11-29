@@ -8,10 +8,6 @@
              Title="SearchResultsPage"
              x:DataType="Pages:SearchResultsPage">
 
-    <ContentPage.Resources>
-        <ValueConverters:ExerciseImageURLConverter x:Key="exerciseIdToImage"/>
-    </ContentPage.Resources>
-
     <ScrollView x:Name="scrollView">
         <VerticalStackLayout>
             <CollectionView x:Name="exercisesCollection"

@@ -7,7 +7,7 @@ namespace AppProjectGym.Services.Create
 {
     public class CreateService(HttpClient client) : ICreateService
     {
-        public async Task<string> Add<T>(T entityToAdd, string endPoint = "")
+        public async Task<string> Add<T>(T entityToAdd, string endPoint = "") where T : class
         {
             try
             {

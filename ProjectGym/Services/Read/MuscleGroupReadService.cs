@@ -16,6 +16,19 @@ namespace ProjectGym.Services.Read
 
                 return m => m.Name.ToLower().Contains(value.ToLower());
             }
+
+            if (int.TryParse(value, out int id))
+            {
+                return key switch
+                {
+                    "primaryin" => x => x.PrimaryInExercises.Any(x => x.Id == id),
+                    "primary" => x => x.PrimaryInExercises.Any(x => x.Id == id),
+                    "secondaryin" => x => x.SecondaryInExercises.Any(x => x.Id == id),
+                    "secondary" => x => x.SecondaryInExercises.Any(x => x.Id == id),
+                    _ => throw new NotSupportedException($"Invalid key in search query. Entered key: {key}")
+                };
+            }
+
             throw new NotSupportedException($"Invalid key in search query. Entered key: {key}");
         }
     }

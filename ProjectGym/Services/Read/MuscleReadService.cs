@@ -16,14 +16,20 @@ namespace ProjectGym.Services.Read
 
                 return x => x.Name.ToLower().Contains(value.ToLower());
             }
-            else if (key == "musclegroup")
+
+            if (int.TryParse(value, out var id))
             {
-                if (int.TryParse(value, out var id))
-                    return x => x.MuscleGroupId == id;
-                else
-                    throw new NotSupportedException($"Invalid value in search query. Entered value '{value}' for key '{key}'");
+                return key switch
+                {
+                    "musclegroup" => x => x.MuscleGroupId == id,
+                    "primaryin" => x => x.PrimaryInExercises.Any(x => x.Id == id),
+                    "primary" => x => x.PrimaryInExercises.Any(x => x.Id == id),
+                    "secondaryin" => x => x.SecondaryInExercises.Any(x => x.Id == id),
+                    "secondary" => x => x.SecondaryInExercises.Any(x => x.Id == id),
+                    _ => throw new NotSupportedException($"Invalid key in search query. Entered key: {key}")
+                };
             }
-            throw new NotSupportedException($"Invalid key in search query. Entered key: {key}");
+            throw new NotSupportedException($"Invalid value in search query. Entered value '{value}' for key '{key}'");
         }
     }
 }

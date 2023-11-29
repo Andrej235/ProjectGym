@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AppProjectGym.Services.Delete
+﻿namespace AppProjectGym.Services.Delete
 {
-    internal interface IDeleteService<T> where T : class
+    public interface IDeleteService
     {
+        Task<bool> Delete(object id, string endPoint);
+        Task<bool> Delete<T>(T entityToDelete, string endPoint = "") where T : class;
     }
 }

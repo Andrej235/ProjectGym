@@ -2,6 +2,6 @@
 {
     public interface ICreateService
     {
-        Task<string> Add<T>(T entityToAdd, string endPoint = "");
+        Task<string> Add<T>(T entityToAdd, string endPoint = "") where T : class;
     }
 }

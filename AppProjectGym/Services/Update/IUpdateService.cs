@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AppProjectGym.Services.Update
+﻿namespace AppProjectGym.Services.Update
 {
-    internal interface IUpdateService<T> where T : class
+    public interface IUpdateService 
     {
+        Task<bool> Update<T>(T updatedEntity, string endPoint = "") where T : class;
     }
 }

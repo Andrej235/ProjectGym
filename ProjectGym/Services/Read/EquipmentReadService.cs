@@ -16,6 +16,10 @@ namespace ProjectGym.Services.Read
 
                 return eq => eq.Name.ToLower().Contains(value.ToLower());
             }
+
+            if (key == "exercise" && int.TryParse(value, out var id))
+                return x => x.UsedInExercises.Any(x => x.Id == id);
+
             throw new NotSupportedException($"Invalid key in search query. Entered key: {key}");
         }
     }

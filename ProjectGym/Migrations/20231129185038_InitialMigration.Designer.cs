@@ -12,8 +12,8 @@ using ProjectGym.Data;
 namespace ProjectGym.Migrations
 {
     [DbContext(typeof(ExerciseContext))]
-    [Migration("20231128183602_FullDatabaseRevamp")]
-    partial class FullDatabaseRevamp
+    [Migration("20231129185038_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

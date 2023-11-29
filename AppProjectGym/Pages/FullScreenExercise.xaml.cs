@@ -30,7 +30,7 @@ namespace AppProjectGym.Pages
         }
         private Exercise exercise;
 
-        public Models.Image MainImage
+        public Image MainImage
         {
             get => mainImage;
             set
@@ -39,7 +39,29 @@ namespace AppProjectGym.Pages
                 OnPropertyChanged();
             }
         }
-        private Models.Image mainImage;
+        private Image mainImage;
+
+        public List<MuscleGroup> PrimaryMuscleGroups
+        {
+            get => primaryMuscleGroups;
+            set
+            {
+                primaryMuscleGroups = value;
+                OnPropertyChanged();
+            }
+        }
+        private List<MuscleGroup> primaryMuscleGroups;
+
+        public List<MuscleGroup> SecondaryMuscleGroups
+        {
+            get => secondaryMuscleGroups;
+            set
+            {
+                secondaryMuscleGroups = value;
+                OnPropertyChanged();
+            }
+        }
+        private List<MuscleGroup> secondaryMuscleGroups;
 
         public List<Muscle> PrimaryMuscles
         {
@@ -74,7 +96,7 @@ namespace AppProjectGym.Pages
         }
         private List<Equipment> equipment;
 
-        public List<Note> Notes
+        public List<ExerciseNote> Notes
         {
             get => notes;
             set
@@ -83,7 +105,7 @@ namespace AppProjectGym.Pages
                 OnPropertyChanged();
             }
         }
-        private List<Note> notes;
+        private List<ExerciseNote> notes;
 
 
 
@@ -97,24 +119,14 @@ namespace AppProjectGym.Pages
                 var image = await readService.Get<Image>("all", $"image/{exercise.ImageIds.First()}");
                 MainImage = image;
             }
-            OnOpen();
+
+            PrimaryMuscleGroups = await readService.Get<List<MuscleGroup>>("none", "musclegroup", $"primary={Exercise.Id}");
+            SecondaryMuscleGroups = await readService.Get<List<MuscleGroup>>("none", "musclegroup", $"secondary={Exercise.Id}");
+            PrimaryMuscles = await readService.Get<List<Muscle>>("none", "muscle", $"primary={Exercise.Id}");
+            SecondaryMuscles = await readService.Get<List<Muscle>>("none", "muscle", $"secondary={Exercise.Id}");
+            Notes = await readService.Get<List<ExerciseNote>>("none", "note", $"exercise={Exercise.Id}");
+            Equipment = await readService.Get<List<Equipment>>("none", "equipment", $"exercise={Exercise.Id}");
         }
-
-        private void OnOpen()
-        {
-            LoadPrimaryMuscles();
-            LoadSecondaryMuscles();
-            LoadNotes();
-            LoadEquipment();
-        }
-
-        private async void LoadPrimaryMuscles() => PrimaryMuscles = [.. await Task.WhenAll(Exercise.PrimaryMuscleIds.Select(x => readService.Get<Muscle>("none", $"muscle/{x}")))];
-
-        private async void LoadSecondaryMuscles() => SecondaryMuscles = [.. await Task.WhenAll(Exercise.SecondaryMuscleIds.Select(x => readService.Get<Muscle>("none", $"muscle/{x}")))];
-
-        private async void LoadNotes() => Notes = [.. await Task.WhenAll(Exercise.NoteIds.Select(x => readService.Get<Note>("none", $"note/{x}")))];
-
-        private async void LoadEquipment() => Equipment = [.. await Task.WhenAll(Exercise.EquipmentIds.Select(x => readService.Get<Equipment>("none", $"equipment/{x}")))];
 
 
 
