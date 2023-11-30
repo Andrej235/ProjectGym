@@ -11,6 +11,8 @@ namespace ProjectGym.Services.Mapping
             Name = entity.Name,
             ImageUrl = entity.ImageUrl,
             MuscleGroupId = entity.MuscleGroupId,
+            PrimaryInExercises = entity.PrimaryInExercises.Select(x => x.Id),
+            SecondaryInExercises = entity.SecondaryInExercises.Select(x => x.Id),
         };
 
         public Muscle Map(MuscleDTO dto) => new()

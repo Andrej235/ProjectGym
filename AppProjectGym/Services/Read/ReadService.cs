@@ -34,6 +34,6 @@ namespace AppProjectGym.Services.Read
             }
         }
 
-        public static string TranslateEndPoint(string endPoint, int? offset, int? limit) => $"{endPoint}?{offset ?? 0}&{limit ?? -1}";
+        public static string TranslateEndPoint(string endPoint, int? offset, int? limit) => $"{endPoint}?offset={offset ?? 0}&limit={limit ?? -1}";
     }
 }

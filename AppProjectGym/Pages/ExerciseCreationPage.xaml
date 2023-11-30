@@ -41,19 +41,34 @@
                 <Label Text="Primary Muscles:" FontSize="Subtitle"/>
 
                 <Grid Margin="15, 0, 0, 0" Grid.Row="1">
-                    <CollectionView x:Name="primaryMuscleSelector"
-                                                ItemsLayout="VerticalList"
-                                                ItemsSource="{Binding Muscles}"
-                                                SelectionMode="Multiple"
-                                                Margin="0, 5, 0, 5">
+                    <CollectionView x:Name="primaryMuscleGroupSelector"
+                                    ItemsLayout="VerticalList"
+                                    ItemsSource="{Binding MuscleGroupDisplays}"
+                                    SelectionMode="Multiple"
+                                    Margin="0, 5, 0, 5">
 
                         <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="Models:Muscle">
-                                <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="3">
-                                    <Label Text="{Binding Name}" 
-                                               VerticalTextAlignment="Center"
-                                               HorizontalTextAlignment="Center"/>
-                                </Border>
+                            <DataTemplate x:DataType="Models:MuscleGroupDisplay">
+                                <Grid RowDefinitions="auto, auto">
+                                    <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="30, 3, 5, 3" Grid.Row="0">
+                                        <Label Text="{Binding Name}" 
+                                       VerticalTextAlignment="Center"
+                                       HorizontalTextAlignment="Center"/>
+                                    </Border>
+
+                                    <CollectionView x:Name="primaryMuscleSelector" Grid.Row="1" ItemsSource="{Binding Muscles}" SelectionMode="Single" SelectionChanged="CollectionView_SelectionChanged">
+                                        <CollectionView.ItemTemplate>
+                                            <DataTemplate x:DataType="Models:MuscleGroupDisplay">
+                                                <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="90, 3, 65, 3" Grid.Row="0">
+                                                    <Label Text="{Binding Name}"
+                                                       FontSize="Caption"
+                                                       VerticalTextAlignment="Center"
+                                                       HorizontalTextAlignment="Center"/>
+                                                </Border>
+                                            </DataTemplate>
+                                        </CollectionView.ItemTemplate>
+                                    </CollectionView>
+                                </Grid>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
@@ -64,19 +79,34 @@
                 <Label Text="Secondary Muscles:" FontSize="Subtitle"/>
 
                 <Grid Margin="15, 0, 0, 0" Grid.Row="1">
-                    <CollectionView x:Name="secondaryMuscleSelector"
-                                                ItemsLayout="VerticalList"
-                                                ItemsSource="{Binding Muscles}"
-                                                SelectionMode="Multiple"
-                                                Margin="0, 5, 0, 5">
+                    <CollectionView x:Name="secondaryMuscleGroupSelector"
+                                    ItemsLayout="VerticalList"
+                                    ItemsSource="{Binding MuscleGroupDisplays}"
+                                    SelectionMode="Multiple"
+                                    Margin="0, 5, 0, 5">
 
                         <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="Models:Muscle">
-                                <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="3">
-                                    <Label Text="{Binding Name}" 
+                            <DataTemplate x:DataType="Models:MuscleGroupDisplay">
+                                <Grid RowDefinitions="auto, auto">
+                                    <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="30, 3, 5, 3" Grid.Row="0">
+                                        <Label Text="{Binding Name}" 
                                                VerticalTextAlignment="Center"
                                                HorizontalTextAlignment="Center"/>
-                                </Border>
+                                    </Border>
+
+                                    <CollectionView x:Name="primaryMuscleGroupSelector" Grid.Row="1" ItemsSource="{Binding Muscles}" SelectionMode="Single" SelectionChanged="CollectionView_SelectionChanged">
+                                        <CollectionView.ItemTemplate>
+                                            <DataTemplate x:DataType="Models:Muscle">
+                                                <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="90, 3, 65, 3" Grid.Row="0">
+                                                    <Label Text="{Binding Name}"
+                                                           FontSize="Caption"
+                                                           VerticalTextAlignment="Center"
+                                                           HorizontalTextAlignment="Center"/>
+                                                </Border>
+                                            </DataTemplate>
+                                        </CollectionView.ItemTemplate>
+                                    </CollectionView>
+                                </Grid>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>

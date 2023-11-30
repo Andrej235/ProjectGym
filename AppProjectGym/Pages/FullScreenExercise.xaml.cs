@@ -1,4 +1,5 @@
 using AppProjectGym.Models;
+using AppProjectGym.Services;
 using AppProjectGym.Services.Read;
 using Image = AppProjectGym.Models.Image;
 
@@ -88,13 +89,11 @@ namespace AppProjectGym.Pages
         public async void ApplyQueryAttributes(IDictionary<string, object> query)
         {
             int id = Convert.ToInt32(query["id"]);
-            Exercise = await readService.Get<Exercise>("all", $"exercise/{id}");
+            Exercise = await readService.Get<Exercise>("none", $"exercise/{id}");
 
-            if (exercise.ImageIds.Any())
-            {
-                var image = await readService.Get<Image>("all", $"image/{exercise.ImageIds.First()}");
-                MainImage = image;
-            }
+            var images = await readService.Get<List<Image>>("none", ReadService.TranslateEndPoint("image", 0, 1), $"exercise={Exercise.Id}");
+            if (images != null && images.Count != 0)
+                MainImage = images.First();
 
             var primaryMuscleGroups = await readService.Get<List<MuscleGroup>>("none", "musclegroup", $"primary={Exercise.Id}");
             var primaryMuscles = await readService.Get<List<Muscle>>("none", "muscle", $"primary={Exercise.Id}");
@@ -120,15 +119,12 @@ namespace AppProjectGym.Pages
 
 
 
-        private async void OnPrimaryMuscleGroupSearch(object sender, SelectionChangedEventArgs e)
-        {
-            var muscle = e.CurrentSelection[0] as MuscleGroupDisplay;
-            Dictionary<string, object> navigationParameter = new()
-            {
-                {"q", $"primarymusclegroup={muscle.Id}"}
-            };
+        private async void OnPrimaryMuscleGroupSearch(object sender, SelectionChangedEventArgs e) => await NavigationService.SearchAsync($"primarymusclegroup={(e.CurrentSelection[0] as MuscleGroupDisplay).Id}");
 
-            await Shell.Current.GoToAsync(nameof(SearchResultsPage), navigationParameter);
-        }
+        private async void OnPrimaryMuscleSearch(object sender, SelectionChangedEventArgs e) => await NavigationService.SearchAsync($"primarymuscle={(e.CurrentSelection[0] as Muscle).Id}");
+
+        private async void OnEquipmentSearch(object sender, SelectionChangedEventArgs e) => await NavigationService.SearchAsync($"equipment={(e.CurrentSelection[0] as Equipment).Id}");
+
+        private async void OnEditButtonClicked(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(ExerciseCreationPage), new KeyValuePair<string, object>("edit", Exercise));
     }
 }

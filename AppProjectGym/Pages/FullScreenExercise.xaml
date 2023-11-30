@@ -15,8 +15,15 @@
     <ScrollView>
         <FlexLayout Direction="Column" Margin="10, 0, 10, 5">
             <Border HorizontalOptions="FillAndExpand" StrokeThickness="3" Margin="10" Padding="5">
-                <Grid RowDefinitions="*">
-                    <Label Text="{Binding Exercise.Name}" HorizontalTextAlignment="Center"/>
+                <Grid RowDefinitions="*" ColumnDefinitions="30, *, 30" ColumnSpacing="15">
+                    <ImageButton HorizontalOptions="Center"
+                                 VerticalOptions="Center"
+                                 WidthRequest="23"
+                                 HeightRequest="23"
+                                 Source="pen.png"
+                                 Margin="7, 0, 0, 0"
+                                 Clicked="OnEditButtonClicked"/>
+                    <Label Text="{Binding Exercise.Name}" HorizontalTextAlignment="Center" Grid.Column="1"/>
                 </Grid>
             </Border>
 
@@ -33,7 +40,7 @@
                 <Label Text="{Binding Exercise.Description}" Grid.Row="1" FontSize="Caption"/>
             </Grid>
 
-            <Grid x:Name="primaryMusclesWrapper" RowDefinitions="Auto, Auto" IsVisible="{Binding PrimaryMuscleDisplays, Converter={StaticResource IsCollectionNotEmpty}}">
+            <Grid RowDefinitions="Auto, Auto" IsVisible="{Binding PrimaryMuscleDisplays, Converter={StaticResource IsCollectionNotEmpty}}">
                 <Label Text="Primary Muscles:" Grid.Row="0" FontSize="Title"/>
                 <CollectionView ItemsSource="{Binding PrimaryMuscleDisplays}"
                                 Grid.Row="1"
@@ -49,7 +56,7 @@
                                        HorizontalTextAlignment="Center"/>
                                 </Border>
 
-                                <CollectionView Grid.Row="1" ItemsSource="{Binding Muscles}">
+                                <CollectionView Grid.Row="1" ItemsSource="{Binding Muscles}" SelectionMode="Single" SelectionChanged="OnPrimaryMuscleSearch">
                                     <CollectionView.ItemTemplate>
                                         <DataTemplate x:DataType="Models:Muscle">
                                             <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="90, 3, 65, 3" Grid.Row="0">
@@ -67,7 +74,7 @@
                 </CollectionView>
             </Grid>
 
-            <Grid x:Name="secondaryMusclesWrapper" RowDefinitions="Auto, Auto" IsVisible="{Binding SecondaryMuscleDisplays, Converter={StaticResource IsCollectionNotEmpty}}">
+            <Grid RowDefinitions="Auto, Auto" IsVisible="{Binding SecondaryMuscleDisplays, Converter={StaticResource IsCollectionNotEmpty}}">
                 <Label Text="Secondary Muscles:" Grid.Row="0" FontSize="Title"/>
                 <CollectionView ItemsSource="{Binding SecondaryMuscleDisplays}"
                                 Grid.Row="1"
@@ -83,7 +90,7 @@
                                        HorizontalTextAlignment="Center"/>
                                 </Border>
 
-                                <CollectionView Grid.Row="1" ItemsSource="{Binding Muscles}">
+                                <CollectionView Grid.Row="1" ItemsSource="{Binding Muscles}" SelectionMode="Single" SelectionChanged="OnPrimaryMuscleSearch">
                                     <CollectionView.ItemTemplate>
                                         <DataTemplate x:DataType="Models:Muscle">
                                             <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="90, 3, 65, 3" Grid.Row="0">
@@ -105,7 +112,8 @@
                 <Label Text="Required equipment:" Grid.Row="0" FontSize="Title"/>
                 <CollectionView ItemsSource="{Binding Equipment}"
                                 Grid.Row="1" 
-                                SelectionMode="Single">
+                                SelectionMode="Multiple"
+                                SelectionChanged="OnEquipmentSearch">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="Models:Equipment">
                             <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="30, 3, 5, 3">
@@ -128,6 +136,7 @@
                     </CollectionView.ItemTemplate>
                 </CollectionView>
             </Grid>
+
         </FlexLayout>
     </ScrollView>
 </ContentPage>

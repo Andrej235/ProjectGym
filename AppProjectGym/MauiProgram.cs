@@ -7,6 +7,8 @@ using CommunityToolkit.Maui.Core;
 using AppProjectGym.Services.Read;
 using Image = AppProjectGym.Models.Image;
 using AppProjectGym.Services.Create;
+using AppProjectGym.Services.Update;
+using AppProjectGym.Services.Delete;
 
 namespace AppProjectGym
 {
@@ -36,8 +38,9 @@ namespace AppProjectGym
             builder.Services.AddTransient<ExerciseCreationPage>();
 
             builder.Services.AddTransient<IReadService, ReadService>();
-
             builder.Services.AddTransient<ICreateService, CreateService>();
+            builder.Services.AddTransient<IUpdateService, UpdateService>();
+            builder.Services.AddTransient<IDeleteService, DeleteService>();
 
             builder.Services.AddTransient<ExerciseDisplayMapper>();
 

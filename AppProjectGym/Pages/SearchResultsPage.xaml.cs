@@ -112,11 +112,6 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
         var selectedExerciseDisplay = e.CurrentSelection[0] as ExerciseDisplay;
         Debug.WriteLine($"---> Selected {selectedExerciseDisplay.Name}");
 
-        Dictionary<string, object> navigationParameter = new()
-        {
-            {"id", selectedExerciseDisplay.Id}
-        };
-
-        await Shell.Current.GoToAsync(nameof(FullScreenExercise), navigationParameter);
+        await NavigationService.GoToAsync(nameof(FullScreenExercise), new KeyValuePair<string, object>("id", selectedExerciseDisplay.Id));
     }
 }

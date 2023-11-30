@@ -78,7 +78,7 @@ namespace AppProjectGym
             if (!await ClientInfo.SetUser())
             {
                 Debug.WriteLine("---> Open login page");
-                await Shell.Current.GoToAsync(nameof(LoginPage));
+                await NavigationService.GoToAsync(nameof(LoginPage));
             }
 
             Debug.WriteLine($"---> Client guid: {ClientInfo.ClientGuid}");
@@ -132,12 +132,7 @@ namespace AppProjectGym
             var exercise = e.CurrentSelection[0] as ExerciseDisplay;
             Debug.WriteLine($"---> Selected {exercise.Name}");
 
-            Dictionary<string, object> navigationParameter = new()
-            {
-                {"id", exercise.Id}
-            };
-
-            await Shell.Current.GoToAsync(nameof(FullScreenExercise), navigationParameter);
+            await NavigationService.GoToAsync(nameof(FullScreenExercise), new KeyValuePair<string, object>("id", exercise.Id));
         }
 
         private async void OnSearch(object sender, EventArgs e)
@@ -151,13 +146,8 @@ namespace AppProjectGym
             string secondaryMusclesQ = $"secondarymuscle={string.Join(',', secondaryMusclesSelected.Select(m => m.Id))};";
             string equipmentQ = $"equipment={string.Join(',', equipmentSelected.Select(eq => eq.Id))};";
 
-            Dictionary<string, object> navigationParameter = new()
-            {
-                {"q", $"{nameQ}{primaryMusclesQ}{secondaryMusclesQ}{equipmentQ}strict=false"}
-            };
-
             searchBar.Text = "";
-            await Shell.Current.GoToAsync(nameof(SearchResultsPage), navigationParameter);
+            await NavigationService.SearchAsync(nameQ, primaryMusclesQ, secondaryMusclesQ, equipmentQ, "strict=false");
         }
 
         private async void FiltersButtonClicked(object sender, EventArgs e)
@@ -191,7 +181,7 @@ namespace AppProjectGym
 
         private async void OnOpenProfilePage(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync(nameof(ProfilePage));
+            await NavigationService.GoToAsync(nameof(ProfilePage));
         }
 
 
@@ -214,6 +204,6 @@ namespace AppProjectGym
             }
         }
 
-        private async void OnAddButtonPressed(object sender, EventArgs e) => await Shell.Current.GoToAsync(nameof(ExerciseCreationPage));
+        private async void OnAddButtonPressed(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(ExerciseCreationPage));
     }
 }
