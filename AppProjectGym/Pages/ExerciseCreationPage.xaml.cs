@@ -54,7 +54,27 @@ public partial class ExerciseCreationPage : ContentPage, IQueryAttributable
     private Exercise exercise;
 
     private List<MuscleGroupRepresentation> primaryMuscleGroupRepresentations;
+    public List<MuscleGroupRepresentation> PrimaryMuscleGroupRepresentations
+    {
+        get => primaryMuscleGroupRepresentations;
+
+        set
+        {
+            primaryMuscleGroupRepresentations = value;
+            OnPropertyChanged();
+        }
+    }
+
     private List<MuscleGroupRepresentation> secondaryMuscleGroupRepresentations;
+    public List<MuscleGroupRepresentation> SecondaryMuscleGroupRepresentations
+    {
+        get => secondaryMuscleGroupRepresentations;
+        set
+        {
+            secondaryMuscleGroupRepresentations = value;
+            OnPropertyChanged();
+        }
+    }
 
     private async void OnCreateExercise(object sender, EventArgs e)
     {
@@ -130,25 +150,20 @@ public partial class ExerciseCreationPage : ContentPage, IQueryAttributable
         imageURLInput.Text = "Not implemented";
 
         equipmentSelector.SelectedItems = Equipment.Where(x => x.UsedInExerciseIds.Contains(exercise.Id)).Cast<object>().ToList();
-        //TODO: Add default selected primary and secondary muscles (and groups), selecting a muscle should select it's group as well
 
-        primaryMuscleGroupRepresentations = MuscleGroupDisplays.Select(x => new MuscleGroupRepresentation(x, [])).ToList();
-        secondaryMuscleGroupRepresentations = MuscleGroupDisplays.Select(x => new MuscleGroupRepresentation(x, [])).ToList();
-
-        primaryMuscleGroupSelector.SelectedItems = MuscleGroupDisplays.Where(x => muscleGroups.First(y => y.Id == x.Id).PrimaryInExercises.Contains(exercise.Id)).Cast<object>().ToList();
-        secondaryMuscleGroupSelector.SelectedItems = MuscleGroupDisplays.Where(x => muscleGroups.First(y => y.Id == x.Id).SecondaryInExercises.Contains(exercise.Id)).Cast<object>().ToList();
+        PrimaryMuscleGroupRepresentations = MuscleGroupDisplays.Select(x => new MuscleGroupRepresentation(x, [])).ToList();
+        SecondaryMuscleGroupRepresentations = MuscleGroupDisplays.Select(x => new MuscleGroupRepresentation(x, [])).ToList();
 
         foreach (var muscle in muscles)
         {
             if (muscle.PrimaryInExercises.Contains(exercise.Id))
-            {
-                primaryMuscleGroupRepresentations.First(x => x.MuscleGroupDisplay.Muscles.Contains(muscle)).SelectedMuscles.Add(muscle);
-            }
+                PrimaryMuscleGroupRepresentations.First(x => x.MuscleGroupDisplay.Muscles.Contains(muscle)).SelectedMuscles.Add(muscle);
             else if (muscle.SecondaryInExercises.Contains(exercise.Id))
-            {
-                secondaryMuscleGroupRepresentations.First(x => x.MuscleGroupDisplay.Muscles.Contains(muscle)).SelectedMuscles.Add(muscle);
-            }
+                SecondaryMuscleGroupRepresentations.First(x => x.MuscleGroupDisplay.Muscles.Contains(muscle)).SelectedMuscles.Add(muscle);
         }
+
+        primaryMuscleGroupSelector.SelectedItems =  PrimaryMuscleGroupRepresentations.Where(x => x.SelectedMuscles.Count > 0).Cast<object>().ToList();
+        secondaryMuscleGroupSelector.SelectedItems =  SecondaryMuscleGroupRepresentations.Where(x => x.SelectedMuscles.Count > 0).Cast<object>().ToList();
     }
 
     private void OnMuscleSelect(object sender, SelectionChangedEventArgs e)
@@ -161,33 +176,43 @@ public partial class ExerciseCreationPage : ContentPage, IQueryAttributable
                 IEnumerable<Muscle> selectedMuscles = innerCollection.SelectedItems.Cast<Muscle>();
                 if (outerCollection == primaryMuscleGroupSelector)
                 {
-                    var oldSelectedMuscles = primaryMuscleGroupRepresentations.First(x => x.MuscleGroupDisplay == display).SelectedMuscles;
-                    primaryMuscleGroupRepresentations.First(x => x.MuscleGroupDisplay == display).SelectedMuscles.AddRange(selectedMuscles.Where(muscle => !oldSelectedMuscles.Contains(muscle)));
+                    var muscleGroupRepresentation = PrimaryMuscleGroupRepresentations.First(x => x.MuscleGroupDisplay == display);
+                    var oldSelectedMuscles = muscleGroupRepresentation.SelectedMuscles;
+                    muscleGroupRepresentation.SelectedMuscles.AddRange(selectedMuscles.Where(muscle => !oldSelectedMuscles.Contains(muscle)));
 
                     var musclesToDelete = oldSelectedMuscles.Where(muscle => !selectedMuscles.Contains(muscle)).ToList();
                     for (int i = 0; i < musclesToDelete.Count; i++)
-                        primaryMuscleGroupRepresentations.First(x => x.MuscleGroupDisplay == display).SelectedMuscles.Remove(musclesToDelete[i]);
+                        PrimaryMuscleGroupRepresentations.First(x => x.MuscleGroupDisplay == display).SelectedMuscles.Remove(musclesToDelete[i]);
+
+                    if (muscleGroupRepresentation.SelectedMuscles.Count > 0)
+                    {
+                        if (!outerCollection.SelectedItems.Contains(muscleGroupRepresentation))
+                            outerCollection.SelectedItems.Add(muscleGroupRepresentation);
+                    }
+                    else if (outerCollection.SelectedItems.Contains(muscleGroupRepresentation))
+                    {
+                        outerCollection.SelectedItems.Remove(muscleGroupRepresentation);
+                    }
                 }
                 else if (outerCollection == secondaryMuscleGroupSelector)
                 {
-                    var oldSelectedMuscles = secondaryMuscleGroupRepresentations.First(x => x.MuscleGroupDisplay == display).SelectedMuscles;
-                    secondaryMuscleGroupRepresentations.First(x => x.MuscleGroupDisplay == display).SelectedMuscles.AddRange(selectedMuscles.Where(muscle => !oldSelectedMuscles.Contains(muscle)));
+                    var muscleGroupRepresentation = secondaryMuscleGroupRepresentations.First(x => x.MuscleGroupDisplay == display);
+                    var oldSelectedMuscles = muscleGroupRepresentation.SelectedMuscles;
+                    muscleGroupRepresentation.SelectedMuscles.AddRange(selectedMuscles.Where(muscle => !oldSelectedMuscles.Contains(muscle)));
 
                     var musclesToDelete = oldSelectedMuscles.Where(muscle => !selectedMuscles.Contains(muscle)).ToList();
                     for (int i = 0; i < musclesToDelete.Count; i++)
                         secondaryMuscleGroupRepresentations.First(x => x.MuscleGroupDisplay == display).SelectedMuscles.Remove(musclesToDelete[i]);
-                }
 
-                if (selectedMuscles.Any())
-                {
-                    if (!outerCollection.SelectedItems.Contains(display))
+                    if (muscleGroupRepresentation.SelectedMuscles.Count > 0)
                     {
-                        outerCollection.SelectedItems.Add(display);
+                        if (!outerCollection.SelectedItems.Contains(muscleGroupRepresentation))
+                            outerCollection.SelectedItems.Add(muscleGroupRepresentation);
                     }
-                }
-                else if (outerCollection.SelectedItems.Contains(display))
-                {
-                    outerCollection.SelectedItems.Remove(display);
+                    else if (outerCollection.SelectedItems.Contains(muscleGroupRepresentation))
+                    {
+                        outerCollection.SelectedItems.Remove(muscleGroupRepresentation);
+                    }
                 }
             }
         }

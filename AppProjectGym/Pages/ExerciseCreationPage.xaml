@@ -59,6 +59,8 @@
                 </VisualStateGroupList>
             </Setter>
         </Style>
+
+        <ValueConverters:ListToListOfObjectConverter x:Key="ToObjectList"/>
     </ContentPage.Resources>
 
     <ScrollView>
@@ -96,7 +98,7 @@
                 <Grid Margin="15, 0, 0, 0" Grid.Row="1">
                     <CollectionView x:Name="primaryMuscleGroupSelector"
                                     ItemsLayout="VerticalList"
-                                    ItemsSource="{Binding MuscleGroupDisplays}"
+                                    ItemsSource="{Binding PrimaryMuscleGroupRepresentations}"
                                     SelectionMode="Multiple"
                                     Margin="0, 5, 0, 5">
 
@@ -109,7 +111,12 @@
                                        HorizontalTextAlignment="Center"/>
                                     </Border>
 
-                                    <CollectionView x:Name="primaryMuscleSelector" Grid.Row="1" ItemsSource="{Binding MuscleGroupDisplay.Muscles}" SelectionMode="Multiple" SelectionChanged="OnMuscleSelect">
+                                    <CollectionView x:Name="{Binding MuscleGroupDisplay.Name}"
+                                                    Grid.Row="1"
+                                                    ItemsSource="{Binding MuscleGroupDisplay.Muscles}"
+                                                    SelectedItems="{Binding SelectedMuscles, Converter={StaticResource ToObjectList}}"
+                                                    SelectionMode="Multiple"
+                                                    SelectionChanged="OnMuscleSelect">
                                         <CollectionView.ItemTemplate>
                                             <DataTemplate x:DataType="Models:Muscle">
                                                 <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="90, 3, 65, 3" Grid.Row="0">
@@ -134,7 +141,7 @@
                 <Grid Margin="15, 0, 0, 0" Grid.Row="1">
                     <CollectionView x:Name="secondaryMuscleGroupSelector"
                                     ItemsLayout="VerticalList"
-                                    ItemsSource="{Binding MuscleGroupDisplays}"
+                                    ItemsSource="{Binding SecondaryMuscleGroupRepresentations}"
                                     SelectionMode="Multiple"
                                     Margin="0, 5, 0, 5">
 
@@ -147,7 +154,11 @@
                                                HorizontalTextAlignment="Center"/>
                                     </Border>
 
-                                    <CollectionView x:Name="primaryMuscleGroupSelector" Grid.Row="1" ItemsSource="{Binding MuscleGroupDisplay.Muscles}" SelectionMode="Multiple" SelectionChanged="OnMuscleSelect">
+                                    <CollectionView Grid.Row="1" 
+                                                    ItemsSource="{Binding MuscleGroupDisplay.Muscles}" 
+                                                    SelectedItems="{Binding SelectedMuscles, Converter={StaticResource ToObjectList}}"
+                                                    SelectionMode="Multiple"
+                                                    SelectionChanged="OnMuscleSelect">
                                         <CollectionView.ItemTemplate>
                                             <DataTemplate x:DataType="Models:Muscle">
                                                 <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="90, 3, 65, 3" Grid.Row="0">

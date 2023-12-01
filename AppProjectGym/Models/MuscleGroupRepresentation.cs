@@ -2,8 +2,17 @@
 {
     public record class MuscleGroupRepresentation
     {
+        private List<Muscle> selectedMuscles;
+
         public MuscleGroupDisplay MuscleGroupDisplay { get; set; }
-        public List<Muscle> SelectedMuscles { get; set; }
+        public List<Muscle> SelectedMuscles
+        {
+            get => selectedMuscles; 
+            set
+            {
+                selectedMuscles = value;
+            }
+        }
 
         public MuscleGroupRepresentation(MuscleGroupDisplay MuscleGroupDisplay, List<Muscle> SelectedMuscles)
         {
