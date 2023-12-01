@@ -1,9 +1,9 @@
 _id: req_6fca14b618e04330af96d87a45ae9469
 type: Request
 parentId: wrk_ab01935ce80a4ba88ebc31536c46ba2d
-modified: 1697710934077
+modified: 1701267081140
 created: 1697708285625
-url: https://localhost:7015/api/user/0704caa6-0075-4e31-453f-08dbd08d1abc
+url: https://localhost:7015/api/user/client/bc51fd55-7f26-4353-e2c5-08dbf0e17a0a
 name: Get user
 description: ""
 method: GET
@@ -13,7 +13,7 @@ headers:
   - name: User-Agent
     value: insomnia/2023.5.8
 authentication: {}
-metaSortKey: -1697708285625
+metaSortKey: -1696266558858
 isPrivate: false
 settingStoreCookies: true
 settingSendCookies: true

@@ -1,7 +1,7 @@
 _id: req_42e455f2fe524610b2c1cdfbad3fd027
 type: Request
 parentId: wrk_ab01935ce80a4ba88ebc31536c46ba2d
-modified: 1697793427250
+modified: 1701035938408
 created: 1697708199302
 url: https://localhost:7015/api/user
 name: Create user
@@ -12,9 +12,9 @@ body:
   text: |-
     {
     	"name": "Andrej",
-    	"email": "rwscbs1@gmail.com",
-    	"password": "coolpassword123",
-    	"clientGUID": "02f6ab6f-e282-4334-eecc-08dbd14d29f7"
+    	"email": "rwscbs@gmail.com",
+    	"password": "password123",
+    	"clientGuid": "4dea390d-533a-4ead-fd72-08dbeecad657"
     }
 parameters: []
 headers:
@@ -23,7 +23,7 @@ headers:
   - name: User-Agent
     value: insomnia/2023.5.8
 authentication: {}
-metaSortKey: -1697708199302
+metaSortKey: -1696266558958
 isPrivate: false
 settingStoreCookies: true
 settingSendCookies: true
