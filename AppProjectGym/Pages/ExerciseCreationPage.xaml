@@ -109,7 +109,7 @@
                                        HorizontalTextAlignment="Center"/>
                                     </Border>
 
-                                    <CollectionView x:Name="primaryMuscleSelector" Grid.Row="1" ItemsSource="{Binding Muscles}" SelectionMode="Multiple" SelectionChanged="CollectionView_SelectionChanged">
+                                    <CollectionView x:Name="primaryMuscleSelector" Grid.Row="1" ItemsSource="{Binding Muscles}" SelectionMode="Multiple" SelectionChanged="OnMuscleSelect">
                                         <CollectionView.ItemTemplate>
                                             <DataTemplate x:DataType="Models:MuscleGroupDisplay">
                                                 <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="90, 3, 65, 3" Grid.Row="0">
@@ -147,7 +147,7 @@
                                                HorizontalTextAlignment="Center"/>
                                     </Border>
 
-                                    <CollectionView x:Name="primaryMuscleGroupSelector" Grid.Row="1" ItemsSource="{Binding Muscles}" SelectionMode="Multiple" SelectionChanged="CollectionView_SelectionChanged">
+                                    <CollectionView x:Name="primaryMuscleGroupSelector" Grid.Row="1" ItemsSource="{Binding Muscles}" SelectionMode="Multiple" SelectionChanged="OnMuscleSelect">
                                         <CollectionView.ItemTemplate>
                                             <DataTemplate x:DataType="Models:Muscle">
                                                 <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="90, 3, 65, 3" Grid.Row="0">
