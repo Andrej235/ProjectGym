@@ -1,0 +1,31 @@
+_id: req_bb7b736889094be49211cfee30b1dddd
+type: Request
+parentId: wrk_ab01935ce80a4ba88ebc31536c46ba2d
+modified: 1700407445657
+created: 1698600388831
+url: https://localhost:7015/api/equipment
+name: Equipment
+description: ""
+method: PUT
+body:
+  mimeType: application/json
+  text: |-
+    {
+    	"id": 1,
+    	"name": "Dumbbell"
+    }
+parameters: []
+headers:
+  - name: Content-Type
+    value: application/json
+  - name: User-Agent
+    value: insomnia/2023.5.8
+authentication: {}
+metaSortKey: -1696360595198.3125
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

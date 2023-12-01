@@ -1,0 +1,32 @@
+_id: req_146f94801b4f48d8826f37d79674fcdb
+type: Request
+parentId: wrk_ab01935ce80a4ba88ebc31536c46ba2d
+modified: 1701036268779
+created: 1700582046585
+url: http://192.168.1.100:5054/api/workout
+name: Workout
+description: ""
+method: POST
+body:
+  mimeType: application/json
+  text: |-
+    {
+    	"name": "Arms",
+    	"IsPublic": true,
+    	"CreatorId": "52854fdd-d583-421e-1842-08dbeecae5af"
+    }
+parameters: []
+headers:
+  - name: Content-Type
+    value: application/json
+  - name: User-Agent
+    value: insomnia/2023.5.8
+authentication: {}
+metaSortKey: -1700582046585
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

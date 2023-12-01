@@ -1,0 +1,36 @@
+_id: req_031fbbdad534457f8cf97da1722a3126
+type: Request
+parentId: wrk_ab01935ce80a4ba88ebc31536c46ba2d
+modified: 1700914203132
+created: 1700753598576
+url: http://192.168.1.100:5054/api/set
+name: Set
+description: ""
+method: PUT
+body:
+  mimeType: application/json
+  text: |-
+    {
+    	"id": "b55545b5-97eb-49d0-56a4-08dbeb84f169",
+    	"repRange_Bottom": 5,
+    	"repRange_Top": 8,
+    	"toFaliure": false,
+    	"dropSet": false,
+    	"exerciseId": 5,
+    	"creatorId": "80898f11-6050-42b5-1787-08dbeb84d20b"
+    }
+parameters: []
+headers:
+  - name: Content-Type
+    value: application/json
+  - name: User-Agent
+    value: insomnia/2023.5.8
+authentication: {}
+metaSortKey: -1700589609867
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

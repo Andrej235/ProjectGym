@@ -1,0 +1,32 @@
+_id: req_956f58c1afac41bbab2eae161ec76a72
+type: Request
+parentId: wrk_ab01935ce80a4ba88ebc31536c46ba2d
+modified: 1700765858465
+created: 1700765587635
+url: http://192.168.1.100:5054/api/workout
+name: Workout
+description: ""
+method: PUT
+body:
+  mimeType: application/json
+  text: |-
+    {
+    	"id": "07773568-20df-45ba-0303-08dbec55fcd8",
+    	"name": "Testing",
+    	"ispublic": true
+    }
+parameters: []
+headers:
+  - name: Content-Type
+    value: application/json
+  - name: User-Agent
+    value: insomnia/2023.5.8
+authentication: {}
+metaSortKey: -1700458191368.25
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

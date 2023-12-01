@@ -1,0 +1,23 @@
+_id: req_9d62374aed5c44f8b55df1e3ad158cd8
+type: Request
+parentId: wrk_ab01935ce80a4ba88ebc31536c46ba2d
+modified: 1700930128474
+created: 1700582115966
+url: http://192.168.1.100:5054/api/workout?include=all&q=primarymusclegroup=2
+name: Workout
+description: ""
+method: GET
+body: {}
+parameters: []
+headers:
+  - name: User-Agent
+    value: insomnia/2023.5.8
+authentication: {}
+metaSortKey: -1700499476440.5
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

@@ -1,0 +1,31 @@
+_id: req_2b8e8594871b41e89bec7fed63d23bef
+type: Request
+parentId: wrk_ab01935ce80a4ba88ebc31536c46ba2d
+modified: 1700929936527
+created: 1700407983893
+url: http://192.168.1.100:5054/api/note
+name: Note
+description: ""
+method: POST
+body:
+  mimeType: application/json
+  text: |-
+    {
+    	"note": "Use lifting straps",
+    	"exerciseId": 2
+    }
+parameters: []
+headers:
+  - name: Content-Type
+    value: application/json
+  - name: User-Agent
+    value: insomnia/2023.5.8
+authentication: {}
+metaSortKey: -1696776399074.5
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

@@ -1,0 +1,23 @@
+_id: req_2db6c1b22fe946eb9e99782eae335739
+type: Request
+parentId: wrk_ab01935ce80a4ba88ebc31536c46ba2d
+modified: 1700929970418
+created: 1700765869338
+url: http://192.168.1.100:5054/api/workout/342bebe6-ac1f-49e5-c754-08dbedd42267
+name: Workout
+description: ""
+method: DELETE
+body: {}
+parameters: []
+headers:
+  - name: User-Agent
+    value: insomnia/2023.5.8
+authentication: {}
+metaSortKey: -1700437548832.125
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

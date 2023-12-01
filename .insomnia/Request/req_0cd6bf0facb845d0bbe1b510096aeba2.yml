@@ -1,0 +1,23 @@
+_id: req_0cd6bf0facb845d0bbe1b510096aeba2
+type: Request
+parentId: wrk_ab01935ce80a4ba88ebc31536c46ba2d
+modified: 1700912613626
+created: 1700835869509
+url: http://192.168.1.100:5054/api/set/d0f64b59-2ba1-407c-8fdd-08dbedabb8d9
+name: Set
+description: ""
+method: DELETE
+body: {}
+parameters: []
+headers:
+  - name: User-Agent
+    value: insomnia/2023.5.8
+authentication: {}
+metaSortKey: -1700585828226
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

@@ -1,0 +1,23 @@
+_id: req_83f3e6bdcaf84da997c981d5202ec788
+type: Request
+parentId: wrk_ab01935ce80a4ba88ebc31536c46ba2d
+modified: 1701354714420
+created: 1699460906126
+url: http://192.168.1.100:5054/api/image?q=exercise=1
+name: Image
+description: ""
+method: GET
+body: {}
+parameters: []
+headers:
+  - name: User-Agent
+    value: insomnia/2023.5.8
+authentication: {}
+metaSortKey: -1699460906126
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

@@ -1,0 +1,407 @@
+_id: req_b2dc9e826443415085cefb5b5ea0cb39
+type: Request
+parentId: wrk_ab01935ce80a4ba88ebc31536c46ba2d
+modified: 1701122342769
+created: 1700952664131
+url: http://192.168.1.100:5054/api/database
+name: Database
+description: ""
+method: PUT
+body:
+  mimeType: application/json
+  text: >-
+    {
+    	"Exercises": [
+    		{
+    			"Id": 1,
+    			"Name": "Katana extensions",
+    			"Description": "123"
+    		},
+    		{
+    			"Id": 2,
+    			"Name": "Bicep curl",
+    			"Description": "123"
+    		},
+    		{
+    			"Id": 3,
+    			"Name": "Barbell curls",
+    			"Description": "123"
+    		},
+    		{
+    			"Id": 4,
+    			"Name": "Cable curls",
+    			"Description": "123"
+    		},
+    		{
+    			"Id": 5,
+    			"Name": "Faceaway cable curls",
+    			"Description": "123"
+    		}
+    	],
+    	"MuscleGroups": [
+    		{
+    			"Id": 1,
+    			"Name": "Tricep"
+    		},
+    		{
+    			"Id": 2,
+    			"Name": "Bicep"
+    		},
+    		{
+    			"Id": 3,
+    			"Name": "Forearms"
+    		}
+    	],
+    	"Muscles": [
+    		{
+    			"Id": 1,
+    			"Name": "Long head",
+    			"ImageUrl": "",
+    			"MuscleGroupId": 1,
+    			"MuscleGroup": "Not implemented"
+    		},
+    		{
+    			"Id": 2,
+    			"Name": "Lateral head",
+    			"ImageUrl": "",
+    			"MuscleGroupId": 1,
+    			"MuscleGroup": "Not implemented"
+    		},
+    		{
+    			"Id": 3,
+    			"Name": "Medial head",
+    			"ImageUrl": "",
+    			"MuscleGroupId": 1,
+    			"MuscleGroup": "Not implemented"
+    		},
+    		{
+    			"Id": 4,
+    			"Name": "Short head",
+    			"ImageUrl": "",
+    			"MuscleGroupId": 2,
+    			"MuscleGroup": "Not implemented"
+    		},
+    		{
+    			"Id": 5,
+    			"Name": "Long head",
+    			"ImageUrl": "",
+    			"MuscleGroupId": 2,
+    			"MuscleGroup": "Not implemented"
+    		},
+    		{
+    			"Id": 6,
+    			"Name": "Flexors",
+    			"ImageUrl": "",
+    			"MuscleGroupId": 3,
+    			"MuscleGroup": "Not implemented"
+    		},
+    		{
+    			"Id": 7,
+    			"Name": "Extensor",
+    			"ImageUrl": "",
+    			"MuscleGroupId": 3,
+    			"MuscleGroup": "Not implemented"
+    		},
+    		{
+    			"Id": 8,
+    			"Name": "Pronators and Supinators",
+    			"ImageUrl": "",
+    			"MuscleGroupId": 3,
+    			"MuscleGroup": "Not implemented"
+    		},
+    		{
+    			"Id": 9,
+    			"Name": "Brachialis",
+    			"ImageUrl": "",
+    			"MuscleGroupId": 3,
+    			"MuscleGroup": "Not implemented"
+    		}
+    	],
+    	"Equipment": [
+    		{
+    			"Id": 1,
+    			"Name": "Dumbbell"
+    		},
+    		{
+    			"Id": 2,
+    			"Name": "Barbell"
+    		},
+    		{
+    			"Id": 3,
+    			"Name": "Cables"
+    		}
+    	],
+    	"Comments": [
+    	],
+    	"Images": [
+    		{
+    			"Id": 1,
+    			"ImageURL": "https://imgs.search.brave.com/GAgcLkanWJ82J29Y8hhlDg8K4Vej1HtW-_SazEueMzE/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9wMTYt/c2lnbi50aWt0b2tj/ZG4tdXMuY29tL3Rv/cy11c2Vhc3Q1LXAt/MDA2OC10eC84YTJi/MjRmNTQzZTQ0ZmYw/YTFlYWUxNTQwYzVk/YjJhY18xNjc0NzUx/OTIwfnRwbHYtZG10/LWxvZ29tOnRvcy11/c2Vhc3Q1LWktMDA2/OC10eC8zNDNhZDQy/NmVhZWM0YjliOTA1/YjhlMjY0NGI5ZGU5/MC5pbWFnZT94LWV4/cGlyZXM9MTcwMDM1/OTIwMCZ4LXNpZ25h/dHVyZT16MFJQNXlP/dGJJNU9ib2NncmJa/T3ozNVJpQUk9",
+    			"Exercise": "Not implemented",
+    			"ExerciseId": 1
+    		},
+    		{
+    			"Id": 2,
+    			"ImageURL": "https://imgs.search.brave.com/GAgcLkanWJ82J29Y8hhlDg8K4Vej1HtW-_SazEueMzE/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9wMTYt/c2lnbi50aWt0b2tj/ZG4tdXMuY29tL3Rv/cy11c2Vhc3Q1LXAt/MDA2OC10eC84YTJi/MjRmNTQzZTQ0ZmYw/YTFlYWUxNTQwYzVk/YjJhY18xNjc0NzUx/OTIwfnRwbHYtZG10/LWxvZ29tOnRvcy11/c2Vhc3Q1LWktMDA2/OC10eC8zNDNhZDQy/NmVhZWM0YjliOTA1/YjhlMjY0NGI5ZGU5/MC5pbWFnZT94LWV4/cGlyZXM9MTcwMDM1/OTIwMCZ4LXNpZ25h/dHVyZT16MFJQNXlP/dGJJNU9ib2NncmJa/T3ozNVJpQUk9",
+    			"Exercise": "Not implemented",
+    			"ExerciseId": 1
+    		}
+    	],
+    	"Notes": [
+    		{
+    			"Id": 1,
+    			"NoteText": "Staggered stance ---> one leg forward",
+    			"Exercise": "Not implemented",
+    			"ExerciseId": 1
+    		},
+    		{
+    			"Id": 2,
+    			"NoteText": "Lifting straps are recommended",
+    			"Exercise": "Not implemented",
+    			"ExerciseId": 1
+    		},
+    		{
+    			"Id": 3,
+    			"NoteText": "Use lifting straps",
+    			"Exercise": "Not implemented",
+    			"ExerciseId": 2
+    		}
+    	],
+    	"Aliases": [
+    		{
+    			"Id": 1,
+    			"AliasName": "Cross body overhead cable tricep extension",
+    			"Exercise": "Not implemented",
+    			"ExerciseId": 1
+    		},
+    		{
+    			"Id": 2,
+    			"AliasName": "Please work!",
+    			"Exercise": "Not implemented",
+    			"ExerciseId": 3
+    		}
+    	],
+    	"PrimaryMuscleGroups": [
+    		{
+    			"Id": 1,
+    			"ExerciseId": 1,
+    			"MuscleGroupId": 1
+    		},
+    		{
+    			"Id": 2,
+    			"ExerciseId": 3,
+    			"MuscleGroupId": 2
+    		},
+    		{
+    			"Id": 3,
+    			"ExerciseId": 4,
+    			"MuscleGroupId": 2
+    		},
+    		{
+    			"Id": 4,
+    			"ExerciseId": 5,
+    			"MuscleGroupId": 2
+    		},
+    		{
+    			"Id": 5,
+    			"ExerciseId": 2,
+    			"MuscleGroupId": 2
+    		}
+    	],
+    	"SecondaryMuscleGroups": [
+    		{
+    			"Id": 1,
+    			"ExerciseId": 2,
+    			"MuscleGroupId": 3
+    		}
+    	],
+    	"PrimaryMuscles": [
+    		{
+    			"Id": 1,
+    			"ExerciseId": 1,
+    			"MuscleId": 2
+    		},
+    		{
+    			"Id": 2,
+    			"ExerciseId": 1,
+    			"MuscleId": 3
+    		},
+    		{
+    			"Id": 3,
+    			"ExerciseId": 3,
+    			"MuscleId": 4
+    		},
+    		{
+    			"Id": 4,
+    			"ExerciseId": 3,
+    			"MuscleId": 5
+    		},
+    		{
+    			"Id": 5,
+    			"ExerciseId": 4,
+    			"MuscleId": 4
+    		},
+    		{
+    			"Id": 6,
+    			"ExerciseId": 4,
+    			"MuscleId": 5
+    		},
+    		{
+    			"Id": 7,
+    			"ExerciseId": 5,
+    			"MuscleId": 4
+    		},
+    		{
+    			"Id": 8,
+    			"ExerciseId": 5,
+    			"MuscleId": 5
+    		},
+    		{
+    			"Id": 9,
+    			"ExerciseId": 2,
+    			"MuscleId": 4
+    		},
+    		{
+    			"Id": 10,
+    			"ExerciseId": 2,
+    			"MuscleId": 5
+    		}
+    	],
+    	"SecondaryMuscles": [
+    		{
+    			"Id": 1,
+    			"ExerciseId": 1,
+    			"MuscleId": 1
+    		},
+    		{
+    			"Id": 2,
+    			"ExerciseId": 2,
+    			"MuscleId": 6
+    		},
+    		{
+    			"Id": 3,
+    			"ExerciseId": 2,
+    			"MuscleId": 9
+    		}
+    	],
+    	"EquipmentUsages": [
+    		{
+    			"Id": 1,
+    			"ExerciseId": 1,
+    			"EquipmentId": 3
+    		},
+    		{
+    			"Id": 2,
+    			"ExerciseId": 3,
+    			"EquipmentId": 2
+    		},
+    		{
+    			"Id": 3,
+    			"ExerciseId": 4,
+    			"EquipmentId": 3
+    		},
+    		{
+    			"Id": 4,
+    			"ExerciseId": 5,
+    			"EquipmentId": 3
+    		},
+    		{
+    			"Id": 5,
+    			"ExerciseId": 2,
+    			"EquipmentId": 1
+    		}
+    	],
+    	"Users": [
+    		{
+    			"Id": "ca8de5d0-4772-45c3-9e55-08dbeece3c0e",
+    			"Name": "Andrej",
+    			"Email": "rwscbs@gmail.com",
+    			"PasswordHash": "nTqWB/pLq3LGmatc0GAgshbqKw8mxSVJwxg7SHZcsek=",
+    			"Salt": "TaqMOS3jmDtMBevj5Czh4Q=="
+    		}
+    	],
+    	"Clients": [
+    		{
+    			"Id": "83e65a7f-e210-4f50-837c-08dbeece3c16",
+    			"User": "Not implemented"
+    		},
+    		{
+    			"Id": "d937a1cf-d5d5-4676-837d-08dbeece3c16",
+    			"User": "Not implemented"
+    		},
+    		{
+    			"Id": "bed9727d-ee14-4aeb-837e-08dbeece3c16",
+    			"User": "Not implemented"
+    		},
+    		{
+    			"Id": "b2e240c8-e638-4866-837f-08dbeece3c16",
+    			"User": "Not implemented"
+    		}
+    	],
+    	"CommentUpvotes": [
+    	],
+    	"CommentDownvotes": [
+    	],
+    	"ExerciseBookmarks": [
+    	],
+    	"Sets": [
+    		{
+    			"Id": "0c3628bd-2b1c-45fd-20b9-08dbeece3c3b",
+    			"RepRange_Bottom": 8,
+    			"RepRange_Top": 12,
+    			"ToFaliure": true,
+    			"DropSet": false,
+    			"Exercise": "Not implemented",
+    			"ExerciseId": 5,
+    			"Creator": "Not implemented",
+    			"CreatorId": "ca8de5d0-4772-45c3-9e55-08dbeece3c0e"
+    		}
+    	],
+    	"Weights": [
+    		{
+    			"Id": "f71b95b9-642e-48b9-0f8d-08dbeececfa9",
+    			"Weight": 10,
+    			"IsCurrent": true,
+    			"DateOfAchieving": "11/26/2023 11:27:01 PM",
+    			"Exercise": "Not implemented",
+    			"ExerciseId": 1,
+    			"User": "Not implemented",
+    			"UserId": "ca8de5d0-4772-45c3-9e55-08dbeece3c0e"
+    		}
+    	],
+    	"Workouts": [
+    		{
+    			"Id": "03410426-c416-4b44-4104-08dbeece3c2a",
+    			"Name": "Arms",
+    			"IsPublic": true,
+    			"Creator": "Not implemented",
+    			"CreatorId": "ca8de5d0-4772-45c3-9e55-08dbeece3c0e"
+    		}
+    	],
+    	"WorkoutSets": [
+    		{
+    			"Id": "aad1fea3-d3c5-4e82-a074-08dbeece3c3e",
+    			"TargetSets": 2,
+    			"Workout": "Not implemented",
+    			"WorkoutId": "03410426-c416-4b44-4104-08dbeece3c2a",
+    			"Set": "Not implemented",
+    			"SetId": "0c3628bd-2b1c-45fd-20b9-08dbeece3c3b",
+    			"Superset": "Not implemented"
+    		}
+    	]
+    }
+parameters: []
+headers:
+  - name: Content-Type
+    value: application/json
+  - name: User-Agent
+    value: insomnia/2023.5.8
+authentication: {}
+metaSortKey: -1700765738971.5
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

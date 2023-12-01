@@ -1,0 +1,23 @@
+_id: req_9ea53311fdf94cdeb3b0145ab5b372b2
+type: Request
+parentId: wrk_ab01935ce80a4ba88ebc31536c46ba2d
+modified: 1700860460256
+created: 1700860309192
+url: http://192.168.1.100:5054/api/alias/2
+name: Alias
+description: ""
+method: DELETE
+body: {}
+parameters: []
+headers:
+  - name: User-Agent
+    value: insomnia/2023.5.8
+authentication: {}
+metaSortKey: -1696776402657
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global
