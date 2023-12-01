@@ -101,17 +101,17 @@
                                     Margin="0, 5, 0, 5">
 
                         <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="Models:MuscleGroupDisplay">
+                            <DataTemplate x:DataType="Models:MuscleGroupRepresentation">
                                 <Grid RowDefinitions="auto, auto">
                                     <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="30, 3, 5, 3" Grid.Row="0">
-                                        <Label Text="{Binding Name}" 
+                                        <Label Text="{Binding MuscleGroupDisplay.Name}" 
                                        VerticalTextAlignment="Center"
                                        HorizontalTextAlignment="Center"/>
                                     </Border>
 
-                                    <CollectionView x:Name="primaryMuscleSelector" Grid.Row="1" ItemsSource="{Binding Muscles}" SelectionMode="Multiple" SelectionChanged="OnMuscleSelect">
+                                    <CollectionView x:Name="primaryMuscleSelector" Grid.Row="1" ItemsSource="{Binding MuscleGroupDisplay.Muscles}" SelectionMode="Multiple" SelectionChanged="OnMuscleSelect">
                                         <CollectionView.ItemTemplate>
-                                            <DataTemplate x:DataType="Models:MuscleGroupDisplay">
+                                            <DataTemplate x:DataType="Models:Muscle">
                                                 <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="90, 3, 65, 3" Grid.Row="0">
                                                     <Label Text="{Binding Name}"
                                                        FontSize="Caption"
@@ -139,15 +139,15 @@
                                     Margin="0, 5, 0, 5">
 
                         <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="Models:MuscleGroupDisplay">
+                            <DataTemplate x:DataType="Models:MuscleGroupRepresentation">
                                 <Grid RowDefinitions="auto, auto">
                                     <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="30, 3, 5, 3" Grid.Row="0">
-                                        <Label Text="{Binding Name}" 
+                                        <Label Text="{Binding MuscleGroupDisplay.Name}" 
                                                VerticalTextAlignment="Center"
                                                HorizontalTextAlignment="Center"/>
                                     </Border>
 
-                                    <CollectionView x:Name="primaryMuscleGroupSelector" Grid.Row="1" ItemsSource="{Binding Muscles}" SelectionMode="Multiple" SelectionChanged="OnMuscleSelect">
+                                    <CollectionView x:Name="primaryMuscleGroupSelector" Grid.Row="1" ItemsSource="{Binding MuscleGroupDisplay.Muscles}" SelectionMode="Multiple" SelectionChanged="OnMuscleSelect">
                                         <CollectionView.ItemTemplate>
                                             <DataTemplate x:DataType="Models:Muscle">
                                                 <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="90, 3, 65, 3" Grid.Row="0">
