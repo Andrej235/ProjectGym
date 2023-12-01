@@ -8,6 +8,59 @@
              Title="ExerciseCreationPage"
              x:DataType="Pages:ExerciseCreationPage">
 
+    <ContentPage.Resources>
+        <Style TargetType="Grid">
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="Black" />
+                            </VisualState.Setters>
+                        </VisualState>
+
+                        <VisualState x:Name="Selected">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="#181818" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+
+        <Style TargetType="Border">
+            <Style.Triggers>
+                <DataTrigger TargetType="Border">
+                    <Setter Property="StrokeThickness" Value="1" />
+                    <Setter Property="Stroke" Value="White" />
+                </DataTrigger>
+            </Style.Triggers>
+
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="Black" />
+                                <Setter Property="StrokeThickness" Value="1" />
+                                <Setter Property="Stroke" Value="White" />
+                            </VisualState.Setters>
+                        </VisualState>
+
+                        <VisualState x:Name="Selected">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="LightSkyBlue" />
+                                <Setter Property="StrokeThickness" Value="1" />
+                                <Setter Property="Stroke" Value="White" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+    </ContentPage.Resources>
+
     <ScrollView>
         <VerticalStackLayout Margin="15">
             <Entry x:Name="nameInput" Placeholder="Name" Margin="0, 10, 0, 0"/>
@@ -27,7 +80,7 @@
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="Models:Equipment">
                                 <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="3">
-                                        <Label Text="{Binding Name}" 
+                                    <Label Text="{Binding Name}" 
                                                VerticalTextAlignment="Center"
                                                HorizontalTextAlignment="Center"/>
                                 </Border>
@@ -56,7 +109,7 @@
                                        HorizontalTextAlignment="Center"/>
                                     </Border>
 
-                                    <CollectionView x:Name="primaryMuscleSelector" Grid.Row="1" ItemsSource="{Binding Muscles}" SelectionMode="Single" SelectionChanged="CollectionView_SelectionChanged">
+                                    <CollectionView x:Name="primaryMuscleSelector" Grid.Row="1" ItemsSource="{Binding Muscles}" SelectionMode="Multiple" SelectionChanged="CollectionView_SelectionChanged">
                                         <CollectionView.ItemTemplate>
                                             <DataTemplate x:DataType="Models:MuscleGroupDisplay">
                                                 <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="90, 3, 65, 3" Grid.Row="0">
@@ -94,7 +147,7 @@
                                                HorizontalTextAlignment="Center"/>
                                     </Border>
 
-                                    <CollectionView x:Name="primaryMuscleGroupSelector" Grid.Row="1" ItemsSource="{Binding Muscles}" SelectionMode="Single" SelectionChanged="CollectionView_SelectionChanged">
+                                    <CollectionView x:Name="primaryMuscleGroupSelector" Grid.Row="1" ItemsSource="{Binding Muscles}" SelectionMode="Multiple" SelectionChanged="CollectionView_SelectionChanged">
                                         <CollectionView.ItemTemplate>
                                             <DataTemplate x:DataType="Models:Muscle">
                                                 <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="90, 3, 65, 3" Grid.Row="0">

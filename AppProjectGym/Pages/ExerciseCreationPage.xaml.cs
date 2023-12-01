@@ -131,6 +131,9 @@ public partial class ExerciseCreationPage : ContentPage, IQueryAttributable
         equipmentSelector.SelectedItems = Equipment.Where(x => x.UsedInExerciseIds.Contains(exercise.Id)).Cast<object>().ToList();
         //TODO: Add default selected primary and secondary muscles (and groups), selecting a muscle should select it's group as well
 
+        primaryMuscleGroupSelector.SelectedItems = MuscleGroupDisplays.Where(x => muscleGroups.First(y => y.Id == x.Id).PrimaryInExercises.Contains(exercise.Id)).Cast<object>().ToList();
+        secondaryMuscleGroupSelector.SelectedItems = MuscleGroupDisplays.Where(x => muscleGroups.First(y => y.Id == x.Id).SecondaryInExercises.Contains(exercise.Id)).Cast<object>().ToList();
+        
         //primaryMuscleSelector.SelectedItems = Muscles.Where(x => x.PrimaryInExercises.Contains(exercise.Id)).Cast<object>().ToList();
         //secondaryMuscleSelector.SelectedItems = Muscles.Where(x => x.SecondaryInExercises.Contains(exercise.Id)).Cast<object>().ToList();
     }
