@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace AppProjectGym.ValueConverters
 {
-    internal class IsCollectionNotEmptyConverter : IValueConverter
+    public class IsCollectionNotEmptyConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => value is IEnumerable collection ? collection.Cast<object>().Any() : (object)false;
 

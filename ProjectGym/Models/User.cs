@@ -10,5 +10,14 @@ namespace ProjectGym.Models
         public string Email { get; set; } = null!;
         public byte[] PasswordHash { get; set; } = null!;
         public byte[] Salt { get; set; } = null!;
+
+        public IEnumerable<PersonalExerciseWeight> Weights { get; set; } = new List<PersonalExerciseWeight>();
+        public IEnumerable<Workout> CreatedWorkouts { get; set; } = new List<Workout>();
+        public IEnumerable<Set> CreatedExerciseSets { get; set; } = new List<Set>();
+
+        public IEnumerable<Comment> Comments { get; set; } = new List<Comment>();
+        public IEnumerable<Comment> CommentUpvotes { get; set; } = new List<Comment>();
+        public IEnumerable<Comment> CommentDownvotes { get; set; } = new List<Comment>();
+        public IEnumerable<Exercise> Bookmarks { get; set; } = new List<Exercise>();
     }
 }

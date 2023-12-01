@@ -1,23 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ProjectGym.DTOs;
 using ProjectGym.Models;
-using ProjectGym.Services;
+using ProjectGym.Services.Create;
+using ProjectGym.Services.Delete;
+using ProjectGym.Services.Mapping;
+using ProjectGym.Services.Read;
+using ProjectGym.Services.Update;
 
 namespace ProjectGym.Controllers
 {
-    [Route("api/note")]
-    [ApiController]
-    public class NoteController : ControllerBase
-    {
-        private readonly BasicGetDataService<ExerciseNote> getDataService;
-        public NoteController(BasicGetDataService<ExerciseNote> getDataService)
-        {
-            this.getDataService = getDataService;
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id) => Ok(await getDataService.Get(id));
-
-        [HttpGet]
-        public async Task<IActionResult> Get() => Ok(await getDataService.Get());
-    }
+    public class NoteController(ICreateService<Note> createService, IUpdateService<Note> updateService, IDeleteService<Note> deleteService, IReadService<Note> readService, IEntityMapper<Note, NoteDTO> mapper) : RepositoryController<Note, NoteDTO>(createService, updateService, deleteService, readService, mapper) { }
 }

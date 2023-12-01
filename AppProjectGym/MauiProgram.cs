@@ -4,6 +4,11 @@ using AppProjectGym.Services;
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Core;
+using AppProjectGym.Services.Read;
+using Image = AppProjectGym.Models.Image;
+using AppProjectGym.Services.Create;
+using AppProjectGym.Services.Update;
+using AppProjectGym.Services.Delete;
 
 namespace AppProjectGym
 {
@@ -23,19 +28,23 @@ namespace AppProjectGym
                 });
 
 #if DEBUG
-		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
+
             builder.Services.AddSingleton<MainPage>();
             builder.Services.AddTransient<FullScreenExercise>();
             builder.Services.AddTransient<SearchResultsPage>();
+            builder.Services.AddTransient<ProfilePage>();
+            builder.Services.AddTransient<ExerciseCreationPage>();
 
-            builder.Services.AddSingleton<IDataService<Exercise>, ExerciseDataService>();
-            builder.Services.AddSingleton<IExerciseSearchData, ExerciseDataService>();
+            builder.Services.AddTransient<IReadService, ReadService>();
+            builder.Services.AddTransient<ICreateService, CreateService>();
+            builder.Services.AddTransient<IUpdateService, UpdateService>();
+            builder.Services.AddTransient<IDeleteService, DeleteService>();
 
-            builder.Services.AddSingleton<IDataService<Muscle>, MuscleDataService>();
-            builder.Services.AddSingleton<IDataService<ExerciseCategory>, ExerciseCategoryDataService>();
-            builder.Services.AddSingleton<IDataService<ExerciseNote>, NotesDataService>();
-            builder.Services.AddSingleton<IDataService<Equipment>, EquipmentDataService>();
+            builder.Services.AddTransient<ExerciseDisplayMapper>();
+
+            builder.Services.AddTransient<HttpClient>();
 
             return builder.Build();
         }

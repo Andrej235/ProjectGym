@@ -1,23 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ProjectGym.DTOs;
 using ProjectGym.Models;
-using ProjectGym.Services;
+using ProjectGym.Services.Create;
+using ProjectGym.Services.Delete;
+using ProjectGym.Services.Mapping;
+using ProjectGym.Services.Read;
+using ProjectGym.Services.Update;
 
 namespace ProjectGym.Controllers
 {
-    [Route("api/equipment")]
-    [ApiController]
-    public class EquipmentController : ControllerBase
-    {
-        private readonly BasicGetDataService<Equipment> getDataService;
-        public EquipmentController(BasicGetDataService<Equipment> getDataService)
-        {
-            this.getDataService = getDataService;
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id) => Ok(await getDataService.Get(id));
-
-        [HttpGet]
-        public async Task<IActionResult> Get() => Ok(await getDataService.Get());
-    }
+    public class EquipmentController(ICreateService<Equipment> createService, IUpdateService<Equipment> updateService, IDeleteService<Equipment> deleteService, IReadService<Equipment> readService, IEntityMapper<Equipment, EquipmentDTO> mapper) : RepositoryController<Equipment, EquipmentDTO>(createService, updateService, deleteService, readService, mapper) { }
 }

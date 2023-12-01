@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿/*using Microsoft.AspNetCore.Mvc;
 using ProjectGym.Data;
 using ProjectGym.Models;
 using System.Diagnostics;
@@ -49,7 +49,7 @@ namespace ProjectGym.Controllers
                 Name = m.Name,
                 Name_en = m.Name_en,
                 IsFront = m.Is_front,
-                ImageUrlMain = "https://wger.de" + m.Image_url_main,
+                ImageUrl = "https://wger.de" + m.Image_url_main,
                 ImageUrlSecondary = "https://wger.de" + m.Image_url_secondary,
             }).ToList();
 
@@ -93,7 +93,6 @@ namespace ProjectGym.Controllers
             var exerciseDTOs = JsonSerializer.Deserialize<DTORootObject<ResetExerciseDTO>>(await GetData("exercise?limit=100000000&ordering=id&language=2"), jsonSerializerOptions);
             var exercises = exerciseDTOs?.Results.Select(e => new Exercise
             {
-                UUID = e.Uuid,
                 Name = e.Name,
                 Description = e.Description,
                 Category = exerciseCategories.First(ec => ec.Id == categoryIdPairs.First(cidp => cidp.oldId == e.Category).newId)
@@ -212,7 +211,7 @@ namespace ProjectGym.Controllers
 
                     ExerciseNote note = new()
                     {
-                        Comment = noteDTO.Comment,
+                        Note = noteDTO.Comment,
                         ExerciseId = exerciseId
                     };
                     await exerciseContext.ExerciseNotes.AddAsync(note);
@@ -427,3 +426,4 @@ namespace ProjectGym.Controllers
         #endregion
     }
 }
+*/

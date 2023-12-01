@@ -4,12 +4,9 @@
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
-        public string Name_en { get; set; } = null!;
-        public bool IsFront { get; set; }
-        public string ImageUrlMain { get; set; } = null!;
-        public string ImageUrlSecondary { get; set; } = null!;
-
-        public IEnumerable<int> PrimaryInExerciseIds { get; set; }
-        public IEnumerable<int> SecondaryInExerciseIds { get; set; }
+        public string ImageUrl { get; set; } = string.Empty;
+        public int MuscleGroupId { get; set; }
+        public IEnumerable<int> PrimaryInExercises { get; set; } = new List<int>();
+        public IEnumerable<int> SecondaryInExercises { get; set; } = new List<int>();
     }
 }

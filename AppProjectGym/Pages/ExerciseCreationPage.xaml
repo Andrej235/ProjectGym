@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:Pages="clr-namespace:AppProjectGym.Pages"
+             xmlns:Models="clr-namespace:AppProjectGym.Models"
+             xmlns:ValueConverters="clr-namespace:AppProjectGym.ValueConverters"
+             x:Class="AppProjectGym.Pages.ExerciseCreationPage"
+             Title="ExerciseCreationPage"
+             x:DataType="Pages:ExerciseCreationPage">
+
+    <ContentPage.Resources>
+        <Style TargetType="Grid">
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="Black" />
+                            </VisualState.Setters>
+                        </VisualState>
+
+                        <VisualState x:Name="Selected">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="#181818" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+
+        <Style TargetType="Border">
+            <Style.Triggers>
+                <DataTrigger TargetType="Border">
+                    <Setter Property="StrokeThickness" Value="1" />
+                    <Setter Property="Stroke" Value="White" />
+                </DataTrigger>
+            </Style.Triggers>
+
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="Black" />
+                                <Setter Property="StrokeThickness" Value="1" />
+                                <Setter Property="Stroke" Value="White" />
+                            </VisualState.Setters>
+                        </VisualState>
+
+                        <VisualState x:Name="Selected">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="LightSkyBlue" />
+                                <Setter Property="StrokeThickness" Value="1" />
+                                <Setter Property="Stroke" Value="White" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+
+        <ValueConverters:ListToListOfObjectConverter x:Key="ToObjectList"/>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Margin="15">
+            <Entry x:Name="nameInput" Placeholder="Name" Margin="0, 10, 0, 0"/>
+            <Editor x:Name="descriptionInput" Placeholder="Description" AutoSize="TextChanges" Margin="0, 10, 0, 0"></Editor>
+            <Entry x:Name="imageURLInput" Placeholder="Image URL" Margin="0, 10, 0, 0"/>
+
+            <Grid RowDefinitions="Auto, Auto" Margin="0, 10, 0, 0">
+                <Label Text="Equipment:" FontSize="Subtitle"/>
+
+                <Grid Margin="15, 0, 0, 0" Grid.Row="1">
+                    <CollectionView x:Name="equipmentSelector"
+                                    ItemsLayout="VerticalList"
+                                    ItemsSource="{Binding Equipment}"
+                                    SelectionMode="Multiple"
+                                    Margin="0, 5, 0, 5">
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="Models:Equipment">
+                                <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="3">
+                                    <Label Text="{Binding Name}" 
+                                               VerticalTextAlignment="Center"
+                                               HorizontalTextAlignment="Center"/>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </Grid>
+
+            <Grid RowDefinitions="Auto, Auto" Margin="0, 10, 0, 0">
+                <Label Text="Primary Muscles:" FontSize="Subtitle"/>
+
+                <Grid Margin="15, 0, 0, 0" Grid.Row="1">
+                    <CollectionView x:Name="primaryMuscleGroupSelector"
+                                    ItemsLayout="VerticalList"
+                                    ItemsSource="{Binding PrimaryMuscleGroupRepresentations}"
+                                    SelectionMode="Multiple"
+                                    Margin="0, 5, 0, 5">
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="Models:MuscleGroupRepresentation">
+                                <Grid RowDefinitions="auto, auto">
+                                    <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="30, 3, 5, 3" Grid.Row="0">
+                                        <Label Text="{Binding MuscleGroupDisplay.Name}" 
+                                       VerticalTextAlignment="Center"
+                                       HorizontalTextAlignment="Center"/>
+                                    </Border>
+
+                                    <CollectionView x:Name="{Binding MuscleGroupDisplay.Name}"
+                                                    Grid.Row="1"
+                                                    ItemsSource="{Binding MuscleGroupDisplay.Muscles}"
+                                                    SelectedItems="{Binding SelectedMuscles, Converter={StaticResource ToObjectList}}"
+                                                    SelectionMode="Multiple"
+                                                    SelectionChanged="OnMuscleSelect">
+                                        <CollectionView.ItemTemplate>
+                                            <DataTemplate x:DataType="Models:Muscle">
+                                                <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="90, 3, 65, 3" Grid.Row="0">
+                                                    <Label Text="{Binding Name}"
+                                                       FontSize="Caption"
+                                                       VerticalTextAlignment="Center"
+                                                       HorizontalTextAlignment="Center"/>
+                                                </Border>
+                                            </DataTemplate>
+                                        </CollectionView.ItemTemplate>
+                                    </CollectionView>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </Grid>
+
+            <Grid RowDefinitions="Auto, Auto" Margin="0, 10, 0, 0">
+                <Label Text="Secondary Muscles:" FontSize="Subtitle"/>
+
+                <Grid Margin="15, 0, 0, 0" Grid.Row="1">
+                    <CollectionView x:Name="secondaryMuscleGroupSelector"
+                                    ItemsLayout="VerticalList"
+                                    ItemsSource="{Binding SecondaryMuscleGroupRepresentations}"
+                                    SelectionMode="Multiple"
+                                    Margin="0, 5, 0, 5">
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="Models:MuscleGroupRepresentation">
+                                <Grid RowDefinitions="auto, auto">
+                                    <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="30, 3, 5, 3" Grid.Row="0">
+                                        <Label Text="{Binding MuscleGroupDisplay.Name}" 
+                                               VerticalTextAlignment="Center"
+                                               HorizontalTextAlignment="Center"/>
+                                    </Border>
+
+                                    <CollectionView Grid.Row="1" 
+                                                    ItemsSource="{Binding MuscleGroupDisplay.Muscles}" 
+                                                    SelectedItems="{Binding SelectedMuscles, Converter={StaticResource ToObjectList}}"
+                                                    SelectionMode="Multiple"
+                                                    SelectionChanged="OnMuscleSelect">
+                                        <CollectionView.ItemTemplate>
+                                            <DataTemplate x:DataType="Models:Muscle">
+                                                <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="90, 3, 65, 3" Grid.Row="0">
+                                                    <Label Text="{Binding Name}"
+                                                           FontSize="Caption"
+                                                           VerticalTextAlignment="Center"
+                                                           HorizontalTextAlignment="Center"/>
+                                                </Border>
+                                            </DataTemplate>
+                                        </CollectionView.ItemTemplate>
+                                    </CollectionView>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </Grid>
+
+            <Button Text="Create" Margin="15, 10, 10, 10" Clicked="OnCreateExercise"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

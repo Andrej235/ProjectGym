@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
@@ -25,9 +25,6 @@
                 </VisualStateGroupList>
             </Setter>
         </Style>
-
-        <ValueConverters:ExerciseImageURLConverter x:Key="exerciseToImage"/>
-        <ValueConverters:MuscleImageConverter x:Key="muscleIdToImage"/>
     </ContentPage.Resources>
 
     <Grid RowDefinitions="50, Auto, *, 90"
@@ -40,225 +37,181 @@
             <ImageButton Grid.Column="1" Source="filter.png" Aspect="AspectFit" Background="Transparent" Clicked="FiltersButtonClicked"/>
         </Grid>
 
-        <VerticalStackLayout x:Name="filtersWrapper"
-                                 Background="#121212" 
-                                 Padding="10, 5, 10, 20"
-                                 AnchorY="0" 
-                                 ScaleY="0" Grid.Row="1" ZIndex="10">
+        <VerticalStackLayout Grid.Row="1"
+                             ZIndex="10" 
+                             x:Name="filtersWrapper"
+                             Padding="10, 5, 10, 20"
+                             AnchorY="0" 
+                             ScaleY="0"
+                             IsVisible="False"
+                             Background="#121212">
 
-            <VerticalStackLayout>
-
-                <toolkit:Expander x:Name="categoryFilterExpander">
-                    <toolkit:Expander.Header>
-                        <Grid ColumnDefinitions="*, 50" 
+            <toolkit:Expander x:Name="equipmentFilterExpander">
+                <toolkit:Expander.Header>
+                    <Grid ColumnDefinitions="*, 50" 
                               Padding="10">
-                            <Label Text="Categories" 
+                        <Label Text="Equipment" 
                                    Grid.Column="0" 
                                    VerticalOptions="Center"
                                    VerticalTextAlignment="Center"
                                    HorizontalTextAlignment="Start"
                                    FontSize="Subtitle"/>
 
-                            <Image Grid.Column="1" Source="downarrow.png" VerticalOptions="FillAndExpand">
-                                <Image.Triggers>
-                                    <DataTrigger TargetType="Image" Binding="{Binding Source={x:Reference categoryFilterExpander}, Path=IsExpanded}" Value="True">
-                                        <Setter Property="RotationX" Value="180"/>
-                                    </DataTrigger>
-                                </Image.Triggers>
-                            </Image>
-                        </Grid>
-                    </toolkit:Expander.Header>
-
-                    <Grid Padding="10"
-                          BackgroundColor="#121212" 
-                          HorizontalOptions="FillAndExpand">
-                        <CollectionView x:Name="categoryFilter"
-                                        ItemsLayout="VerticalList"
-                                        ItemsSource="{Binding Categories}"
-                                        SelectionMode="Multiple"
-                                        Margin="0, 5, 0, 5"
-                                        HorizontalOptions="FillAndExpand"
-                                        Background="#fff">
-
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="Models:ExerciseCategory">
-                                    <Border Padding="10" StrokeShape="RoundRectangle 10" MinimumWidthRequest="{Binding Source={RelativeSource AncestorType={x:Type CollectionView}}, Path=WidthRequest}">
-                                        <Grid RowDefinitions="25" ColumnDefinitions="*">
-                                            <Label Text="{Binding Name}" 
-                                                   VerticalTextAlignment="Center"
-                                                   HorizontalTextAlignment="Center"/>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
+                        <Image Grid.Column="1" Source="downarrow.png" VerticalOptions="FillAndExpand">
+                            <Image.Triggers>
+                                <DataTrigger TargetType="Image" Binding="{Binding Source={x:Reference equipmentFilterExpander}, Path=IsExpanded}" Value="True">
+                                    <Setter Property="RotationX" Value="180"/>
+                                </DataTrigger>
+                            </Image.Triggers>
+                        </Image>
                     </Grid>
-                </toolkit:Expander>
+                </toolkit:Expander.Header>
 
-                <toolkit:Expander x:Name="equipmentFilterExpander">
-                    <toolkit:Expander.Header>
-                        <Grid ColumnDefinitions="*, 50" 
-                              Padding="10">
-                            <Label Text="Equipment" 
-                                   Grid.Column="0" 
-                                   VerticalOptions="Center"
-                                   VerticalTextAlignment="Center"
-                                   HorizontalTextAlignment="Start"
-                                   FontSize="Subtitle"/>
-
-                            <Image Grid.Column="1" Source="downarrow.png" VerticalOptions="FillAndExpand">
-                                <Image.Triggers>
-                                    <DataTrigger TargetType="Image" Binding="{Binding Source={x:Reference equipmentFilterExpander}, Path=IsExpanded}" Value="True">
-                                        <Setter Property="RotationX" Value="180"/>
-                                    </DataTrigger>
-                                </Image.Triggers>
-                            </Image>
-                        </Grid>
-                    </toolkit:Expander.Header>
-
-                    <Grid Padding="10"
+                <Grid Padding="10"
                           BackgroundColor="#121212">
-                        <CollectionView x:Name="equipmentFilter"
+                    <CollectionView x:Name="equipmentFilter"
                                                 ItemsLayout="VerticalList"
                                                 ItemsSource="{Binding Equipment}"
                                                 SelectionMode="Multiple"
                                                 Margin="0, 5, 0, 5">
 
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="Models:Equipment">
-                                    <Border Padding="10" StrokeShape="RoundRectangle 10">
-                                        <Grid RowDefinitions="25" ColumnDefinitions="*" HorizontalOptions="FillAndExpand">
-                                            <Label Text="{Binding Name}" 
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="Models:Equipment">
+                                <Border Padding="10" StrokeShape="RoundRectangle 10">
+                                    <Grid RowDefinitions="25" ColumnDefinitions="*" HorizontalOptions="FillAndExpand">
+                                        <Label Text="{Binding Name}" 
                                                    VerticalTextAlignment="Center"
                                                    HorizontalTextAlignment="Center"/>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
-                    </Grid>
-                </toolkit:Expander>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </toolkit:Expander>
 
-                <toolkit:Expander x:Name="primaryMuscleFilterExpander">
-                    <toolkit:Expander.Header>
-                        <Grid ColumnDefinitions="*, 50" 
+            <toolkit:Expander x:Name="primaryMuscleFilterExpander">
+                <toolkit:Expander.Header>
+                    <Grid ColumnDefinitions="*, 50" 
                               Padding="10">
-                            <Label Text="Primary muscles" 
+                        <Label Text="Primary muscles" 
                                    Grid.Column="0" 
                                    VerticalOptions="Center"
                                    VerticalTextAlignment="Center"
                                    HorizontalTextAlignment="Start"
                                    FontSize="Subtitle"/>
 
-                            <Image Grid.Column="1" Source="downarrow.png" VerticalOptions="FillAndExpand">
-                                <Image.Triggers>
-                                    <DataTrigger TargetType="Image" Binding="{Binding Source={x:Reference primaryMuscleFilterExpander}, Path=IsExpanded}" Value="True">
-                                        <Setter Property="RotationX" Value="180"/>
-                                    </DataTrigger>
-                                </Image.Triggers>
-                            </Image>
-                        </Grid>
-                    </toolkit:Expander.Header>
+                        <Image Grid.Column="1" Source="downarrow.png" VerticalOptions="FillAndExpand">
+                            <Image.Triggers>
+                                <DataTrigger TargetType="Image" Binding="{Binding Source={x:Reference primaryMuscleFilterExpander}, Path=IsExpanded}" Value="True">
+                                    <Setter Property="RotationX" Value="180"/>
+                                </DataTrigger>
+                            </Image.Triggers>
+                        </Image>
+                    </Grid>
+                </toolkit:Expander.Header>
 
-                    <Grid Padding="10"
+                <Grid Padding="10"
                           BackgroundColor="#121212">
-                        <CollectionView x:Name="primaryMuscleFilter"
+                    <CollectionView x:Name="primaryMuscleFilter"
                                                 ItemsLayout="HorizontalList"
                                                 ItemsSource="{Binding Muscles}"
                                                 SelectionMode="Multiple"
                                                 Margin="0, 5, 0, 5">
 
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="Models:Muscle">
-                                    <Border Padding="10">
-                                        <Grid RowDefinitions="300, 50" >
-                                            <Image Source="{Binding Id, Converter={StaticResource muscleIdToImage}}" Grid.Row="0"/>
-                                            <Label Text="{Binding Name}" 
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="Models:Muscle">
+                                <Border Padding="10">
+                                    <Grid RowDefinitions="300, 50" >
+                                        <Image Source="{Binding Id, Converter={StaticResource muscleIdToImage}}" Grid.Row="0"/>
+                                        <Label Text="{Binding Name}" 
                                                        Grid.Row="1"
                                                        HorizontalTextAlignment="Center"/>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
-                    </Grid>
-                </toolkit:Expander>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </toolkit:Expander>
 
-                <toolkit:Expander x:Name="secondaryMuscleFilterExpander">
-                    <toolkit:Expander.Header>
-                        <Grid ColumnDefinitions="*, 50" 
+            <toolkit:Expander x:Name="secondaryMuscleFilterExpander">
+                <toolkit:Expander.Header>
+                    <Grid ColumnDefinitions="*, 50" 
                               Padding="10"
                               BackgroundColor="#121212">
-                            <Label Text="Secondary muscles" 
+                        <Label Text="Secondary muscles" 
                                    Grid.Column="0" 
                                    VerticalOptions="Center"
                                    VerticalTextAlignment="Center"
                                    HorizontalTextAlignment="Start"
                                    FontSize="Subtitle"/>
 
-                            <Image Grid.Column="1" Source="downarrow.png" VerticalOptions="FillAndExpand">
-                                <Image.Triggers>
-                                    <DataTrigger TargetType="Image" Binding="{Binding Source={x:Reference secondaryMuscleFilterExpander}, Path=IsExpanded}" Value="True">
-                                        <Setter Property="Rotation" Value="180" />
-                                    </DataTrigger>
-                                </Image.Triggers>
-                            </Image>
-                        </Grid>
-                    </toolkit:Expander.Header>
+                        <Image Grid.Column="1" Source="downarrow.png" VerticalOptions="FillAndExpand">
+                            <Image.Triggers>
+                                <DataTrigger TargetType="Image" Binding="{Binding Source={x:Reference secondaryMuscleFilterExpander}, Path=IsExpanded}" Value="True">
+                                    <Setter Property="Rotation" Value="180" />
+                                </DataTrigger>
+                            </Image.Triggers>
+                        </Image>
+                    </Grid>
+                </toolkit:Expander.Header>
 
-                    <Grid Padding="10"
+                <Grid Padding="10"
                           BackgroundColor="#121212">
 
-                        <CollectionView x:Name="secondaryMuscleFilter"
+                    <CollectionView x:Name="secondaryMuscleFilter"
                                                 ItemsLayout="HorizontalList"
                                                 ItemsSource="{Binding Muscles}"
                                                 SelectionMode="Multiple"
                                                 Margin="0, 5, 0, 5">
 
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="Models:Muscle">
-                                    <Border Padding="10">
-                                        <Grid RowDefinitions="300, 50" >
-                                            <Image Source="{Binding Id, Converter={StaticResource muscleIdToImage}}" Grid.Row="0"/>
-                                            <Label Text="{Binding Name}" 
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="Models:Muscle">
+                                <Border Padding="10">
+                                    <Grid RowDefinitions="300, 50" >
+                                        <Image Source="{Binding Id, Converter={StaticResource muscleIdToImage}}" Grid.Row="0"/>
+                                        <Label Text="{Binding Name}" 
                                                        Grid.Row="1"
                                                        HorizontalTextAlignment="Center"/>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
-                    </Grid>
-                </toolkit:Expander>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </toolkit:Expander>
 
-                <Button Text="Clear filters" Margin="10" Clicked="OnClearFilters"/>
+            <Button Text="Clear filters" Margin="10" Clicked="OnClearFilters"/>
 
-                <Button Text="Apply" Margin="10" Clicked="OnSearch"/>
-            </VerticalStackLayout>
+            <Button Text="Apply" Margin="10" Clicked="OnSearch"/>
         </VerticalStackLayout>
 
-        <CollectionView x:Name="exerciseCollectionView" 
-                        SelectionMode="Single"
-                        SelectionChanged="OnExerciseSelect"
-                        Grid.Row="1"
-                        Grid.RowSpan="2">
-            <CollectionView.ItemsLayout>
-                <GridItemsLayout Orientation="Vertical" Span="1" />
-            </CollectionView.ItemsLayout>
+        <ScrollView Grid.Row="1"
+                    Grid.RowSpan="2"
+                    VerticalScrollBarVisibility="Always"
+                    x:Name="exerciseCollectionScrollView">
 
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="Models:Exercise">
-                    <Border Stroke="#aaa"
+            <Grid RowDefinitions="*, Auto">
+                <CollectionView x:Name="exerciseCollectionView" 
+                                SelectionMode="Single"
+                                SelectionChanged="OnExerciseSelect">
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout Orientation="Vertical" Span="1" />
+                    </CollectionView.ItemsLayout>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="Models:ExerciseDisplay">
+                            <Border Stroke="#aaa"
                             StrokeThickness="7"
                             Margin="25">
 
-                        <Grid RowDefinitions="*, 125"
-                              x:DataType="Models:Exercise">
-                            <Image Source="{Binding Id, Converter={StaticResource exerciseToImage}}"
+                                <Grid RowDefinitions="*, 125">
+                                    <Image Source="{Binding ImageUrl}"
                                          Aspect="AspectFit"
                                          BackgroundColor="#fff"/>
 
-                            <Label x:Name="exercises"
+                                    <Label x:Name="exercises"
                                    Text="{Binding Name}" 
                                    TextColor="#3d3d3d"
                                    FontSize="Title"
@@ -266,21 +219,43 @@
                                    VerticalTextAlignment="Center"
                                    Grid.Row="1">
 
-                                <Label.Background>
-                                    <LinearGradientBrush EndPoint="0, 1">
-                                        <GradientStop Color="#fff"
+                                        <Label.Background>
+                                            <LinearGradientBrush EndPoint="0, 1">
+                                                <GradientStop Color="#fff"
                                                       Offset="0"/>
 
-                                        <GradientStop Color="#aaa"
+                                                <GradientStop Color="#aaa"
                                                       Offset="1"/>
-                                    </LinearGradientBrush>
-                                </Label.Background>
-                            </Label>
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                                            </LinearGradientBrush>
+                                        </Label.Background>
+                                    </Label>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <FlexLayout HorizontalOptions="FillAndExpand"
+                            JustifyContent="Center"
+                            Grid.Row="1">
+
+                    <Button Text="Prev"
+                        Margin="5, 0, 5, 0"
+                        Clicked="LoadPreviousPage"/>
+
+                    <Label x:Name="pageNumberLabel"
+                       Margin="5, 0, 5, 0"
+                       VerticalTextAlignment="Center"
+                       HorizontalTextAlignment="Center"/>
+
+                    <Button Text="Next"
+                        Margin="5, 0, 5, 0"
+                        Clicked="LoadNextPage"/>
+
+                </FlexLayout>
+            </Grid>
+
+        </ScrollView>
 
         <Grid Grid.Row="3"
               RowDefinitions="3, *">
@@ -323,11 +298,23 @@
                         Stroke="#aaa"
                         Margin="7">
 
-                    <Button BackgroundColor="#181818"/>
+                    <Button BackgroundColor="#181818" Clicked="OnOpenProfilePage"/>
                 </Border>
 
             </FlexLayout>
         </Grid>
+
+        <Border StrokeThickness="3"
+                StrokeShape="RoundRectangle 25"
+                WidthRequest="65"
+                HeightRequest="65"
+                Margin="315, 1175, 0, 0"
+                Padding="15">
+            <ImageButton HorizontalOptions="Center"
+                         VerticalOptions="Center"
+                         Source="plus.png"
+                         Clicked="OnAddButtonPressed"/>
+        </Border>
     </Grid>
 
 </ContentPage>

@@ -9,99 +9,134 @@
              Title="{Binding Exercise.Name}">
 
     <ContentPage.Resources>
-        <ValueConverters:MuscleImageConverter x:Key="MuscleIdToImage"/>
         <ValueConverters:IsCollectionNotEmptyConverter x:Key="IsCollectionNotEmpty"/>
     </ContentPage.Resources>
 
     <ScrollView>
-        <VerticalStackLayout>
+        <FlexLayout Direction="Column" Margin="10, 0, 10, 5">
             <Border HorizontalOptions="FillAndExpand" StrokeThickness="3" Margin="10" Padding="5">
-                <Grid RowDefinitions="*">
-                    <Label Text="{Binding Category.Name, StringFormat='Category: {0}'}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" FontSize="Subtitle" Grid.Row="0"/>
-                    <Button BackgroundColor="Transparent" Grid.Row="0" BindingContext="{Binding Category}" Clicked="OnCategoryClicked"/>
+                <Grid RowDefinitions="*" ColumnDefinitions="30, *, 30" ColumnSpacing="15">
+                    <ImageButton HorizontalOptions="Center"
+                                 VerticalOptions="Center"
+                                 WidthRequest="23"
+                                 HeightRequest="23"
+                                 Source="pen.png"
+                                 Margin="7, 0, 0, 0"
+                                 Clicked="OnEditButtonClicked"/>
+                    <Label Text="{Binding Exercise.Name}" HorizontalTextAlignment="Center" Grid.Column="1"/>
                 </Grid>
             </Border>
 
             <Image Source="{Binding MainImage.ImageURL}"
                    BackgroundColor="#fff"
-                   MaximumHeightRequest="500"
-                   Margin="5"/>
+                   MaximumHeightRequest="500"/>
 
             <Border StrokeShape="Line -100, 0, 1000, 0"
                     Stroke="#fff"
-                    StrokeThickness="1"
-                    Margin="5"/>
+                    StrokeThickness="1"/>
 
             <Grid RowDefinitions="Auto, Auto" RowSpacing="5" Padding="10">
                 <Label Text="{Binding Exercise.Name}" Grid.Row="0" FontSize="Title"/>
                 <Label Text="{Binding Exercise.Description}" Grid.Row="1" FontSize="Caption"/>
             </Grid>
 
-            <VerticalStackLayout Margin="10">
-                <Grid x:Name="primaryMusclesWrapper" RowDefinitions="Auto, Auto" IsVisible="{Binding PrimaryMuscles, Converter={StaticResource IsCollectionNotEmpty}}">
-                    <Label Text="Primary Muscles:" Grid.Row="0" FontSize="Title"/>
-                    <CollectionView ItemsSource="{Binding PrimaryMuscles}"
-                                    ItemsLayout="HorizontalList"
-                                    Grid.Row="1"
-                                    SelectionMode="Single"
-                                    SelectionChanged="OnSelectPrimaryMuscle">
+            <Grid RowDefinitions="Auto, Auto" IsVisible="{Binding PrimaryMuscleDisplays, Converter={StaticResource IsCollectionNotEmpty}}">
+                <Label Text="Primary Muscles:" Grid.Row="0" FontSize="Title"/>
+                <CollectionView ItemsSource="{Binding PrimaryMuscleDisplays}"
+                                Grid.Row="1"
+                                SelectionMode="Single"
+                                SelectionChanged="OnPrimaryMuscleGroupSearch">
 
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="Models:Muscle">
-                                <Border>
-                                    <Grid RowDefinitions="Auto, 400">
-                                        <Label Text="{Binding Name}" HorizontalTextAlignment="Center" Grid.Row="0" FontSize="Subtitle"/>
-                                        <Image Source="{Binding Id, Converter={StaticResource MuscleIdToImage}}" Grid.Row="1" BackgroundColor="Transparent"/>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </Grid>
-
-                <Grid x:Name="secondaryMusclesWrapper" RowDefinitions="Auto, Auto" IsVisible="{Binding SecondaryMuscles, Converter={StaticResource IsCollectionNotEmpty}}">
-                    <Label Text="Secondary Muscles:" Grid.Row="0" FontSize="Title"/>
-                    <CollectionView ItemsSource="{Binding SecondaryMuscles}"
-                                    ItemsLayout="HorizontalList"
-                                    Grid.Row="1"
-                                    SelectionMode="Single"
-                                    SelectionChanged="OnSelectSecondaryMuscle">
-
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="Models:Muscle">
-                                <Border>
-                                    <Grid RowDefinitions="Auto, 400">
-                                        <Label Text="{Binding Name}" HorizontalTextAlignment="Center" Grid.Row="0" FontSize="Subtitle"/>
-                                        <Image Source="{Binding Id, Converter={StaticResource MuscleIdToImage}}" Grid.Row="1" BackgroundColor="Transparent"/>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </Grid>
-            </VerticalStackLayout>
-
-            <Grid Margin="10, 0, 10, 5" RowDefinitions="Auto, Auto" RowSpacing="5" ColumnDefinitions=".05*, *" IsVisible="{Binding Equipment, Converter={StaticResource IsCollectionNotEmpty}}">
-                <Label Text="Required equipment:" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Subtitle"/>
-                <CollectionView ItemsSource="{Binding Equipment}" Grid.Row="1" Grid.Column="1">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="Models:Equipment">
-                            <Label Text="{Binding Name, StringFormat='*{0}'}" HorizontalTextAlignment="Start" FontSize="Caption"/>
+                        <DataTemplate x:DataType="Models:MuscleGroupDisplay">
+                            <Grid RowDefinitions="auto, auto">
+                                <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="30, 3, 5, 3" Grid.Row="0">
+                                    <Label Text="{Binding Name}" 
+                                       VerticalTextAlignment="Center"
+                                       HorizontalTextAlignment="Center"/>
+                                </Border>
+
+                                <CollectionView Grid.Row="1" ItemsSource="{Binding Muscles}" SelectionMode="Single" SelectionChanged="OnPrimaryMuscleSearch">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate x:DataType="Models:Muscle">
+                                            <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="90, 3, 65, 3" Grid.Row="0">
+                                                <Label Text="{Binding Name}"
+                                                       FontSize="Caption"
+                                                       VerticalTextAlignment="Center"
+                                                       HorizontalTextAlignment="Center"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </Grid>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
             </Grid>
-            
-            <Grid Margin="10, 0, 10, 5" RowDefinitions="Auto, Auto" RowSpacing="5" ColumnDefinitions=".05*, *" IsVisible="{Binding Notes, Converter={StaticResource IsCollectionNotEmpty}}">
+
+            <Grid RowDefinitions="Auto, Auto" IsVisible="{Binding SecondaryMuscleDisplays, Converter={StaticResource IsCollectionNotEmpty}}">
+                <Label Text="Secondary Muscles:" Grid.Row="0" FontSize="Title"/>
+                <CollectionView ItemsSource="{Binding SecondaryMuscleDisplays}"
+                                Grid.Row="1"
+                                SelectionMode="Single"
+                                SelectionChanged="OnPrimaryMuscleGroupSearch">
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="Models:MuscleGroupDisplay">
+                            <Grid RowDefinitions="auto, auto">
+                                <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="30, 3, 5, 3" Grid.Row="0">
+                                    <Label Text="{Binding Name}" 
+                                       VerticalTextAlignment="Center"
+                                       HorizontalTextAlignment="Center"/>
+                                </Border>
+
+                                <CollectionView Grid.Row="1" ItemsSource="{Binding Muscles}" SelectionMode="Single" SelectionChanged="OnPrimaryMuscleSearch">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate x:DataType="Models:Muscle">
+                                            <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="90, 3, 65, 3" Grid.Row="0">
+                                                <Label Text="{Binding Name}"
+                                                       FontSize="Caption"
+                                                       VerticalTextAlignment="Center"
+                                                       HorizontalTextAlignment="Center"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+
+            <Grid RowDefinitions="Auto, Auto" IsVisible="{Binding Equipment, Converter={StaticResource IsCollectionNotEmpty}}">
+                <Label Text="Required equipment:" Grid.Row="0" FontSize="Title"/>
+                <CollectionView ItemsSource="{Binding Equipment}"
+                                Grid.Row="1" 
+                                SelectionMode="Multiple"
+                                SelectionChanged="OnEquipmentSearch">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="Models:Equipment">
+                            <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="30, 3, 5, 3">
+                                <Label Text="{Binding Name}" 
+                                               VerticalTextAlignment="Center"
+                                               HorizontalTextAlignment="Center"/>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+
+            <Grid RowDefinitions="Auto, Auto" RowSpacing="5" ColumnDefinitions=".05*, *" IsVisible="{Binding Notes, Converter={StaticResource IsCollectionNotEmpty}}">
                 <Label Text="Notes:" Grid.Row="0" Grid.ColumnSpan="2" FontSize="Subtitle"/>
                 <CollectionView ItemsSource="{Binding Notes}" Grid.Row="1" Grid.Column="1">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="Models:ExerciseNote">
-                            <Label Text="{Binding Comment, StringFormat='*{0}'}" HorizontalTextAlignment="Start" FontSize="Caption"/>
+                            <Label Text="{Binding Note, StringFormat='*{0}'}" HorizontalTextAlignment="Start" FontSize="Caption"/>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
             </Grid>
-        </VerticalStackLayout>
+
+        </FlexLayout>
     </ScrollView>
 </ContentPage>

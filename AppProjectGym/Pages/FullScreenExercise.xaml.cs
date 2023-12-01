@@ -1,33 +1,19 @@
 using AppProjectGym.Models;
 using AppProjectGym.Services;
-using System.Diagnostics;
+using AppProjectGym.Services.Read;
+using Image = AppProjectGym.Models.Image;
 
 namespace AppProjectGym.Pages
 {
     public partial class FullScreenExercise : ContentPage, IQueryAttributable
     {
-        private readonly IDataService<Muscle> muscleDataService;
-        private readonly IDataService<Exercise> exerciseDataService;
-        private readonly IDataService<ExerciseCategory> categoryDataService;
-        private readonly IDataService<ExerciseNote> notesDataService;
-        private readonly IDataService<Equipment> equipmentDataService;
+        private readonly IReadService readService;
 
-        public FullScreenExercise(
-            IDataService<Exercise> exerciseDataService,
-            IDataService<Muscle> muscleDataService,
-            IDataService<ExerciseCategory> categoryDataService,
-            IDataService<ExerciseNote> notesDataService,
-            IDataService<Equipment> equipmentDataService
-            )
+        public FullScreenExercise(IReadService readService)
         {
             InitializeComponent();
-
             BindingContext = this;
-            this.exerciseDataService = exerciseDataService;
-            this.muscleDataService = muscleDataService;
-            this.categoryDataService = categoryDataService;
-            this.notesDataService = notesDataService;
-            this.equipmentDataService = equipmentDataService;
+            this.readService = readService;
         }
 
 
@@ -43,7 +29,7 @@ namespace AppProjectGym.Pages
         }
         private Exercise exercise;
 
-        public ExerciseImage MainImage
+        public Image MainImage
         {
             get => mainImage;
             set
@@ -52,29 +38,29 @@ namespace AppProjectGym.Pages
                 OnPropertyChanged();
             }
         }
-        private ExerciseImage mainImage;
+        private Image mainImage;
 
-        public List<Muscle> PrimaryMuscles
+        public List<MuscleGroupDisplay> PrimaryMuscleDisplays
         {
-            get => primaryMuscles;
+            get => primaryMuscleDisplays;
             set
             {
-                primaryMuscles = value;
+                primaryMuscleDisplays = value;
                 OnPropertyChanged();
             }
         }
-        private List<Muscle> primaryMuscles;
+        private List<MuscleGroupDisplay> primaryMuscleDisplays;
 
-        public List<Muscle> SecondaryMuscles
+        public List<MuscleGroupDisplay> SecondaryMuscleDisplays
         {
-            get => secondaryMuscles;
+            get => secondaryMuscleDisplays;
             set
             {
-                secondaryMuscles = value;
+                secondaryMuscleDisplays = value;
                 OnPropertyChanged();
             }
         }
-        private List<Muscle> secondaryMuscles;
+        private List<MuscleGroupDisplay> secondaryMuscleDisplays;
 
         public List<Equipment> Equipment
         {
@@ -86,17 +72,6 @@ namespace AppProjectGym.Pages
             }
         }
         private List<Equipment> equipment;
-
-        public ExerciseCategory Category
-        {
-            get => category;
-            set
-            {
-                category = value;
-                OnPropertyChanged();
-            }
-        }
-        private ExerciseCategory category;
 
         public List<ExerciseNote> Notes
         {
@@ -111,73 +86,45 @@ namespace AppProjectGym.Pages
 
 
 
-        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        public async void ApplyQueryAttributes(IDictionary<string, object> query)
         {
-            Exercise = query[nameof(Models.Exercise)] as Exercise;
-            MainImage = Exercise.Images.FirstOrDefault(i => i.IsMain);
-            OnOpen();
-        }
+            int id = Convert.ToInt32(query["id"]);
+            Exercise = await readService.Get<Exercise>("none", $"exercise/{id}");
 
-        private async void OnOpen()
-        {
-            Exercise = await exerciseDataService.Get(Exercise.Id);
-            LoadCategory();
-            LoadMuscles();
-            LoadNotes();
-            LoadEquipment();
-        }
+            var images = await readService.Get<List<Image>>("none", ReadService.TranslateEndPoint("image", 0, 1), $"exercise={Exercise.Id}");
+            if (images != null && images.Count != 0)
+                MainImage = images.First();
 
-        private async void LoadMuscles()
-        {
-            PrimaryMuscles = (await Task.WhenAll(Exercise.PrimaryMuscleIds
-                .Select(muscleDataService.Get))
-                .ConfigureAwait(false)).ToList();
-
-            SecondaryMuscles = (await Task.WhenAll(Exercise.SecondaryMuscleIds
-                .Select(muscleDataService.Get))
-                .ConfigureAwait(false)).ToList();
-        }
-
-        private async void LoadCategory() => Category = await categoryDataService.Get(Exercise.CategoryId);
-
-        private async void LoadNotes() => Notes = (await Task.WhenAll(Exercise.NoteIds.Select(notesDataService.Get))).ToList();
-
-        private async void LoadEquipment() => Equipment = (await Task.WhenAll(Exercise.EquipmentIds.Select(equipmentDataService.Get))).ToList();
-
-
-
-        private async void OnCategoryClicked(object sender, EventArgs e)
-        {
-            var category = (sender as Button).BindingContext as ExerciseCategory;
-            Dictionary<string, object> navigationParameter = new()
+            var primaryMuscleGroups = await readService.Get<List<MuscleGroup>>("none", "musclegroup", $"primary={Exercise.Id}");
+            var primaryMuscles = await readService.Get<List<Muscle>>("none", "muscle", $"primary={Exercise.Id}");
+            PrimaryMuscleDisplays = primaryMuscleGroups.Select(x => new MuscleGroupDisplay()
             {
-                {"q", $"category={category.Id}"}
-            };
+                Id = x.Id,
+                Name = x.Name,
+                Muscles = primaryMuscles.Where(y => y.MuscleGroupId == x.Id)
+            }).ToList();
 
-            await Shell.Current.GoToAsync(nameof(SearchResultsPage), navigationParameter);
-            Debug.WriteLine($"---> Category clicked {category.Name}");
-        }
-
-        private async void OnSelectPrimaryMuscle(object sender, SelectionChangedEventArgs e)
-        {
-            var muscle = e.CurrentSelection[0] as Muscle;
-            Dictionary<string, object> navigationParameter = new()
+            var secondaryMuscleGroups = await readService.Get<List<MuscleGroup>>("none", "musclegroup", $"secondary={Exercise.Id}");
+            var secondaryMuscles = await readService.Get<List<Muscle>>("none", "muscle", $"secondary={Exercise.Id}");
+            SecondaryMuscleDisplays = secondaryMuscleGroups.Select(x => new MuscleGroupDisplay()
             {
-                {"q", $"primarymuscle={muscle.Id}"}
-            };
+                Id = x.Id,
+                Name = x.Name,
+                Muscles = secondaryMuscles.Where(y => y.MuscleGroupId == x.Id)
+            }).ToList();
 
-            await Shell.Current.GoToAsync(nameof(SearchResultsPage), navigationParameter);
+            Notes = await readService.Get<List<ExerciseNote>>("none", "note", $"exercise={Exercise.Id}");
+            Equipment = await readService.Get<List<Equipment>>("none", "equipment", $"exercise={Exercise.Id}");
         }
 
-        private async void OnSelectSecondaryMuscle(object sender, SelectionChangedEventArgs e)
-        {
-            var muscle = e.CurrentSelection[0] as Muscle;
-            Dictionary<string, object> navigationParameter = new()
-            {
-                {"q", $"secondarymuscle={muscle.Id}"}
-            };
 
-            await Shell.Current.GoToAsync(nameof(SearchResultsPage), navigationParameter);
-        }
+
+        private async void OnPrimaryMuscleGroupSearch(object sender, SelectionChangedEventArgs e) => await NavigationService.SearchAsync($"primarymusclegroup={(e.CurrentSelection[0] as MuscleGroupDisplay).Id}");
+
+        private async void OnPrimaryMuscleSearch(object sender, SelectionChangedEventArgs e) => await NavigationService.SearchAsync($"primarymuscle={(e.CurrentSelection[0] as Muscle).Id}");
+
+        private async void OnEquipmentSearch(object sender, SelectionChangedEventArgs e) => await NavigationService.SearchAsync($"equipment={(e.CurrentSelection[0] as Equipment).Id}");
+
+        private async void OnEditButtonClicked(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(ExerciseCreationPage), new KeyValuePair<string, object>("edit", Exercise));
     }
 }
