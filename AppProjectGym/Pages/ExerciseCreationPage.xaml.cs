@@ -29,15 +29,6 @@ public partial class ExerciseCreationPage : ContentPage, IQueryAttributable
     private List<MuscleGroup> muscleGroups;
     private List<Muscle> muscles;
 
-    public List<MuscleGroupDisplay> MuscleGroupDisplays
-    {
-        get => muscleGroupDisplays;
-        set
-        {
-            muscleGroupDisplays = value;
-            OnPropertyChanged();
-        }
-    }
     private List<MuscleGroupDisplay> muscleGroupDisplays;
 
     public List<Equipment> Equipment
@@ -75,6 +66,19 @@ public partial class ExerciseCreationPage : ContentPage, IQueryAttributable
             OnPropertyChanged();
         }
     }
+
+    public List<Image> Images
+    {
+        get => images;
+        set
+        {
+            images = value;
+            OnPropertyChanged();
+        }
+    }
+    private List<Image> images;
+
+
 
     private async void OnCreateExercise(object sender, EventArgs e)
     {
@@ -121,7 +125,19 @@ public partial class ExerciseCreationPage : ContentPage, IQueryAttributable
 
     public async Task UpdateExercise()
     {
-        await updateService.Update(exercise);
+        //IT WORKSSS
+        //*****************************************************************************************************
+        var oldImages = await readService.Get<List<Image>>("none", "image", $"exercise={exercise.Id}");
+        var imagesToAdd = Images.Where(x => x.Id == 0);
+        var imagesToDelete = oldImages.Where(x => !Images.Any(y => y.Id != 0 && y.ImageURL == x.ImageURL));
+        foreach (var img in imagesToAdd)
+            await createService.Add(img);
+
+        foreach (var img in imagesToDelete)
+            await deleteService.Delete(img);
+        //*****************************************************************************************************
+
+        //await updateService.Update(exercise);
     }
 
     public async void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -130,7 +146,7 @@ public partial class ExerciseCreationPage : ContentPage, IQueryAttributable
         muscles = await readService.Get<List<Muscle>>("all");
         Equipment = await readService.Get<List<Equipment>>("all");
 
-        MuscleGroupDisplays = muscleGroups.Select(x => new MuscleGroupDisplay()
+        muscleGroupDisplays = muscleGroups.Select(x => new MuscleGroupDisplay()
         {
             Id = x.Id,
             Name = x.Name,
@@ -145,15 +161,15 @@ public partial class ExerciseCreationPage : ContentPage, IQueryAttributable
 
         isEditing = true;
         exercise = value as Exercise;
+
+
+
         nameInput.Text = exercise.Name;
         descriptionInput.Text = exercise.Description;
-        imageURLInput.Text = "Not implemented";
+        Images = await readService.Get<List<Image>>("none", "image", $"exercise={exercise.Id}");
 
-        equipmentSelector.SelectedItems = Equipment.Where(x => x.UsedInExerciseIds.Contains(exercise.Id)).Cast<object>().ToList();
-
-        PrimaryMuscleGroupRepresentations = MuscleGroupDisplays.Select(x => new MuscleGroupRepresentation(x, [])).ToList();
-        SecondaryMuscleGroupRepresentations = MuscleGroupDisplays.Select(x => new MuscleGroupRepresentation(x, [])).ToList();
-
+        PrimaryMuscleGroupRepresentations = muscleGroupDisplays.Select(x => new MuscleGroupRepresentation(x, [])).ToList();
+        SecondaryMuscleGroupRepresentations = muscleGroupDisplays.Select(x => new MuscleGroupRepresentation(x, [])).ToList();
         foreach (var muscle in muscles)
         {
             if (muscle.PrimaryInExercises.Contains(exercise.Id))
@@ -162,8 +178,9 @@ public partial class ExerciseCreationPage : ContentPage, IQueryAttributable
                 SecondaryMuscleGroupRepresentations.First(x => x.MuscleGroupDisplay.Muscles.Contains(muscle)).SelectedMuscles.Add(muscle);
         }
 
-        primaryMuscleGroupSelector.SelectedItems =  PrimaryMuscleGroupRepresentations.Where(x => x.SelectedMuscles.Count > 0).Cast<object>().ToList();
-        secondaryMuscleGroupSelector.SelectedItems =  SecondaryMuscleGroupRepresentations.Where(x => x.SelectedMuscles.Count > 0).Cast<object>().ToList();
+        equipmentSelector.SelectedItems = Equipment.Where(x => x.UsedInExerciseIds.Contains(exercise.Id)).Cast<object>().ToList();
+        primaryMuscleGroupSelector.SelectedItems = PrimaryMuscleGroupRepresentations.Where(x => x.SelectedMuscles.Count > 0).Cast<object>().ToList();
+        secondaryMuscleGroupSelector.SelectedItems = SecondaryMuscleGroupRepresentations.Where(x => x.SelectedMuscles.Count > 0).Cast<object>().ToList();
     }
 
     private void OnMuscleSelect(object sender, SelectionChangedEventArgs e)
@@ -172,7 +189,7 @@ public partial class ExerciseCreationPage : ContentPage, IQueryAttributable
         {
             if (innerCollection.Parent.Parent is CollectionView outerCollection)
             {
-                MuscleGroupDisplay display = MuscleGroupDisplays.First(x => x.Id == musclesSource.First().MuscleGroupId);
+                MuscleGroupDisplay display = muscleGroupDisplays.First(x => x.Id == musclesSource.First().MuscleGroupId);
                 IEnumerable<Muscle> selectedMuscles = innerCollection.SelectedItems.Cast<Muscle>();
                 if (outerCollection == primaryMuscleGroupSelector)
                 {
@@ -214,6 +231,41 @@ public partial class ExerciseCreationPage : ContentPage, IQueryAttributable
                         outerCollection.SelectedItems.Remove(muscleGroupRepresentation);
                     }
                 }
+            }
+        }
+    }
+
+    private void OnAddNewImage(object sender, EventArgs e)
+    {
+        string enteredUrl = imageURLInput.Text;
+
+        if (enteredUrl == "")
+            return;
+
+        Images.Add(new()
+        {
+            ImageURL = enteredUrl,
+            ExerciseId = exercise.Id,
+        });
+        imageURLInput.Text = "";
+
+        imagesCollection.ItemsSource = null;
+        imagesCollection.ItemsSource = Images;
+    }
+
+    private void OnImageDeleted(object sender, EventArgs e)
+    {
+        if (sender is SwipeItem swipeItem)
+        {
+            if (swipeItem.BindingContext is string url)
+            {
+                Image image = Images.FirstOrDefault(x => x.ImageURL == url);
+                if (image is null)
+                    return;
+
+                Images.Remove(image);
+                imagesCollection.ItemsSource = null;
+                imagesCollection.ItemsSource = Images;
             }
         }
     }
