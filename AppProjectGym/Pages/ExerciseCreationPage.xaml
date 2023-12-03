@@ -91,7 +91,6 @@
                 </CollectionView>
             </Grid>
 
-
             <Grid RowDefinitions="Auto, Auto" Margin="0, 10, 0, 0">
                 <Label Text="Equipment:" FontSize="Subtitle"/>
 
@@ -199,6 +198,53 @@
                     </CollectionView>
                 </Grid>
             </Grid>
+
+            <Grid RowDefinitions="auto, auto">
+                <Grid ColumnDefinitions="*, 25" Grid.Row="0">
+                    <Entry x:Name="noteTextInput" Placeholder="Note" Margin="0, 10, 0, 0" Grid.Column="0"/>
+                    <ImageButton Source="plus.png" Grid.Column="1" Clicked="OnAddNewNote" HeightRequest="25" WidthRequest="25"/>
+                </Grid>
+
+                <CollectionView x:Name="notesCollection" ItemsSource="{Binding Notes}" Grid.Row="1">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="Models:ExerciseNote">
+                            <SwipeView>
+                                <Border Padding="10, 10, 3, 10" StrokeShape="RoundRectangle 15" Margin="0, 5, 0, 0">
+                                    <Label Text="{Binding Note}" FontSize="Caption"/>
+                                </Border>
+
+                                <SwipeView.LeftItems>
+                                    <SwipeItem IconImageSource="trashcan.png" Clicked="OnNoteDeleted" BindingContext="{Binding Note}"/>
+                                </SwipeView.LeftItems>
+                            </SwipeView>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+
+            <Grid RowDefinitions="auto, auto">
+                <Grid ColumnDefinitions="*, 25" Grid.Row="0">
+                    <Entry x:Name="aliasInput" Placeholder="Alias" Margin="0, 10, 0, 0" Grid.Column="0"/>
+                    <ImageButton Source="plus.png" Grid.Column="1" Clicked="OnAddNewAlias" HeightRequest="25" WidthRequest="25"/>
+                </Grid>
+
+                <CollectionView x:Name="aliasCollection" ItemsSource="{Binding Aliases}" Grid.Row="1">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="Models:ExerciseAlias">
+                            <SwipeView>
+                                <Border Padding="10, 10, 3, 10" StrokeShape="RoundRectangle 15" Margin="0, 5, 0, 0">
+                                    <Label Text="{Binding Alias}" FontSize="Caption"/>
+                                </Border>
+
+                                <SwipeView.LeftItems>
+                                    <SwipeItem IconImageSource="trashcan.png" Clicked="OnAliasDeleted" BindingContext="{Binding Alias}"/>
+                                </SwipeView.LeftItems>
+                            </SwipeView>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+
 
             <Button Text="Create" Margin="15, 10, 10, 10" Clicked="OnCreateExercise"/>
 
