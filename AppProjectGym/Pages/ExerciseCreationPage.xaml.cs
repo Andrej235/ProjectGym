@@ -5,6 +5,7 @@ using AppProjectGym.Services.Delete;
 using AppProjectGym.Services.Read;
 using AppProjectGym.Services.Update;
 using AppProjectGym.Utilities;
+using System.Reflection;
 using Image = AppProjectGym.Models.Image;
 
 namespace AppProjectGym.Pages
@@ -110,44 +111,9 @@ namespace AppProjectGym.Pages
         private async void OnSaveExercise(object sender, EventArgs e)
         {
             if (isEditing)
-            {
                 await UpdateExercise();
-                return;
-            }
-
-            var name = nameInput.Text;
-            var description = descriptionInput.Text;
-            var imageURL = imageURLInput.Text;
-
-            if (name is null ||
-                name == "" ||
-                description is null ||
-                description == "" ||
-                equipmentSelector.SelectedItems is null ||
-                primaryMuscleGroupSelector.SelectedItems is null)
-                return;
-
-            Exercise exercise = new()
-            {
-                Name = name,
-                Description = description,
-                EquipmentIds = equipmentSelector.SelectedItems.Select(x => (x as Equipment).Id),
-                PrimaryMuscleIds = primaryMuscleGroupSelector.SelectedItems.Select(x => (x as Muscle).Id),
-                SecondaryMuscleIds = secondaryMuscleGroupSelector.SelectedItems is not null ? secondaryMuscleGroupSelector.SelectedItems.Select(x => (x as Muscle).Id) : new List<int>(),
-                AliasIds = new List<int>(),
-                ImageIds = new List<int>(),
-                NoteIds = new List<int>(),
-            };
-
-            var exerciseId = await createService.Add(exercise);
-            if (exerciseId == "")
-                return;
-
-            await createService.Add(new Image()
-            {
-                ImageURL = imageURL,
-                ExerciseId = int.Parse(exerciseId),
-            });
+            else
+                await CreateExercise();
         }
 
         public async Task UpdateExercise()
@@ -165,7 +131,7 @@ namespace AppProjectGym.Pages
             exercise.SecondaryMuscleIds = selectedSecondaryMuscleGroupRepresentatins.SelectMany(x => x.SelectedMuscles).Select(x => x.Id);
 
             var wasUpdateSuccessful = await updateService.Update(exercise);
-            if(!wasUpdateSuccessful)
+            if (!wasUpdateSuccessful)
             {
                 await NavigationService.GoToAsync("..");
                 return;
@@ -178,6 +144,43 @@ namespace AppProjectGym.Pages
             await NavigationService.GoToAsync("..");
         }
 
+        public async Task CreateExercise()
+        {
+            exercise = new();
+            var selectedEquipment = equipmentSelector.SelectedItems.Cast<Equipment>();
+            var selectedPrimaryMuscleGroupRepresentatins = primaryMuscleGroupSelector.SelectedItems.Cast<MuscleGroupRepresentation>();
+            var selectedSecondaryMuscleGroupRepresentatins = secondaryMuscleGroupSelector.SelectedItems.Cast<MuscleGroupRepresentation>();
+
+            exercise.Name = nameInput.Text;
+            exercise.Description = descriptionInput.Text;
+            exercise.EquipmentIds = selectedEquipment.Select(x => x.Id);
+            exercise.PrimaryMuscleGroupIds = selectedPrimaryMuscleGroupRepresentatins.Select(x => x.MuscleGroupDisplay.Id);
+            exercise.PrimaryMuscleIds = selectedPrimaryMuscleGroupRepresentatins.SelectMany(x => x.SelectedMuscles).Select(x => x.Id);
+            exercise.SecondaryMuscleGroupIds = selectedSecondaryMuscleGroupRepresentatins.Select(x => x.MuscleGroupDisplay.Id);
+            exercise.SecondaryMuscleIds = selectedSecondaryMuscleGroupRepresentatins.SelectMany(x => x.SelectedMuscles).Select(x => x.Id);
+
+            try
+            {
+                string newExerciseId = await createService.Add(exercise);
+                if (newExerciseId == "")
+                    throw new Exception("Newly created exercise doesn't have an id");
+
+                exercise.Id = Convert.ToInt32(newExerciseId);
+
+                await SaveListPropertyChangesToDB(Images, originalImages, "image");
+                await SaveListPropertyChangesToDB(Notes, originalNotes, "note");
+                await SaveListPropertyChangesToDB(Aliases, originalAliases, "alias");
+
+                await NavigationService.GoToAsync("..");
+            }
+            catch (Exception ex)
+            {
+                await NavigationService.GoToAsync("..");
+                LogDebugger.LogError(ex);
+                return;
+            }
+        }
+
         private async Task SaveListPropertyChangesToDB<T>(IEnumerable<T> entities, IEnumerable<T> originalEntities, string endPoint = "") where T : class
         {
             try
@@ -185,6 +188,19 @@ namespace AppProjectGym.Pages
                 var idProperty = typeof(T).GetProperty("Id");
                 var entitiesToAdd = entities.Where(x => Convert.ToInt32(idProperty.GetValue(x)) == 0);
                 var entitiesToDelete = originalEntities.Where(x => Convert.ToInt32(idProperty.GetValue(x)) != 0).Except(entities);
+
+                var exerciseIdProperty = typeof(T).GetProperty("ExerciseId");
+                if (exerciseIdProperty != null)
+                {
+                    if (exercise.Id <= 0)
+                        return;
+
+                    foreach (var entity in entitiesToAdd)
+                        exerciseIdProperty.SetValue(entity, exercise.Id);
+
+                    foreach (var entity in entitiesToDelete)
+                        exerciseIdProperty.SetValue(entity, exercise.Id);
+                }
 
                 foreach (var entity in entitiesToAdd)
                     await createService.Add(entity, endPoint);
@@ -212,6 +228,13 @@ namespace AppProjectGym.Pages
                 Muscles = muscles.Where(y => y.MuscleGroupId == x.Id)
             }).ToList();
 
+            PrimaryMuscleGroupRepresentations = muscleGroupDisplays.Select(x => new MuscleGroupRepresentation(x, [])).ToList();
+            SecondaryMuscleGroupRepresentations = muscleGroupDisplays.Select(x => new MuscleGroupRepresentation(x, [])).ToList();
+
+            Images ??= [];
+            Notes ??= [];
+            Aliases ??= [];
+
             if (!query.TryGetValue("edit", out object value))
             {
                 isEditing = false;
@@ -233,8 +256,6 @@ namespace AppProjectGym.Pages
             Aliases = await readService.Get<List<ExerciseAlias>>("none", "alias", $"exercise={exercise.Id}");
             originalAliases = Aliases.ToList();
 
-            PrimaryMuscleGroupRepresentations = muscleGroupDisplays.Select(x => new MuscleGroupRepresentation(x, [])).ToList();
-            SecondaryMuscleGroupRepresentations = muscleGroupDisplays.Select(x => new MuscleGroupRepresentation(x, [])).ToList();
             foreach (var muscle in muscles)
             {
                 if (muscle.PrimaryInExercises.Contains(exercise.Id))
@@ -245,7 +266,13 @@ namespace AppProjectGym.Pages
             }
 
             equipmentSelector.SelectedItems = Equipment.Where(x => x.UsedInExerciseIds.Contains(exercise.Id)).Cast<object>().ToList();
+
+            primaryMuscleGroupSelector.ItemsSource = null;
+            primaryMuscleGroupSelector.ItemsSource = primaryMuscleGroupRepresentations;
             primaryMuscleGroupSelector.SelectedItems = PrimaryMuscleGroupRepresentations.Where(x => x.SelectedMuscles.Count > 0).Cast<object>().ToList();
+
+            secondaryMuscleGroupSelector.ItemsSource = null;
+            secondaryMuscleGroupSelector.ItemsSource = secondaryMuscleGroupRepresentations;
             secondaryMuscleGroupSelector.SelectedItems = SecondaryMuscleGroupRepresentations.Where(x => x.SelectedMuscles.Count > 0).Cast<object>().ToList();
         }
 
@@ -308,11 +335,7 @@ namespace AppProjectGym.Pages
             if (enteredUrl == "")
                 return;
 
-            Images.Add(new()
-            {
-                ImageURL = enteredUrl,
-                ExerciseId = exercise.Id,
-            });
+            Images.Add(new() { ImageURL = enteredUrl });
             imageURLInput.Text = "";
 
             imagesCollection.ItemsSource = null;
@@ -343,11 +366,7 @@ namespace AppProjectGym.Pages
             if (enteredNote == "")
                 return;
 
-            Notes.Add(new()
-            {
-                Note = enteredNote,
-                ExerciseId = exercise.Id,
-            });
+            Notes.Add(new() { Note = enteredNote });
             noteTextInput.Text = "";
 
             notesCollection.ItemsSource = null;
@@ -378,11 +397,7 @@ namespace AppProjectGym.Pages
             if (enteredAlias == "")
                 return;
 
-            Aliases.Add(new()
-            {
-                Alias = enteredAlias,
-                ExerciseId = exercise.Id,
-            });
+            Aliases.Add(new() { Alias = enteredAlias });
             aliasInput.Text = "";
 
             aliasCollection.ItemsSource = null;

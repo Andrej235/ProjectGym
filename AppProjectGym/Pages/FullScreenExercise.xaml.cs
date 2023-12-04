@@ -1,5 +1,6 @@
 using AppProjectGym.Models;
 using AppProjectGym.Services;
+using AppProjectGym.Services.Delete;
 using AppProjectGym.Services.Read;
 using Image = AppProjectGym.Models.Image;
 
@@ -8,12 +9,14 @@ namespace AppProjectGym.Pages
     public partial class FullScreenExercise : ContentPage, IQueryAttributable
     {
         private readonly IReadService readService;
+        private readonly IDeleteService deleteService;
 
-        public FullScreenExercise(IReadService readService)
+        public FullScreenExercise(IReadService readService, IDeleteService deleteService)
         {
             InitializeComponent();
             BindingContext = this;
             this.readService = readService;
+            this.deleteService = deleteService;
         }
 
 
@@ -126,5 +129,11 @@ namespace AppProjectGym.Pages
         private async void OnEquipmentSearch(object sender, SelectionChangedEventArgs e) => await NavigationService.SearchAsync($"equipment={(e.CurrentSelection[0] as Equipment).Id}");
 
         private async void OnEditButtonClicked(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(ExerciseCreationPage), new KeyValuePair<string, object>("edit", Exercise));
+
+        private async void OnDeleteButtonClicked(object sender, EventArgs e)
+        {
+            await deleteService.Delete(Exercise);
+            await NavigationService.GoToAsync("..");
+        }
     }
 }

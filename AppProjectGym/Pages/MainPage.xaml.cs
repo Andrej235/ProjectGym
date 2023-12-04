@@ -109,6 +109,7 @@ namespace AppProjectGym
             exerciseDisplays = [.. newExerciseDisplays.OrderByDescending(x => x.ImageUrl != "")];
             exerciseCollectionView.ItemsSource = null;
             exerciseCollectionView.ItemsSource = exerciseDisplays;
+            exerciseCollectionView.SelectedItem = null;
             await exerciseCollectionScrollView.ScrollToAsync(0, 0, true);
             isWaitingForExerciseData = false;
         }
@@ -119,6 +120,7 @@ namespace AppProjectGym
 
         protected override void OnAppearing()
         {
+            LoadExercises();
             base.OnAppearing();
             if (exerciseCollectionView.ItemsSource is not null)
                 exerciseCollectionView.SelectedItem = null;

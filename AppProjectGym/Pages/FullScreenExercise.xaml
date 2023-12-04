@@ -14,17 +14,30 @@
 
     <ScrollView>
         <FlexLayout Direction="Column" Margin="10, 0, 10, 5">
-            <Border HorizontalOptions="FillAndExpand" StrokeThickness="3" Margin="10" Padding="5">
-                <Grid RowDefinitions="*" ColumnDefinitions="30, *, 30" ColumnSpacing="15">
-                    <ImageButton HorizontalOptions="Center"
-                                 VerticalOptions="Center"
-                                 WidthRequest="23"
-                                 HeightRequest="23"
-                                 Source="pen.png"
-                                 Margin="7, 0, 0, 0"
-                                 Clicked="OnEditButtonClicked"/>
-                    <Label Text="{Binding Exercise.Name}" HorizontalTextAlignment="Center" Grid.Column="1"/>
-                </Grid>
+            <Border HorizontalOptions="FillAndExpand" StrokeThickness="3" Margin="10">
+                <SwipeView  Margin="5" Padding="0">
+                    <Label Text="{Binding Exercise.Name}" HorizontalTextAlignment="Center" Margin="0, 10, 0, 10" FontSize="Medium"/>
+
+                    <SwipeView.LeftItems>
+                        <SwipeItems>
+                            <SwipeItemView>
+                                <Grid WidthRequest="50" HeightRequest="50">
+                                    <ImageButton Clicked="OnEditButtonClicked" Source="pen.png" WidthRequest="30" HeightRequest="30"/>
+                                </Grid>
+                            </SwipeItemView>
+                        </SwipeItems>
+                    </SwipeView.LeftItems>
+
+                    <SwipeView.RightItems>
+                        <SwipeItems>
+                            <SwipeItemView>
+                                <Grid WidthRequest="50" HeightRequest="50">
+                                    <ImageButton Clicked="OnDeleteButtonClicked" Source="trashcan.png" WidthRequest="30" HeightRequest="30"/>
+                                </Grid>
+                            </SwipeItemView>
+                        </SwipeItems>
+                    </SwipeView.RightItems>
+                </SwipeView>
             </Border>
 
             <Image Source="{Binding MainImage.ImageURL}"
@@ -35,9 +48,8 @@
                     Stroke="#fff"
                     StrokeThickness="1"/>
 
-            <Grid RowDefinitions="Auto, Auto" RowSpacing="5" Padding="10">
-                <Label Text="{Binding Exercise.Name}" Grid.Row="0" FontSize="Title"/>
-                <Label Text="{Binding Exercise.Description}" Grid.Row="1" FontSize="Caption"/>
+            <Grid RowDefinitions="Auto" RowSpacing="5" Margin="7, 10, 7, 10">
+                <Label Text="{Binding Exercise.Description}" FontSize="Caption"/>
             </Grid>
 
             <Grid RowDefinitions="Auto, Auto" IsVisible="{Binding PrimaryMuscleDisplays, Converter={StaticResource IsCollectionNotEmpty}}">
