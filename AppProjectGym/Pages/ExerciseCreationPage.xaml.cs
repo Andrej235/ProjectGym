@@ -1,9 +1,10 @@
 using AppProjectGym.Models;
+using AppProjectGym.Services;
 using AppProjectGym.Services.Create;
 using AppProjectGym.Services.Delete;
 using AppProjectGym.Services.Read;
 using AppProjectGym.Services.Update;
-using System.Linq.Expressions;
+using AppProjectGym.Utilities;
 using Image = AppProjectGym.Models.Image;
 
 namespace AppProjectGym.Pages
@@ -78,7 +79,7 @@ namespace AppProjectGym.Pages
             }
         }
         private List<Image> images;
-        private List<Image> originalImages;
+        private IEnumerable<Image> originalImages;
 
         public List<ExerciseNote> Notes
         {
@@ -90,7 +91,7 @@ namespace AppProjectGym.Pages
             }
         }
         private List<ExerciseNote> notes;
-        private List<ExerciseNote> originalNotes;
+        private IEnumerable<ExerciseNote> originalNotes;
 
         public List<ExerciseAlias> Aliases
         {
@@ -102,11 +103,11 @@ namespace AppProjectGym.Pages
             }
         }
         private List<ExerciseAlias> aliases;
-        private List<ExerciseAlias> originalAliases;
+        private IEnumerable<ExerciseAlias> originalAliases;
 
 
 
-        private async void OnCreateExercise(object sender, EventArgs e)
+        private async void OnSaveExercise(object sender, EventArgs e)
         {
             if (isEditing)
             {
@@ -151,36 +152,51 @@ namespace AppProjectGym.Pages
 
         public async Task UpdateExercise()
         {
-            //IT WORKSSS
-            //*****************************************************************************************************
-            /*            var imagesToAdd = Images.Where(x => x.Id == 0);
-                        var imagesToDelete = originalImages.Where(x => !Images.Any(y => y.Id != 0 && y.ImageURL == x.ImageURL));
-                        foreach (var img in imagesToAdd)
-                            await createService.Add(img);
+            var selectedEquipment = equipmentSelector.SelectedItems.Cast<Equipment>();
+            var selectedPrimaryMuscleGroupRepresentatins = primaryMuscleGroupSelector.SelectedItems.Cast<MuscleGroupRepresentation>();
+            var selectedSecondaryMuscleGroupRepresentatins = secondaryMuscleGroupSelector.SelectedItems.Cast<MuscleGroupRepresentation>();
 
-                        foreach (var img in imagesToDelete)
-                            await deleteService.Delete(img);*/
+            //exercise.Name = nameInput.Text; //Name doesn't work?
+            exercise.Description = descriptionInput.Text;
+            exercise.EquipmentIds = selectedEquipment.Select(x => x.Id);
+            exercise.PrimaryMuscleGroupIds = selectedPrimaryMuscleGroupRepresentatins.Select(x => x.MuscleGroupDisplay.Id);
+            exercise.PrimaryMuscleIds = selectedPrimaryMuscleGroupRepresentatins.SelectMany(x => x.SelectedMuscles).Select(x => x.Id);
+            exercise.SecondaryMuscleGroupIds = selectedSecondaryMuscleGroupRepresentatins.Select(x => x.MuscleGroupDisplay.Id);
+            exercise.SecondaryMuscleIds = selectedSecondaryMuscleGroupRepresentatins.SelectMany(x => x.SelectedMuscles).Select(x => x.Id);
 
-            await SavePropertyChangesToDB(Images, originalImages, (x, y) => x.ImageURL == y.ImageURL, "image");
-            await SavePropertyChangesToDB(Notes, originalNotes, (x, y) => x.Note == y.Note, "note");
-            await SavePropertyChangesToDB(Aliases, originalAliases, (x, y) => x.Alias == y.Alias, "alias");
-            //*****************************************************************************************************
+            var wasUpdateSuccessful = await updateService.Update(exercise);
+            if(!wasUpdateSuccessful)
+            {
+                await NavigationService.GoToAsync("..");
+                return;
+            }
 
-            //await updateService.Update(exercise);
+            await SaveListPropertyChangesToDB(Images, originalImages, "image");
+            await SaveListPropertyChangesToDB(Notes, originalNotes, "note");
+            await SaveListPropertyChangesToDB(Aliases, originalAliases, "alias");
+
+            await NavigationService.GoToAsync("..");
         }
 
-        private async Task SavePropertyChangesToDB<T>(IEnumerable<T> entities, IEnumerable<T> originalEntities, Func<T, T, bool> equalExpression, string endPoint = "") where T : class
+        private async Task SaveListPropertyChangesToDB<T>(IEnumerable<T> entities, IEnumerable<T> originalEntities, string endPoint = "") where T : class
         {
-            var idProperty = typeof(T).GetProperty("Id");
-            var entitiesToAdd = entities.Where(x => Convert.ToInt32(idProperty.GetValue(x)) == 0);
+            try
+            {
+                var idProperty = typeof(T).GetProperty("Id");
+                var entitiesToAdd = entities.Where(x => Convert.ToInt32(idProperty.GetValue(x)) == 0);
+                var entitiesToDelete = originalEntities.Where(x => Convert.ToInt32(idProperty.GetValue(x)) != 0).Except(entities);
 
-            var entitiesToDelete = originalEntities.Where(x => !entities.Any(y => equalExpression(x, y)));
-            //entitiesToDelete = entitiesToDelete.Where(x => Convert.ToInt32(idProperty.GetValue(x)) != 0);
-            foreach (var img in entitiesToAdd)
-                await createService.Add(img, endPoint);
+                foreach (var entity in entitiesToAdd)
+                    await createService.Add(entity, endPoint);
 
-            foreach (var img in entitiesToDelete)
-                await deleteService.Delete(img, endPoint);
+                foreach (var entity in entitiesToDelete)
+                    await deleteService.Delete(entity, endPoint);
+            }
+            catch (Exception ex)
+            {
+                LogDebugger.LogError(ex);
+                return;
+            }
         }
 
         public async void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -205,19 +221,17 @@ namespace AppProjectGym.Pages
             isEditing = true;
             exercise = value as Exercise;
 
-
-
             nameInput.Text = exercise.Name;
             descriptionInput.Text = exercise.Description;
 
             Images = await readService.Get<List<Image>>("none", "image", $"exercise={exercise.Id}");
-            originalImages = Images;
+            originalImages = Images.ToList();
 
             Notes = await readService.Get<List<ExerciseNote>>("none", "note", $"exercise={exercise.Id}");
-            originalNotes = Notes;
+            originalNotes = Notes.ToList();
 
             Aliases = await readService.Get<List<ExerciseAlias>>("none", "alias", $"exercise={exercise.Id}");
-            originalAliases = Aliases;
+            originalAliases = Aliases.ToList();
 
             PrimaryMuscleGroupRepresentations = muscleGroupDisplays.Select(x => new MuscleGroupRepresentation(x, [])).ToList();
             SecondaryMuscleGroupRepresentations = muscleGroupDisplays.Select(x => new MuscleGroupRepresentation(x, [])).ToList();
@@ -225,7 +239,8 @@ namespace AppProjectGym.Pages
             {
                 if (muscle.PrimaryInExercises.Contains(exercise.Id))
                     PrimaryMuscleGroupRepresentations.First(x => x.MuscleGroupDisplay.Muscles.Contains(muscle)).SelectedMuscles.Add(muscle);
-                else if (muscle.SecondaryInExercises.Contains(exercise.Id))
+
+                if (muscle.SecondaryInExercises.Contains(exercise.Id))
                     SecondaryMuscleGroupRepresentations.First(x => x.MuscleGroupDisplay.Muscles.Contains(muscle)).SelectedMuscles.Add(muscle);
             }
 

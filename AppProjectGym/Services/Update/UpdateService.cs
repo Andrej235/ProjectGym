@@ -3,6 +3,7 @@ using AppProjectGym.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -17,10 +18,24 @@ namespace AppProjectGym.Services.Update
 			try
 			{
                 if (endPoint == "") 
-                    endPoint = typeof(T).FullName;
+                    endPoint = typeof(T).Name;
 
                 string url = AppInfo.BaseApiURL + "/" + endPoint;
-                await client.PutAsync(url, new StringContent(JsonSerializer.Serialize(updatedEntity)));
+                HttpRequestMessage message = new()
+                {
+                    Method = HttpMethod.Put,
+                    RequestUri = new Uri(url),
+                    Content = new StringContent(JsonSerializer.Serialize(updatedEntity))
+                    {
+                        Headers =
+                        {
+                            ContentType = new MediaTypeHeaderValue("application/json")
+                        }
+                    }
+                };
+
+                var response = await client.SendAsync(message);
+                response.EnsureSuccessStatusCode();
                 return true;
 			}
 			catch (Exception ex)

@@ -5,8 +5,8 @@
              xmlns:Models="clr-namespace:AppProjectGym.Models"
              xmlns:ValueConverters="clr-namespace:AppProjectGym.ValueConverters"
              x:Class="AppProjectGym.Pages.ExerciseCreationPage"
-             Title="ExerciseCreationPage"
-             x:DataType="Pages:ExerciseCreationPage">
+             x:DataType="Pages:ExerciseCreationPage"
+             Title="Exercise">
 
     <ContentPage.Resources>
         <Style TargetType="Grid">
@@ -246,7 +246,7 @@
             </Grid>
 
 
-            <Button Text="Create" Margin="15, 10, 10, 10" Clicked="OnCreateExercise"/>
+            <Button Text="Save" Margin="15, 10, 10, 10" Clicked="OnSaveExercise"/>
 
         </VerticalStackLayout>
     </ScrollView>

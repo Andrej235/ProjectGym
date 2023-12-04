@@ -11,6 +11,9 @@ namespace ProjectGym.Services.Read
     {
         protected override Expression<Func<Alias, bool>> TranslateKeyValueToExpression(string key, string value)
         {
+            if (key == "exercise" && int.TryParse(value, out var id))
+                return x => x.ExerciseId == id;
+
             if (key == "name")
             {
                 if (string.IsNullOrWhiteSpace(value))
@@ -18,6 +21,7 @@ namespace ProjectGym.Services.Read
 
                 return x => x.AliasName.ToLower().Contains(value.ToLower());
             }
+
             throw new NotSupportedException($"Invalid key in search query. Entered key: {key}");
         }
     }
