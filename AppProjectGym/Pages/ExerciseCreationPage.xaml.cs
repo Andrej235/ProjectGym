@@ -280,7 +280,7 @@ namespace AppProjectGym.Pages
         {
             if (sender is CollectionView innerCollection && innerCollection.ItemsSource is IEnumerable<Muscle> musclesSource)
             {
-                if (innerCollection.Parent.Parent is CollectionView outerCollection)
+                if (innerCollection.Parent.Parent.Parent is CollectionView outerCollection)
                 {
                     MuscleGroupDisplay display = muscleGroupDisplays.First(x => x.Id == musclesSource.First().MuscleGroupId);
                     IEnumerable<Muscle> selectedMuscles = innerCollection.SelectedItems.Cast<Muscle>();

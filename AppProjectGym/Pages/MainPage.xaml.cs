@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Text.Json;
 using AppProjectGym.Pages;
 using AppProjectGym.Models;
 using AppProjectGym.Services;
@@ -30,16 +29,21 @@ namespace AppProjectGym
         private readonly int exercisesPerPage;
         private bool isWaitingForExerciseData;
 
-        public List<Muscle> Muscles
+        public List<MuscleGroupRepresentation> PrimaryMuscleGroupRepresentations
         {
-            get => muscles;
-            set
-            {
-                muscles = value;
-                OnPropertyChanged();
-            }
+            get { return primaryMuscleGroupRepresentations; }
+            set { primaryMuscleGroupRepresentations = value; }
         }
-        private List<Muscle> muscles;
+        private List<MuscleGroupRepresentation> primaryMuscleGroupRepresentations;
+
+        public List<MuscleGroupRepresentation> SecondaryMuscleGroupRepresentations
+        {
+            get { return secondaryMuscleGroupRepresentations; }
+            set { secondaryMuscleGroupRepresentations = value; }
+        }
+        private List<MuscleGroupRepresentation> secondaryMuscleGroupRepresentations;
+
+        private List<MuscleGroupDisplay> muscleGroupDisplays;
 
         public List<Equipment> Equipment
         {
@@ -67,14 +71,40 @@ namespace AppProjectGym
             PageNumber = 1;
             exercisesPerPage = 15;
 
-            LoadExercises();
-            LoadMuscles();
-            LoadEquipment();
-            CheckIfLoggedIn();
+            OnLoad();
         }
 
-        private static async void CheckIfLoggedIn()
+        private async void OnLoad()
         {
+            Equipment = await readService.Get<List<Equipment>>();
+            var muscles = await readService.Get<List<Muscle>>();
+            var muscleGroups = await readService.Get<List<MuscleGroup>>();
+            muscleGroupDisplays = muscleGroups.Select(x => new MuscleGroupDisplay()
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Muscles = muscles.Where(y => y.MuscleGroupId == x.Id),
+            }).ToList();
+
+            PrimaryMuscleGroupRepresentations = muscleGroupDisplays.Select(x => new MuscleGroupRepresentation()
+            {
+                MuscleGroupDisplay = x,
+                SelectedMuscles = []
+            }).ToList();
+
+            SecondaryMuscleGroupRepresentations = muscleGroupDisplays.Select(x => new MuscleGroupRepresentation()
+            {
+                MuscleGroupDisplay = x,
+                SelectedMuscles = []
+            }).ToList();
+
+            primaryMuscleFilter.ItemsSource = null;
+            primaryMuscleFilter.ItemsSource = PrimaryMuscleGroupRepresentations;
+            secondaryMuscleFilter.ItemsSource = null;
+            secondaryMuscleFilter.ItemsSource = SecondaryMuscleGroupRepresentations;
+
+
+
             if (!await ClientInfo.SetUser())
             {
                 Debug.WriteLine("---> Open login page");
@@ -114,10 +144,6 @@ namespace AppProjectGym
             isWaitingForExerciseData = false;
         }
 
-        private async void LoadMuscles() => Muscles = await readService.Get<List<Muscle>>();
-
-        private async void LoadEquipment() => Equipment = await readService.Get<List<Equipment>>();
-
         protected override void OnAppearing()
         {
             LoadExercises();
@@ -139,17 +165,24 @@ namespace AppProjectGym
 
         private async void OnSearch(object sender, EventArgs e)
         {
-            List<Muscle> primaryMusclesSelected = primaryMuscleFilter.SelectedItems.Where(x => x is Muscle).Cast<Muscle>().ToList();
-            List<Muscle> secondaryMusclesSelected = secondaryMuscleFilter.SelectedItems.Where(x => x is Muscle).Cast<Muscle>().ToList();
-            List<Equipment> equipmentSelected = equipmentFilter.SelectedItems.Where(x => x is Equipment).Cast<Equipment>().ToList();
+            string searchText = searchBar.Text;
 
-            string nameQ = searchBar.Text == string.Empty ? string.Empty : $"name={searchBar.Text};";
-            string primaryMusclesQ = $"primarymuscle={string.Join(',', primaryMusclesSelected.Select(m => m.Id))};";
-            string secondaryMusclesQ = $"secondarymuscle={string.Join(',', secondaryMusclesSelected.Select(m => m.Id))};";
-            string equipmentQ = $"equipment={string.Join(',', equipmentSelected.Select(eq => eq.Id))};";
+            IEnumerable<int> equipmentIds = equipmentFilter.SelectedItems.Cast<Equipment>().Select(x => x.Id);
+
+            IEnumerable<int> primaryMuscleGroupIds = PrimaryMuscleGroupRepresentations.Where(x => x.SelectedMuscles.Count > 0).Select(x => x.MuscleGroupDisplay.Id);
+            IEnumerable<int> primaryMuscleIds = PrimaryMuscleGroupRepresentations.SelectMany(x => x.SelectedMuscles).Select(x => x.Id);
+
+            IEnumerable<int> secondaryMuscleGroupIds = SecondaryMuscleGroupRepresentations.Where(x => x.SelectedMuscles.Count > 0).Select(x => x.MuscleGroupDisplay.Id);
+            IEnumerable<int> secondaryMuscleIds = SecondaryMuscleGroupRepresentations.SelectMany(x => x.SelectedMuscles).Select(x => x.Id);
 
             searchBar.Text = "";
-            await NavigationService.SearchAsync(nameQ, primaryMusclesQ, secondaryMusclesQ, equipmentQ, "strict=false");
+            await NavigationService.SearchAsync(searchText == "" ? "" : $"name={searchText}",
+                                                $"equipment={string.Join(',', equipmentIds)}",
+                                                $"primarymusclegroup={string.Join(',', primaryMuscleGroupIds)}",
+                                                $"primarymuscle={string.Join(',', primaryMuscleIds)}",
+                                                $"secondarymusclegroup={string.Join(',', secondaryMuscleGroupIds)}",
+                                                $"secondarymuscle={string.Join(',', secondaryMuscleIds)}",
+                                                "strict=false");
         }
 
         private async void FiltersButtonClicked(object sender, EventArgs e)
@@ -176,15 +209,24 @@ namespace AppProjectGym
 
         private void OnClearFilters(object sender, EventArgs e)
         {
+            foreach (MuscleGroupRepresentation muscleGroupRepresentation in PrimaryMuscleGroupRepresentations)
+                muscleGroupRepresentation.SelectedMuscles = [];
+
+            foreach (MuscleGroupRepresentation muscleGroupRepresentation in SecondaryMuscleGroupRepresentations)
+                muscleGroupRepresentation.SelectedMuscles = [];
+
             primaryMuscleFilter.SelectedItems = null;
+            primaryMuscleFilter.ItemsSource = null;
+            primaryMuscleFilter.ItemsSource = PrimaryMuscleGroupRepresentations;
+
             secondaryMuscleFilter.SelectedItems = null;
+            secondaryMuscleFilter.ItemsSource = null;
+            secondaryMuscleFilter.ItemsSource = SecondaryMuscleGroupRepresentations;
+
             equipmentFilter.SelectedItems = null;
         }
 
-        private async void OnOpenProfilePage(object sender, EventArgs e)
-        {
-            await NavigationService.GoToAsync(nameof(ProfilePage));
-        }
+        private async void OnOpenProfilePage(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(ProfilePage));
 
 
 
@@ -207,5 +249,57 @@ namespace AppProjectGym
         }
 
         private async void OnAddButtonPressed(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(ExerciseCreationPage));
+
+        private void OnMuscleFilterSelect(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is CollectionView innerCollection && innerCollection.ItemsSource is IEnumerable<Muscle> musclesSource)
+            {
+                if (innerCollection.Parent.Parent.Parent is CollectionView outerCollection)
+                {
+                    MuscleGroupDisplay display = muscleGroupDisplays.First(x => x.Id == musclesSource.First().MuscleGroupId);
+                    IEnumerable<Muscle> selectedMuscles = innerCollection.SelectedItems.Cast<Muscle>();
+                    if (outerCollection == primaryMuscleFilter)
+                    {
+                        var muscleGroupRepresentation = PrimaryMuscleGroupRepresentations.First(x => x.MuscleGroupDisplay == display);
+                        var oldSelectedMuscles = muscleGroupRepresentation.SelectedMuscles;
+                        muscleGroupRepresentation.SelectedMuscles.AddRange(selectedMuscles.Where(muscle => !oldSelectedMuscles.Contains(muscle)));
+
+                        var musclesToDelete = oldSelectedMuscles.Where(muscle => !selectedMuscles.Contains(muscle)).ToList();
+                        for (int i = 0; i < musclesToDelete.Count; i++)
+                            PrimaryMuscleGroupRepresentations.First(x => x.MuscleGroupDisplay == display).SelectedMuscles.Remove(musclesToDelete[i]);
+
+                        if (muscleGroupRepresentation.SelectedMuscles.Count > 0)
+                        {
+                            if (!outerCollection.SelectedItems.Contains(muscleGroupRepresentation))
+                                outerCollection.SelectedItems.Add(muscleGroupRepresentation);
+                        }
+                        else if (outerCollection.SelectedItems.Contains(muscleGroupRepresentation))
+                        {
+                            outerCollection.SelectedItems.Remove(muscleGroupRepresentation);
+                        }
+                    }
+                    else if (outerCollection == secondaryMuscleFilter)
+                    {
+                        var muscleGroupRepresentation = secondaryMuscleGroupRepresentations.First(x => x.MuscleGroupDisplay == display);
+                        var oldSelectedMuscles = muscleGroupRepresentation.SelectedMuscles;
+                        muscleGroupRepresentation.SelectedMuscles.AddRange(selectedMuscles.Where(muscle => !oldSelectedMuscles.Contains(muscle)));
+
+                        var musclesToDelete = oldSelectedMuscles.Where(muscle => !selectedMuscles.Contains(muscle)).ToList();
+                        for (int i = 0; i < musclesToDelete.Count; i++)
+                            secondaryMuscleGroupRepresentations.First(x => x.MuscleGroupDisplay == display).SelectedMuscles.Remove(musclesToDelete[i]);
+
+                        if (muscleGroupRepresentation.SelectedMuscles.Count > 0)
+                        {
+                            if (!outerCollection.SelectedItems.Contains(muscleGroupRepresentation))
+                                outerCollection.SelectedItems.Add(muscleGroupRepresentation);
+                        }
+                        else if (outerCollection.SelectedItems.Contains(muscleGroupRepresentation))
+                        {
+                            outerCollection.SelectedItems.Remove(muscleGroupRepresentation);
+                        }
+                    }
+                }
+            }
+        }
     }
 }
