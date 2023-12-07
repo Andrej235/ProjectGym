@@ -248,7 +248,29 @@ namespace AppProjectGym
             }
         }
 
-        private async void OnAddButtonPressed(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(ExerciseCreationPage));
+        private bool areCreateOptionsOpen = false;
+        private bool isPlayingCreateOptionsAnimation = false;
+        private void OnAddButtonPressed(object sender, EventArgs e)
+        {
+            if (isPlayingCreateOptionsAnimation)
+                return;
+
+            isPlayingCreateOptionsAnimation = true;
+
+            if (areCreateOptionsOpen)
+            {
+                createOptionsWrapper.ScaleY = 0;
+                createOptionsWrapper.IsVisible = false;
+            }
+            else
+            {
+                createOptionsWrapper.IsVisible = true;
+                createOptionsWrapper.ScaleY = 1;
+            }
+
+            areCreateOptionsOpen = !areCreateOptionsOpen;
+            isPlayingCreateOptionsAnimation = false;
+        }
 
         private void OnMuscleFilterSelect(object sender, SelectionChangedEventArgs e)
         {
@@ -301,5 +323,7 @@ namespace AppProjectGym
                 }
             }
         }
+
+        private async void OnExerciseCreateClicked(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(ExerciseCreationPage));
     }
 }
