@@ -147,6 +147,9 @@ namespace AppProjectGym
         protected override void OnAppearing()
         {
             LoadExercises();
+            if (areCreateOptionsOpen)
+                ToggleCreateOptions();
+
             base.OnAppearing();
             if (exerciseCollectionView.ItemsSource is not null)
                 exerciseCollectionView.SelectedItem = null;
@@ -250,7 +253,9 @@ namespace AppProjectGym
 
         private bool areCreateOptionsOpen = false;
         private bool isPlayingCreateOptionsAnimation = false;
-        private void OnAddButtonPressed(object sender, EventArgs e)
+        private void OnAddButtonPressed(object sender, EventArgs e) => ToggleCreateOptions();
+
+        private void ToggleCreateOptions()
         {
             if (isPlayingCreateOptionsAnimation)
                 return;
@@ -325,5 +330,7 @@ namespace AppProjectGym
         }
 
         private async void OnExerciseCreateClicked(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(ExerciseCreationPage));
+
+        private async void OnMuscleCreateClicked(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(MuscleCreationPage));
     }
 }

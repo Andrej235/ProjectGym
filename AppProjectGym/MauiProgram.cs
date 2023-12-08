@@ -36,6 +36,7 @@ namespace AppProjectGym
             builder.Services.AddTransient<SearchResultsPage>();
             builder.Services.AddTransient<ProfilePage>();
             builder.Services.AddTransient<ExerciseCreationPage>();
+            builder.Services.AddTransient<MuscleCreationPage>();
 
             builder.Services.AddTransient<IReadService, ReadService>();
             builder.Services.AddTransient<ICreateService, CreateService>();

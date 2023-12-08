@@ -312,7 +312,9 @@
                         Stroke="#aaa"
                         Margin="7">
 
-                        <Button BackgroundColor="#181818"/>
+                        <ImageButton Source="plus.png" 
+                                     Padding="125" 
+                                     BackgroundColor="#181818"/>
                     </Border>
 
                     <Border WidthRequest="60" 
@@ -322,7 +324,10 @@
                         Stroke="#aaa"
                         Margin="7">
 
-                        <Button BackgroundColor="#181818"/>
+                        <ImageButton Source="plus.png" 
+                                     Padding="125" 
+                                     BackgroundColor="#181818"
+                                     Clicked="OnAddButtonPressed"/>
                     </Border>
 
                     <Border WidthRequest="60" 
@@ -332,23 +337,28 @@
                         Stroke="#aaa"
                         Margin="7">
 
-                        <Button BackgroundColor="#181818" Clicked="OnOpenProfilePage"/>
+                        <ImageButton Source="user.png"
+                                     Padding="125"
+                                     BackgroundColor="#181818"
+                                     Clicked="OnOpenProfilePage"/>
                     </Border>
 
                 </FlexLayout>
             </Grid>
 
-            <Border StrokeThickness="3"
-                StrokeShape="RoundRectangle 25"
-                WidthRequest="65"
-                HeightRequest="65"
-                Margin="315, 1175, 0, 0"
-                Padding="15">
-                <ImageButton HorizontalOptions="Center"
-                         VerticalOptions="Center"
-                         Source="plus.png"
-                         Clicked="OnAddButtonPressed"/>
-            </Border>
+            <!--
+                <Border StrokeThickness="3"
+                    StrokeShape="RoundRectangle 25"
+                    WidthRequest="65"
+                    HeightRequest="65"
+                    Margin="315, 1175, 0, 0"
+                    Padding="15">
+                    <ImageButton HorizontalOptions="Center"
+                             VerticalOptions="Center"
+                             Source="plus.png"
+                             Clicked="OnAddButtonPressed"/>
+                </Border>
+            -->
         </Grid>
 
         <StackLayout VerticalOptions="End" 
@@ -367,17 +377,12 @@
                         FontSize="Subtitle"
                         Clicked="OnExerciseCreateClicked"/>
 
-                <Button Text="Muscle Group" 
-                        BackgroundColor="AliceBlue"
-                        Margin="5"
-                        TextColor="Black"
-                        FontSize="Subtitle"/>
-
                 <Button Text="Muscle" 
                         BackgroundColor="AliceBlue"
                         Margin="5"
                         TextColor="Black"
-                        FontSize="Subtitle"/>
+                        FontSize="Subtitle"
+                        Clicked="OnMuscleCreateClicked"/>
 
                 <Button Text="Equipment" 
                         BackgroundColor="AliceBlue"

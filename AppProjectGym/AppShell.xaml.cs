@@ -13,6 +13,7 @@ namespace AppProjectGym
             Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
             Routing.RegisterRoute(nameof(ProfilePage), typeof(ProfilePage));
             Routing.RegisterRoute(nameof(ExerciseCreationPage), typeof(ExerciseCreationPage));
+            Routing.RegisterRoute(nameof(MuscleCreationPage), typeof(MuscleCreationPage));
         }
     }
 }
