@@ -31,6 +31,6 @@ namespace AppProjectGym.Services
 
         public static async Task GoToAsync(Type page) => await Shell.Current.GoToAsync(page.Name);
 
-        public static async Task SearchAsync(params string[] queryPairs) => await GoToAsync(nameof(SearchResultsPage), new KeyValuePair<string, object>("q", string.Join(';', queryPairs)));
+        public static async Task SearchAsync(params string[] queryPairs) => await GoToAsync(nameof(SearchResultsPage), new KeyValuePair<string, object>("q", queryPairs.Length > 1 ? string.Join(';', queryPairs) : ""));
     }
 }

@@ -31,15 +31,23 @@ namespace AppProjectGym
 
         public List<MuscleGroupRepresentation> PrimaryMuscleGroupRepresentations
         {
-            get { return primaryMuscleGroupRepresentations; }
-            set { primaryMuscleGroupRepresentations = value; }
+            get => primaryMuscleGroupRepresentations;
+            set
+            {
+                primaryMuscleGroupRepresentations = value;
+                OnPropertyChanged();
+            }
         }
         private List<MuscleGroupRepresentation> primaryMuscleGroupRepresentations;
 
         public List<MuscleGroupRepresentation> SecondaryMuscleGroupRepresentations
         {
-            get { return secondaryMuscleGroupRepresentations; }
-            set { secondaryMuscleGroupRepresentations = value; }
+            get => secondaryMuscleGroupRepresentations;
+            set
+            {
+                secondaryMuscleGroupRepresentations = value;
+                OnPropertyChanged();
+            }
         }
         private List<MuscleGroupRepresentation> secondaryMuscleGroupRepresentations;
 
@@ -136,7 +144,7 @@ namespace AppProjectGym
             foreach (var e in Exercises)
                 newExerciseDisplays.Add(await exerciseDisplayMapper.Map(e));
 
-            exerciseDisplays = [.. newExerciseDisplays.OrderByDescending(x => x.ImageUrl != "")];
+            exerciseDisplays = newExerciseDisplays;
             exerciseCollectionView.ItemsSource = null;
             exerciseCollectionView.ItemsSource = exerciseDisplays;
             exerciseCollectionView.SelectedItem = null;
@@ -172,20 +180,25 @@ namespace AppProjectGym
 
             IEnumerable<int> equipmentIds = equipmentFilter.SelectedItems.Cast<Equipment>().Select(x => x.Id);
 
-            IEnumerable<int> primaryMuscleGroupIds = PrimaryMuscleGroupRepresentations.Where(x => x.SelectedMuscles.Count > 0).Select(x => x.MuscleGroupDisplay.Id);
+            IEnumerable<int> primaryMuscleGroupIds = primaryMuscleFilter.SelectedItems.Cast<MuscleGroupRepresentation>().Select(x => x.MuscleGroupDisplay.Id);
             IEnumerable<int> primaryMuscleIds = PrimaryMuscleGroupRepresentations.SelectMany(x => x.SelectedMuscles).Select(x => x.Id);
 
             IEnumerable<int> secondaryMuscleGroupIds = SecondaryMuscleGroupRepresentations.Where(x => x.SelectedMuscles.Count > 0).Select(x => x.MuscleGroupDisplay.Id);
             IEnumerable<int> secondaryMuscleIds = SecondaryMuscleGroupRepresentations.SelectMany(x => x.SelectedMuscles).Select(x => x.Id);
 
+            List<string> queryPairs = [
+                $"name={searchText}",
+                $"equipment={string.Join(',', equipmentIds)}",
+                $"primarymusclegroup={string.Join(',', primaryMuscleGroupIds)}",
+                $"primarymuscle={string.Join(',', primaryMuscleIds)}",
+                $"secondarymusclegroup={string.Join(',', secondaryMuscleGroupIds)}",
+                $"secondarymuscle={string.Join(',', secondaryMuscleIds)}",
+                "strict=false"
+                ];
+            queryPairs = queryPairs.Where(x => x.Contains('=') && x.Split('=').Where(y => y.Length > 0).Count() == 2).ToList();
+
             searchBar.Text = "";
-            await NavigationService.SearchAsync(searchText == "" ? "" : $"name={searchText}",
-                                                $"equipment={string.Join(',', equipmentIds)}",
-                                                $"primarymusclegroup={string.Join(',', primaryMuscleGroupIds)}",
-                                                $"primarymuscle={string.Join(',', primaryMuscleIds)}",
-                                                $"secondarymusclegroup={string.Join(',', secondaryMuscleGroupIds)}",
-                                                $"secondarymuscle={string.Join(',', secondaryMuscleIds)}",
-                                                "strict=false");
+            await NavigationService.SearchAsync([.. queryPairs]);
         }
 
         private async void FiltersButtonClicked(object sender, EventArgs e)
