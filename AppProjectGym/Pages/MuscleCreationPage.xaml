@@ -4,7 +4,7 @@
              xmlns:Pages="clr-namespace:AppProjectGym.Pages"
              xmlns:Models="clr-namespace:AppProjectGym.Models"
              x:Class="AppProjectGym.Pages.MuscleCreationPage"
-             Title="MuscleCreationPage"
+             Title="Muscles"
              x:DataType="Pages:MuscleCreationPage">
 
     <Grid HorizontalOptions="Fill" VerticalOptions="Fill">

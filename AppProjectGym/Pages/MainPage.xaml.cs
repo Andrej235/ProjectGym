@@ -332,5 +332,7 @@ namespace AppProjectGym
         private async void OnExerciseCreateClicked(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(ExerciseCreationPage));
 
         private async void OnMuscleCreateClicked(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(MuscleCreationPage));
+
+        private async void Button_Clicked(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(EquipmentCreationPage));
     }
 }

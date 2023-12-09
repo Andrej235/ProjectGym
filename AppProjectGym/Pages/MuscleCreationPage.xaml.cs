@@ -12,6 +12,9 @@ public partial class MuscleCreationPage : ContentPage
     private delegate Task<bool> InputHandler(string input);
     private delegate Task ConfirmHandler(bool input);
 
+    private InputHandler inputHandler;
+    private ConfirmHandler confirmHandler;
+
     private readonly ICreateService createService;
     private readonly IReadService readService;
     private readonly IUpdateService updateService;
@@ -59,10 +62,6 @@ public partial class MuscleCreationPage : ContentPage
 
     private void OnInputSubmit(object sender, EventArgs e) => HandleInput(muscleNameInput.Text);
 
-
-    private InputHandler inputHandler;
-    private ConfirmHandler confirmHandler;
-
     private async void HandleInput(string input)
     {
         try
@@ -83,11 +82,11 @@ public partial class MuscleCreationPage : ContentPage
         }
     }
 
-    private async void HandleConfirmDialog(bool choise)
+    private async void HandleConfirmDialog(bool choice)
     {
         try
         {
-            await confirmHandler(choise);
+            await confirmHandler(choice);
             CloseConfirmDialog();
         }
         catch (Exception ex)
@@ -183,7 +182,7 @@ public partial class MuscleCreationPage : ContentPage
             muscleCollection.ItemsSource = MuscleGroupDisplays;
         };
 
-        OpenConfirmDialog($"Are you sure you want to delete {muscle.Name}");
+        OpenConfirmDialog($"Are you sure you want to delete {muscle.Name}?");
     }
 
     private void OnMuscleGroupDelete(object sender, EventArgs e)
@@ -209,7 +208,7 @@ public partial class MuscleCreationPage : ContentPage
             muscleCollection.ItemsSource = MuscleGroupDisplays;
         };
 
-        OpenConfirmDialog($"Are you sure you want to delete {muscleGroupDisplay.Name}");
+        OpenConfirmDialog($"Are you sure you want to delete {muscleGroupDisplay.Name}?");
     }
 
     private void OnMuscleGroupCreate(object sender, EventArgs e)
@@ -273,6 +272,7 @@ public partial class MuscleCreationPage : ContentPage
 
     private void OpenInputDialog()
     {
+        muscleNameInput.Placeholder = "Enter muscle name: ";
         nameInputDialogWrapper.IsVisible = true;
         whiteOverlay.IsVisible = true;
     }

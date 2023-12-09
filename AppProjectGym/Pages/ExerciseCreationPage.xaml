@@ -36,196 +36,257 @@
         <ValueConverters:ListToListOfObjectConverter x:Key="ToObjectList"/>
     </ContentPage.Resources>
 
-    <ScrollView>
-        <VerticalStackLayout Margin="15">
-            <Entry x:Name="nameInput" Placeholder="Name" Margin="0, 10, 0, 0"/>
-            <Editor x:Name="descriptionInput" Placeholder="Description" AutoSize="TextChanges" Margin="0, 10, 0, 0"></Editor>
+    <Grid HorizontalOptions="Fill" VerticalOptions="Fill">
+        <ScrollView>
+            <VerticalStackLayout Margin="15">
+                <Entry x:Name="nameInput" Placeholder="Name" Margin="0, 10, 0, 0"/>
+                <Editor x:Name="descriptionInput" Placeholder="Description" AutoSize="TextChanges" Margin="0, 10, 0, 0"></Editor>
 
-            <Grid RowDefinitions="auto, auto">
-                <Grid ColumnDefinitions="*, 25" Grid.Row="0">
-                    <Entry x:Name="imageURLInput" Placeholder="Image URL" Margin="0, 10, 0, 0" Grid.Column="0"/>
-                    <ImageButton Source="plus.png" Grid.Column="1" Clicked="OnAddNewImage" HeightRequest="25" WidthRequest="25"/>
+                <Grid RowDefinitions="auto, auto">
+                    <Grid ColumnDefinitions="*, 25" Grid.Row="0">
+                        <Entry x:Name="imageURLInput" Placeholder="Image URL" Margin="0, 10, 0, 0" Grid.Column="0"/>
+                        <ImageButton Source="plus.png" Grid.Column="1" Clicked="OnAddNewImage" HeightRequest="25" WidthRequest="25"/>
+                    </Grid>
+
+                    <CollectionView x:Name="imagesCollection" ItemsSource="{Binding Images}" Grid.Row="1">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="Models:Image">
+                                <SwipeView>
+                                    <Border Padding="10, 10, 3, 10" StrokeShape="RoundRectangle 15" Margin="0, 5, 0, 0">
+                                        <Label Text="{Binding ImageURL}" FontSize="Caption"/>
+                                    </Border>
+
+                                    <SwipeView.RightItems>
+                                        <SwipeItem IconImageSource="trashcan.png" Clicked="OnImageDeleted" BindingContext="{Binding ImageURL}"/>
+                                    </SwipeView.RightItems>
+                                </SwipeView>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
                 </Grid>
 
-                <CollectionView x:Name="imagesCollection" ItemsSource="{Binding Images}" Grid.Row="1">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="Models:Image">
-                            <SwipeView>
-                                <Border Padding="10, 10, 3, 10" StrokeShape="RoundRectangle 15" Margin="0, 5, 0, 0">
-                                    <Label Text="{Binding ImageURL}" FontSize="Caption"/>
-                                </Border>
+                <Grid RowDefinitions="Auto, Auto" Margin="0, 10, 0, 0">
+                    <Label Text="Equipment:" FontSize="Subtitle"/>
 
-                                <SwipeView.LeftItems>
-                                    <SwipeItem IconImageSource="trashcan.png" Clicked="OnImageDeleted" BindingContext="{Binding ImageURL}"/>
-                                </SwipeView.LeftItems>
-                            </SwipeView>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </Grid>
-
-            <Grid RowDefinitions="Auto, Auto" Margin="0, 10, 0, 0">
-                <Label Text="Equipment:" FontSize="Subtitle"/>
-
-                <Grid Margin="15, 0, 0, 0" Grid.Row="1">
-                    <CollectionView x:Name="equipmentSelector"
+                    <Grid Margin="15, 0, 0, 0" Grid.Row="1">
+                        <CollectionView x:Name="equipmentSelector"
                                     ItemsLayout="VerticalList"
                                     ItemsSource="{Binding Equipment}"
                                     SelectionMode="Multiple"
                                     Margin="0, 5, 0, 5">
 
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="Models:Equipment">
-                                <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="3">
-                                    <Label Text="{Binding Name}" 
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="Models:Equipment">
+                                    <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="3">
+                                        <Label Text="{Binding Name}" 
                                                VerticalTextAlignment="Center"
                                                HorizontalTextAlignment="Center"/>
-                                </Border>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </Grid>
                 </Grid>
-            </Grid>
 
-            <Grid RowDefinitions="Auto, Auto" Margin="0, 10, 0, 0">
-                <Label Text="Primary Muscles:" FontSize="Subtitle"/>
+                <Grid RowDefinitions="Auto, Auto" Margin="0, 10, 0, 0">
+                    <Label Text="Primary Muscles:" FontSize="Subtitle"/>
 
-                <Grid Margin="15, 0, 0, 0" Grid.Row="1">
-                    <CollectionView x:Name="primaryMuscleGroupSelector"
+                    <Grid Margin="15, 0, 0, 0" Grid.Row="1">
+                        <CollectionView x:Name="primaryMuscleGroupSelector"
                                     ItemsLayout="HorizontalList"
                                     ItemsSource="{Binding PrimaryMuscleGroupRepresentations}"
                                     SelectionMode="Multiple"
                                     Margin="0, 5, 0, 5">
 
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="Models:MuscleGroupRepresentation">
-                                <Border Margin="5" Padding="10" StrokeShape="RoundRectangle 7">
-                                    <Grid RowDefinitions="auto, *" RowSpacing="10">
-                                        <Label Text="{Binding MuscleGroupDisplay.Name}"
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="Models:MuscleGroupRepresentation">
+                                    <Border Margin="5" Padding="10" StrokeShape="RoundRectangle 7">
+                                        <Grid RowDefinitions="auto, *" RowSpacing="10">
+                                            <Label Text="{Binding MuscleGroupDisplay.Name}"
                                            Grid.Row="0" 
                                            FontSize="Subtitle"
                                            HorizontalTextAlignment="Center"
                                            FontAttributes="Bold"/>
 
-                                        <CollectionView ItemsSource="{Binding MuscleGroupDisplay.Muscles}"
+                                            <CollectionView ItemsSource="{Binding MuscleGroupDisplay.Muscles}"
                                                     SelectionMode="Multiple"
                                                     SelectedItems="{Binding SelectedMuscles, Converter={StaticResource ToObjectList}}"
                                                     Grid.Row="1"
                                                     SelectionChanged="OnMuscleSelect">
 
-                                            <CollectionView.ItemTemplate>
-                                                <DataTemplate x:DataType="Models:Muscle">
-                                                    <Border WidthRequest="200" Margin="35, 3, 35, 3" Padding="10" StrokeShape="RoundRectangle 15">
-                                                        <Label Text="{Binding Name}" 
+                                                <CollectionView.ItemTemplate>
+                                                    <DataTemplate x:DataType="Models:Muscle">
+                                                        <Border WidthRequest="200" Margin="35, 3, 35, 3" Padding="10" StrokeShape="RoundRectangle 15">
+                                                            <Label Text="{Binding Name}" 
                                                                FontSize="Caption"
                                                                VerticalOptions="Center"
                                                                HorizontalTextAlignment="Center"/>
-                                                    </Border>
-                                                </DataTemplate>
-                                            </CollectionView.ItemTemplate>
-                                        </CollectionView>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </CollectionView.ItemTemplate>
+                                            </CollectionView>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </Grid>
                 </Grid>
-            </Grid>
 
-            <Grid RowDefinitions="Auto, Auto" Margin="0, 10, 0, 0">
-                <Label Text="Secondary Muscles:" FontSize="Subtitle"/>
+                <Grid RowDefinitions="Auto, Auto" Margin="0, 10, 0, 0">
+                    <Label Text="Secondary Muscles:" FontSize="Subtitle"/>
 
-                <Grid Margin="15, 0, 0, 0" Grid.Row="1">
-                    <CollectionView x:Name="secondaryMuscleGroupSelector"
+                    <Grid Margin="15, 0, 0, 0" Grid.Row="1">
+                        <CollectionView x:Name="secondaryMuscleGroupSelector"
                                     ItemsLayout="HorizontalList"
                                     ItemsSource="{Binding SecondaryMuscleGroupRepresentations}"
                                     SelectionMode="Multiple"
                                     Margin="0, 5, 0, 5">
 
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="Models:MuscleGroupRepresentation">
-                                <Border Margin="5" Padding="10" StrokeShape="RoundRectangle 7">
-                                    <Grid RowDefinitions="auto, *" RowSpacing="10">
-                                        <Label Text="{Binding MuscleGroupDisplay.Name}"
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="Models:MuscleGroupRepresentation">
+                                    <Border Margin="5" Padding="10" StrokeShape="RoundRectangle 7">
+                                        <Grid RowDefinitions="auto, *" RowSpacing="10">
+                                            <Label Text="{Binding MuscleGroupDisplay.Name}"
                                            Grid.Row="0" 
                                            FontSize="Subtitle"
                                            HorizontalTextAlignment="Center"
                                            FontAttributes="Bold"/>
 
-                                        <CollectionView ItemsSource="{Binding MuscleGroupDisplay.Muscles}"
+                                            <CollectionView ItemsSource="{Binding MuscleGroupDisplay.Muscles}"
                                                     SelectionMode="Multiple"
                                                     SelectedItems="{Binding SelectedMuscles, Converter={StaticResource ToObjectList}}"
                                                     Grid.Row="1"
                                                     SelectionChanged="OnMuscleSelect">
 
-                                            <CollectionView.ItemTemplate>
-                                                <DataTemplate x:DataType="Models:Muscle">
-                                                    <Border WidthRequest="200" Margin="35, 3, 35, 3" Padding="10" StrokeShape="RoundRectangle 15">
-                                                        <Label Text="{Binding Name}" 
+                                                <CollectionView.ItemTemplate>
+                                                    <DataTemplate x:DataType="Models:Muscle">
+                                                        <Border WidthRequest="200" Margin="35, 3, 35, 3" Padding="10" StrokeShape="RoundRectangle 15">
+                                                            <Label Text="{Binding Name}" 
                                                                FontSize="Caption"
                                                                VerticalOptions="Center"
                                                                HorizontalTextAlignment="Center"/>
-                                                    </Border>
-                                                </DataTemplate>
-                                            </CollectionView.ItemTemplate>
-                                        </CollectionView>
-                                    </Grid>
-                                </Border>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </CollectionView.ItemTemplate>
+                                            </CollectionView>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </Grid>
+                </Grid>
+
+                <Grid RowDefinitions="auto, auto">
+                    <Grid ColumnDefinitions="*, 25" Grid.Row="0">
+                        <Entry x:Name="noteTextInput" Placeholder="Note" Margin="0, 10, 0, 0" Grid.Column="0"/>
+                        <ImageButton Source="plus.png" Grid.Column="1" Clicked="OnAddNewNote" HeightRequest="25" WidthRequest="25"/>
+                    </Grid>
+
+                    <CollectionView x:Name="notesCollection" ItemsSource="{Binding Notes}" Grid.Row="1">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="Models:ExerciseNote">
+                                <SwipeView>
+                                    <Border Padding="10, 10, 3, 10" StrokeShape="RoundRectangle 15" Margin="0, 5, 0, 0">
+                                        <Label Text="{Binding Note}" FontSize="Caption"/>
+                                    </Border>
+
+                                    <SwipeView.LeftItems>
+                                        <SwipeItem IconImageSource="pen.png" Clicked="OnNotesEdit" BindingContext="{Binding Note}"/>
+                                    </SwipeView.LeftItems>
+
+                                    <SwipeView.RightItems>
+                                        <SwipeItem IconImageSource="trashcan.png" Clicked="OnNoteDeleted" BindingContext="{Binding Note}"/>
+                                    </SwipeView.RightItems>
+                                </SwipeView>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
                 </Grid>
-            </Grid>
 
-            <Grid RowDefinitions="auto, auto">
-                <Grid ColumnDefinitions="*, 25" Grid.Row="0">
-                    <Entry x:Name="noteTextInput" Placeholder="Note" Margin="0, 10, 0, 0" Grid.Column="0"/>
-                    <ImageButton Source="plus.png" Grid.Column="1" Clicked="OnAddNewNote" HeightRequest="25" WidthRequest="25"/>
+                <Grid RowDefinitions="auto, auto">
+                    <Grid ColumnDefinitions="*, 25" Grid.Row="0">
+                        <Entry x:Name="aliasInput" Placeholder="Alias" Margin="0, 10, 0, 0" Grid.Column="0"/>
+                        <ImageButton Source="plus.png" Grid.Column="1" Clicked="OnAddNewAlias" HeightRequest="25" WidthRequest="25"/>
+                    </Grid>
+
+                    <CollectionView x:Name="aliasCollection" ItemsSource="{Binding Aliases}" Grid.Row="1">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="Models:ExerciseAlias">
+                                <SwipeView>
+                                    <Border Padding="10, 10, 3, 10" StrokeShape="RoundRectangle 15" Margin="0, 5, 0, 0">
+                                        <Label Text="{Binding Alias}" FontSize="Caption"/>
+                                    </Border>
+
+                                    <SwipeView.LeftItems>
+                                        <SwipeItem IconImageSource="pen.png" Clicked="OnAliasEdit" BindingContext="{Binding Alias}"/>
+                                    </SwipeView.LeftItems>
+
+                                    <SwipeView.RightItems>
+                                        <SwipeItem IconImageSource="trashcan.png" Clicked="OnAliasDeleted" BindingContext="{Binding Alias}"/>
+                                    </SwipeView.RightItems>
+                                </SwipeView>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
                 </Grid>
 
-                <CollectionView x:Name="notesCollection" ItemsSource="{Binding Notes}" Grid.Row="1">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="Models:ExerciseNote">
-                            <SwipeView>
-                                <Border Padding="10, 10, 3, 10" StrokeShape="RoundRectangle 15" Margin="0, 5, 0, 0">
-                                    <Label Text="{Binding Note}" FontSize="Caption"/>
-                                </Border>
 
-                                <SwipeView.LeftItems>
-                                    <SwipeItem IconImageSource="trashcan.png" Clicked="OnNoteDeleted" BindingContext="{Binding Note}"/>
-                                </SwipeView.LeftItems>
-                            </SwipeView>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </Grid>
+                <Button Text="Save" Margin="15, 10, 10, 10" Clicked="OnSaveExercise"/>
 
-            <Grid RowDefinitions="auto, auto">
-                <Grid ColumnDefinitions="*, 25" Grid.Row="0">
-                    <Entry x:Name="aliasInput" Placeholder="Alias" Margin="0, 10, 0, 0" Grid.Column="0"/>
-                    <ImageButton Source="plus.png" Grid.Column="1" Clicked="OnAddNewAlias" HeightRequest="25" WidthRequest="25"/>
-                </Grid>
+            </VerticalStackLayout>
+        </ScrollView>
 
-                <CollectionView x:Name="aliasCollection" ItemsSource="{Binding Aliases}" Grid.Row="1">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="Models:ExerciseAlias">
-                            <SwipeView>
-                                <Border Padding="10, 10, 3, 10" StrokeShape="RoundRectangle 15" Margin="0, 5, 0, 0">
-                                    <Label Text="{Binding Alias}" FontSize="Caption"/>
-                                </Border>
+        <Border x:Name="nameInputDialogWrapper"
+                HorizontalOptions="Center" 
+                VerticalOptions="Center" 
+                BackgroundColor="#000" 
+                Padding="25"
+                StrokeShape="RoundRectangle 10"
+                StrokeThickness="10"
+                Stroke="White"
+                ZIndex="10"
+                IsVisible="False" >
 
-                                <SwipeView.LeftItems>
-                                    <SwipeItem IconImageSource="trashcan.png" Clicked="OnAliasDeleted" BindingContext="{Binding Alias}"/>
-                                </SwipeView.LeftItems>
-                            </SwipeView>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </Grid>
+            <VerticalStackLayout>
+                <Entry x:Name="equipmentNameInput"
+                       Placeholder="Enter new text: "
+                       Margin="10, 10, 10, 25"
+                       FontSize="Subtitle"
+                       WidthRequest="250"/>
 
+                <Button Text="Submit" Clicked="OnInputSubmit"/>
+            </VerticalStackLayout>
+        </Border>
 
-            <Button Text="Save" Margin="15, 10, 10, 10" Clicked="OnSaveExercise"/>
+        <Border x:Name="confirmDialogWrapper"
+                HorizontalOptions="Center" 
+                VerticalOptions="Center" 
+                BackgroundColor="#000" 
+                Padding="25"
+                StrokeShape="RoundRectangle 10"
+                StrokeThickness="10"
+                Stroke="White"
+                ZIndex="10"
+                IsVisible="false">
 
-        </VerticalStackLayout>
-    </ScrollView>
+            <VerticalStackLayout>
+                <Label x:Name="confirmDialogMessage" Text="Are you sure you want to delete this?" Margin="0, 0, 0, 10" />
+
+                <FlexLayout JustifyContent="Center" HeightRequest="100">
+                    <Button Text="Cancel" WidthRequest="100"  Margin="10" Padding="10" Clicked="OnCancelClicked" />
+                    <Button Text="Yes" WidthRequest="100" Margin="10" Padding="10" Clicked="OnYesClicked" />
+                </FlexLayout>
+            </VerticalStackLayout>
+        </Border>
+
+        <Button x:Name="whiteOverlay"
+                HorizontalOptions="Fill" 
+                VerticalOptions="Fill" 
+                BackgroundColor="White"
+                Opacity="0.5" 
+                IsVisible="false"
+                Clicked="OnWhiteOverlayClicked" />
+    </Grid>
 </ContentPage>

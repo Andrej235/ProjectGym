@@ -2,12 +2,16 @@ using AppProjectGym.Models;
 using AppProjectGym.Services;
 using AppProjectGym.Services.Delete;
 using AppProjectGym.Services.Read;
+using AppProjectGym.Utilities;
 using Image = AppProjectGym.Models.Image;
 
 namespace AppProjectGym.Pages
 {
     public partial class FullScreenExercise : ContentPage, IQueryAttributable
     {
+        private delegate Task ConfirmHandler(bool input);
+        private ConfirmHandler confirmHandler;
+
         private readonly IReadService readService;
         private readonly IDeleteService deleteService;
 
@@ -130,10 +134,47 @@ namespace AppProjectGym.Pages
 
         private async void OnEditButtonClicked(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(ExerciseCreationPage), new KeyValuePair<string, object>("edit", Exercise));
 
-        private async void OnDeleteButtonClicked(object sender, EventArgs e)
+        private void OnDeleteButtonClicked(object sender, EventArgs e)
         {
-            await deleteService.Delete(Exercise);
-            await NavigationService.GoToAsync("..");
+            confirmHandler = async choice =>
+            {
+                if (!choice)
+                    return;
+
+                await deleteService.Delete(Exercise);
+                await NavigationService.GoToAsync("..");
+            };
+            OpenConfirmDialog("Are you sure you want to delete this exercise?");
+        }
+
+
+
+        //Confirm dialog
+        private void OnWhiteOverlayClicked(object sender, EventArgs e) => CloseConfirmDialog();
+        private void OnCancelClicked(object sender, EventArgs e) => HandleConfirmDialog(false);
+        private void OnYesClicked(object sender, EventArgs e) => HandleConfirmDialog(true);
+        private void OpenConfirmDialog(string message)
+        {
+            confirmDialogMessage.Text = message;
+            confirmDialogWrapper.IsVisible = true;
+            whiteOverlay.IsVisible = true;
+        }
+        private void CloseConfirmDialog()
+        {
+            confirmDialogWrapper.IsVisible = false;
+            whiteOverlay.IsVisible = false;
+        }
+        private void HandleConfirmDialog(bool choice)
+        {
+            try
+            {
+                confirmHandler(choice);
+                CloseConfirmDialog();
+            }
+            catch (Exception ex)
+            {
+                LogDebugger.LogError(ex);
+            }
         }
     }
 }

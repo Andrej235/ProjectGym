@@ -5,13 +5,19 @@ using AppProjectGym.Services.Delete;
 using AppProjectGym.Services.Read;
 using AppProjectGym.Services.Update;
 using AppProjectGym.Utilities;
-using System.Reflection;
+using System.Text.RegularExpressions;
 using Image = AppProjectGym.Models.Image;
 
 namespace AppProjectGym.Pages
 {
     public partial class ExerciseCreationPage : ContentPage, IQueryAttributable
     {
+        private delegate Task<bool> InputHandler(string input);
+        private delegate void ConfirmHandler(bool input);
+
+        private InputHandler inputHandler;
+        private ConfirmHandler confirmHandler;
+
         private readonly IReadService readService;
         private readonly ICreateService createService;
         private readonly IUpdateService updateService;
@@ -57,6 +63,7 @@ namespace AppProjectGym.Pages
                 OnPropertyChanged();
             }
         }
+
         private List<MuscleGroupRepresentation> primaryMuscleGroupRepresentations;
 
         public List<MuscleGroupRepresentation> SecondaryMuscleGroupRepresentations
@@ -68,6 +75,7 @@ namespace AppProjectGym.Pages
                 OnPropertyChanged();
             }
         }
+
         private List<MuscleGroupRepresentation> secondaryMuscleGroupRepresentations;
 
         public List<Image> Images
@@ -341,22 +349,29 @@ namespace AppProjectGym.Pages
             imagesCollection.ItemsSource = null;
             imagesCollection.ItemsSource = Images;
         }
-
         private void OnImageDeleted(object sender, EventArgs e)
         {
-            if (sender is SwipeItem swipeItem)
-            {
-                if (swipeItem.BindingContext is string url)
-                {
-                    Image image = Images.FirstOrDefault(x => x.ImageURL == url);
-                    if (image is null)
-                        return;
+            if (sender is not SwipeItem swipeItem)
+                return;
 
-                    Images.Remove(image);
-                    imagesCollection.ItemsSource = null;
-                    imagesCollection.ItemsSource = Images;
-                }
-            }
+            if (swipeItem.BindingContext is not string url)
+                return;
+
+            Image image = Images.FirstOrDefault(x => x.ImageURL == url);
+            if (image is null)
+                return;
+
+            confirmHandler = choice =>
+            {
+                if (!choice)
+                    return;
+
+                Images.Remove(image);
+                imagesCollection.ItemsSource = null;
+                imagesCollection.ItemsSource = Images;
+            };
+
+            OpenConfirmDialog($"Are you sure you want to delete this image?");
         }
 
         private void OnAddNewNote(object sender, EventArgs e)
@@ -372,22 +387,61 @@ namespace AppProjectGym.Pages
             notesCollection.ItemsSource = null;
             notesCollection.ItemsSource = Notes;
         }
+        private void OnNotesEdit(object sender, EventArgs e)
+        {
+            if (sender is not SwipeItem swipeItem)
+                return;
 
+            if (swipeItem.BindingContext is not string noteText)
+                return;
+
+            var note = Notes.FirstOrDefault(x => x.Note == noteText);
+            if (note is null)
+                return;
+
+            inputHandler = async s =>
+            {
+                if (s is null || s == "" || s == noteText)
+                    return false;
+
+                note.Note = s;
+                if (note.Id != 0)
+                {
+                    var success = await updateService.Update(note, "note");
+                    if (!success)
+                        return false;
+                }
+
+                notesCollection.ItemsSource = null;
+                notesCollection.ItemsSource = Notes;
+                return true;
+            };
+
+            OpenInputDialog(noteText);
+        }
         private void OnNoteDeleted(object sender, EventArgs e)
         {
-            if (sender is SwipeItem swipeItem)
-            {
-                if (swipeItem.BindingContext is string noteText)
-                {
-                    var note = Notes.FirstOrDefault(x => x.Note == noteText);
-                    if (note is null)
-                        return;
+            if (sender is not SwipeItem swipeItem)
+                return;
 
-                    Notes.Remove(note);
-                    notesCollection.ItemsSource = null;
-                    notesCollection.ItemsSource = Notes;
-                }
-            }
+            if (swipeItem.BindingContext is not string noteText)
+                return;
+
+            var note = Notes.FirstOrDefault(x => x.Note == noteText);
+            if (note is null)
+                return;
+
+            confirmHandler = choice =>
+            {
+                if (!choice)
+                    return;
+
+                Notes.Remove(note);
+                notesCollection.ItemsSource = null;
+                notesCollection.ItemsSource = Notes;
+            };
+
+            OpenConfirmDialog($"Are you sure you want to delete {noteText}?");
         }
 
         private void OnAddNewAlias(object sender, EventArgs e)
@@ -403,22 +457,135 @@ namespace AppProjectGym.Pages
             aliasCollection.ItemsSource = null;
             aliasCollection.ItemsSource = Aliases;
         }
+        private void OnAliasEdit(object sender, EventArgs e)
+        {
+            if (sender is not SwipeItem swipeItem)
+                return;
 
+            if (swipeItem.BindingContext is not string aliasText)
+                return;
+
+            var alias = Aliases.FirstOrDefault(x => x.Alias == aliasText);
+            if (alias is null)
+                return;
+
+
+            inputHandler = async s =>
+            {
+                if (s is null || s == "" || s == aliasText)
+                    return false;
+
+                alias.Alias = s;
+
+                if (alias.Id != 0)
+                {
+                    var success = await updateService.Update(alias, "alias");
+                    if (!success)
+                        return false;
+                }
+
+                aliasCollection.ItemsSource = null;
+                aliasCollection.ItemsSource = Aliases;
+                return true;
+            };
+
+            OpenInputDialog(aliasText);
+        }
         private void OnAliasDeleted(object sender, EventArgs e)
         {
-            if (sender is SwipeItem swipeItem)
-            {
-                if (swipeItem.BindingContext is string aliasText)
-                {
-                    var alias = Aliases.FirstOrDefault(x => x.Alias == aliasText);
-                    if (alias is null)
-                        return;
+            if (sender is not SwipeItem swipeItem)
+                return;
 
-                    Aliases.Remove(alias);
-                    aliasCollection.ItemsSource = null;
-                    aliasCollection.ItemsSource = Aliases;
-                }
+            if (swipeItem.BindingContext is not string aliasText)
+                return;
+
+            var alias = Aliases.FirstOrDefault(x => x.Alias == aliasText);
+            if (alias is null)
+                return;
+
+            confirmHandler = choice =>
+            {
+                if (!choice)
+                    return;
+
+                Aliases.Remove(alias);
+                aliasCollection.ItemsSource = null;
+                aliasCollection.ItemsSource = Aliases;
+            };
+
+            OpenConfirmDialog($"Are you sure you want to delete {aliasText}?");
+        }
+
+
+
+        //Input dialogs
+        private void OnWhiteOverlayClicked(object sender, EventArgs e)
+        {
+            CloseInputDialog();
+            CloseConfirmDialog();
+        }
+
+        private void OnCancelClicked(object sender, EventArgs e) => HandleConfirmDialog(false);
+        private void OnYesClicked(object sender, EventArgs e) => HandleConfirmDialog(true);
+        private void OpenConfirmDialog(string message)
+        {
+            confirmDialogMessage.Text = message;
+            confirmDialogWrapper.IsVisible = true;
+            whiteOverlay.IsVisible = true;
+        }
+        private void CloseConfirmDialog()
+        {
+            confirmDialogWrapper.IsVisible = false;
+            whiteOverlay.IsVisible = false;
+        }
+        private void HandleConfirmDialog(bool choice)
+        {
+            try
+            {
+                confirmHandler(choice);
+                CloseConfirmDialog();
             }
+            catch (Exception ex)
+            {
+                LogDebugger.LogError(ex);
+            }
+        }
+
+        private void OnInputSubmit(object sender, EventArgs e) => HandleInput(equipmentNameInput.Text);
+        private async void HandleInput(string input)
+        {
+            try
+            {
+                var success = await inputHandler(input);
+                if (success)
+                    CloseInputDialog();
+
+                equipmentNameInput.Text = "";
+                equipmentNameInput.Placeholder = "Something went wrong";
+                return;
+            }
+            catch (Exception ex)
+            {
+                LogDebugger.LogError(ex);
+                equipmentNameInput.Text = "";
+                equipmentNameInput.Placeholder = "Something went wrong";
+            }
+        }
+        private void OpenInputDialog()
+        {
+            equipmentNameInput.Placeholder = "Enter equipment name: ";
+            nameInputDialogWrapper.IsVisible = true;
+            whiteOverlay.IsVisible = true;
+        }
+        private void OpenInputDialog(string defaultValue)
+        {
+            equipmentNameInput.Text = defaultValue;
+            OpenInputDialog();
+        }
+        private void CloseInputDialog()
+        {
+            nameInputDialogWrapper.IsVisible = false;
+            whiteOverlay.IsVisible = false;
         }
     }
 }

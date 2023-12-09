@@ -388,7 +388,8 @@
                         BackgroundColor="AliceBlue"
                         Margin="5"
                         TextColor="Black"
-                        FontSize="Subtitle"/>
+                        FontSize="Subtitle"
+                        Clicked="Button_Clicked" />
 
                 <Button Text="Close" 
                         BackgroundColor="AliceBlue"
