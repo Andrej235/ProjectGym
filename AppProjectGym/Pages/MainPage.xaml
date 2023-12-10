@@ -312,7 +312,7 @@
                         Stroke="#aaa"
                         Margin="7">
 
-                        <ImageButton Source="plus.png" 
+                        <ImageButton Source="workout.png" 
                                      Padding="125" 
                                      BackgroundColor="#181818"/>
                     </Border>
@@ -389,7 +389,14 @@
                         Margin="5"
                         TextColor="Black"
                         FontSize="Subtitle"
-                        Clicked="Button_Clicked" />
+                        Clicked="OnEquipmentCreateClicked" />
+
+                <Button Text="Workout" 
+                        BackgroundColor="AliceBlue"
+                        Margin="5"
+                        TextColor="Black"
+                        FontSize="Subtitle"
+                        Clicked="OnWorkoutCreateClicked" />
 
                 <Button Text="Close" 
                         BackgroundColor="AliceBlue"

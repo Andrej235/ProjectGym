@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="AppProjectGym.Pages.EquipmentCreationPage"
-             Title="Equipment"
+             x:Class="AppProjectGym.Pages.WorkoutCreationPage"
              xmlns:Pages="clr-namespace:AppProjectGym.Pages"
              xmlns:Models="clr-namespace:AppProjectGym.Models"
-             x:DataType="Pages:EquipmentCreationPage">
+             Title="Workouts"
+             x:DataType="Pages:WorkoutCreationPage">
 
     <Grid HorizontalOptions="Fill" VerticalOptions="Fill">
         <VerticalStackLayout>
-            <CollectionView x:Name="equipmentCollection" ItemsSource="{Binding Equipment}">
+            <CollectionView x:Name="workoutCollection" ItemsSource="{Binding Workouts}" SelectionMode="None">
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="Models:Equipment">
+                    <DataTemplate x:DataType="Models:Workout">
                         <SwipeView>
                             <Border Margin="25, 5, 25, 5"
-                                    HorizontalOptions="Fill"
-                                    StrokeShape="RoundRectangle 15"
-                                    Padding="10">
+                                HorizontalOptions="Fill"
+                                StrokeShape="RoundRectangle 15"
+                                Padding="10">
 
                                 <Label Text="{Binding Name}" HorizontalTextAlignment="Center"/>
                             </Border>
@@ -24,7 +24,7 @@
                             <SwipeView.LeftItems>
                                 <SwipeItemView>
                                     <Grid WidthRequest="50" HeightRequest="50" Margin="3">
-                                        <ImageButton Source="pen.png"  WidthRequest="30" HeightRequest="30" Clicked="OnEquipmentEdit"/>
+                                        <ImageButton Source="pen.png"  WidthRequest="30" HeightRequest="30" Clicked="OnWorkoutEdit" />
                                     </Grid>
                                 </SwipeItemView>
                             </SwipeView.LeftItems>
@@ -32,7 +32,7 @@
                             <SwipeView.RightItems>
                                 <SwipeItemView>
                                     <Grid WidthRequest="50" HeightRequest="50" Margin="3">
-                                        <ImageButton Source="trashcan.png"  WidthRequest="30" HeightRequest="30" Clicked="OnEquipmentDelete" />
+                                        <ImageButton Source="trashcan.png"  WidthRequest="30" HeightRequest="30" Clicked="OnWorkoutDelete" />
                                     </Grid>
                                 </SwipeItemView>
                             </SwipeView.RightItems>
@@ -49,8 +49,7 @@
                 <ImageButton Source="plus.png"
                              HeightRequest="20"
                              VerticalOptions="Center"
-                             Clicked="OnEquipmentCreate"
-                             BindingContext="{Binding Id}"/>
+                             Clicked="OnWorkoutCreate" />
             </Border>
         </VerticalStackLayout>
 
@@ -66,8 +65,8 @@
                 IsVisible="False" >
 
             <VerticalStackLayout>
-                <Entry x:Name="equipmentNameInput"
-                       Placeholder="Enter equipment name: "
+                <Entry x:Name="workoutNameInput"
+                       Placeholder="Enter a name for your workout: "
                        Margin="10, 10, 10, 25"
                        FontSize="Subtitle"
                        WidthRequest="250"/>

@@ -21,7 +21,7 @@ namespace ProjectGym.Services.Read
                 bool CheckPrimaryKey(T e)
                 {
                     var idProp = e.GetType().GetProperty("Id");
-                    if(idProp == null)
+                    if (idProp == null)
                         return false;
 
                     return Convert.ToString(idProp.GetValue(e)) == Convert.ToString(id);
@@ -123,14 +123,22 @@ namespace ProjectGym.Services.Read
             }
         }
 
-        protected virtual IQueryable<T> ApplyNonStrictCriterias(IQueryable<T> entitiesQueryable, IEnumerable<Expression<Func<T, bool>>> criterias) => criterias
-            .Where(x => x.Body is not ConstantExpression)
+        protected virtual IQueryable<T> ApplyNonStrictCriterias(IQueryable<T> entitiesQueryable, IEnumerable<Expression<Func<T, bool>>> criterias)
+        {
+            criterias = criterias
+            .Where(x => x.Body is not ConstantExpression);
+
+            if(!criterias.Any())
+                return entitiesQueryable;
+
+            return criterias
             .Select(x => entitiesQueryable.Where(x))
             .SelectMany(x => x)
             .GroupBy(x => x)
             .OrderByDescending(g => g.Count())
             .Select(x => x.First())
             .AsQueryable();
+        }
 
         protected List<T> ApplyOffsetAndLimit(IQueryable<T> queryable, int? offset = 0, int? limit = -1)
         {

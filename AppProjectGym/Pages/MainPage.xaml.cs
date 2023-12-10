@@ -144,7 +144,7 @@ namespace AppProjectGym
             foreach (var e in Exercises)
                 newExerciseDisplays.Add(await exerciseDisplayMapper.Map(e));
 
-            exerciseDisplays = newExerciseDisplays;
+            exerciseDisplays = [.. newExerciseDisplays.OrderByDescending(x => x.ImageUrl != "")];
             exerciseCollectionView.ItemsSource = null;
             exerciseCollectionView.ItemsSource = exerciseDisplays;
             exerciseCollectionView.SelectedItem = null;
@@ -346,6 +346,8 @@ namespace AppProjectGym
 
         private async void OnMuscleCreateClicked(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(MuscleCreationPage));
 
-        private async void Button_Clicked(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(EquipmentCreationPage));
+        private async void OnEquipmentCreateClicked(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(EquipmentCreationPage));
+
+        private async void OnWorkoutCreateClicked(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(WorkoutCreationPage));
     }
 }

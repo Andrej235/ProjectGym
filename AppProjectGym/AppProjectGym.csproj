@@ -72,6 +72,12 @@
     <MauiXaml Update="Pages\SearchResultsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
+    <MauiXaml Update="Pages\WorkoutCreationPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
+    <MauiXaml Update="Pages\WorkoutEditPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
   </ItemGroup>
   <ProjectExtensions>
     <VisualStudio>

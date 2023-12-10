@@ -46,8 +46,8 @@ namespace ProjectGym.Services.Read
             return key switch
             {
                 "personal" => x => true,
-                "client" => x => true,
-                "clientid" => x => true,
+                "user" => x => true,
+                "userid" => x => true,
                 _ => throw new NotSupportedException($"Invalid key in search query. Entered key: {key}"),
             };
         }
@@ -85,8 +85,8 @@ namespace ProjectGym.Services.Read
 
 
 
-                List<string>? clientKeyValuePair = keyValuePairsInSearchQuery.FirstOrDefault(kvp => kvp[0] == "client" || kvp[0] == "clientid");
-                if (clientKeyValuePair != null && Guid.TryParse(clientKeyValuePair[1], out var creatorId))
+                List<string>? userKeyValuePair = keyValuePairsInSearchQuery.FirstOrDefault(kvp => kvp[0] == "user" || kvp[0] == "userid");
+                if (userKeyValuePair != null && Guid.TryParse(userKeyValuePair[1], out var creatorId))
                 {
                     List<string>? personalKeyValuePair = keyValuePairsInSearchQuery.FirstOrDefault(kvp => kvp[0] == "personal");
                     if (personalKeyValuePair is null)
