@@ -8,7 +8,11 @@ namespace ProjectGym.Services.Read
     {
         protected override Expression<Func<WorkoutSet, bool>> TranslateKeyValueToExpression(string key, string value)
         {
-            if (int.TryParse(value, out int valueId))
+            if (key == "workout" && Guid.TryParse(value, out Guid guid))
+            {
+                return x => x.WorkoutId == guid;
+            }
+            else if (int.TryParse(value, out int valueId))
             {
                 return key switch
                 {
