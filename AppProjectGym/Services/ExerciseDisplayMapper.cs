@@ -1,11 +1,6 @@
 ﻿using AppProjectGym.Models;
 using AppProjectGym.Services.Read;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Image = AppProjectGym.Models.Image;
 
 namespace AppProjectGym.Services

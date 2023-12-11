@@ -4,7 +4,6 @@ using AppProjectGym.Services.Create;
 using AppProjectGym.Services.Delete;
 using AppProjectGym.Services.Read;
 using AppProjectGym.Services.Update;
-using System.Reflection.Metadata.Ecma335;
 
 namespace AppProjectGym.Pages
 {
@@ -82,6 +81,14 @@ namespace AppProjectGym.Pages
                 WorkoutSetDisplays.Add(workoutSetDisplay);
             }
             Workout = workout;
+
+            setCollection.ItemsSource = null;
+            setCollection.ItemsSource = WorkoutSetDisplays;
+        }
+
+        private void OnWhiteOverlayClicked(object sender, EventArgs e)
+        {
+
         }
     }
 }
