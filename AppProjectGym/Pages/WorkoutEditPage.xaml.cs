@@ -4,11 +4,15 @@ using AppProjectGym.Services.Create;
 using AppProjectGym.Services.Delete;
 using AppProjectGym.Services.Read;
 using AppProjectGym.Services.Update;
+using AppProjectGym.Utilities;
 
 namespace AppProjectGym.Pages
 {
     public partial class WorkoutEditPage : ContentPage, IQueryAttributable
     {
+        private delegate void RepRangeInputHandler(int bottom, int top);
+        private RepRangeInputHandler repRangeInputHandler;
+
         private readonly ICreateService createService;
         private readonly IReadService readService;
         private readonly IUpdateService updateService;
@@ -88,7 +92,86 @@ namespace AppProjectGym.Pages
 
         private void OnWhiteOverlayClicked(object sender, EventArgs e)
         {
+            CloseRepRangeInputDialog();
+        }
 
+        private void OpenRepRangeInputDialog()
+        {
+            repRangeInputDialogWrapper.IsVisible = true;
+            whiteOverlay.IsVisible = true;
+        }
+
+        private void CloseRepRangeInputDialog()
+        {
+            repRangeInputDialogWrapper.IsVisible = false;
+            whiteOverlay.IsVisible = false;
+        }
+
+        private void OnRepRangeEdit(object sender, EventArgs e)
+        {
+            if (sender is not Button button)
+                return;
+
+            WorkoutSetDisplay workoutSetDisplay = button.BindingContext as WorkoutSetDisplay;
+            repRangeInputHandler = (bottom, top) =>
+            {
+                if (top < bottom)
+                    throw new Exception("User entered an invalid rep range, top is lower than bottom");
+
+                workoutSetDisplay.Set.Set.RepRange_Bottom = bottom;
+                workoutSetDisplay.Set.Set.RepRange_Top = top;
+                RefreshSetCollection();
+            };
+
+            OpenRepRangeInputDialog();
+        }
+
+        private void OnRepRangeSubmit(object sender, EventArgs e) => HandleRepRangeInput(bottomRepRangeInput.Text, topRepRangeInput.Text);
+
+        private void HandleRepRangeInput(string bottomText, string topText)
+        {
+            try
+            {
+                if (!int.TryParse(bottomText, out int bottom) || !int.TryParse(topText, out int top))
+                    throw new Exception("User entered an invalid rep range, couldn't parse to int");
+
+                CloseRepRangeInputDialog();
+                repRangeInputHandler(bottom, top);
+
+                bottomRepRangeInput.Text = "";
+                topRepRangeInput.Text = "";
+            }
+            catch (Exception ex)
+            {
+                LogDebugger.LogError(ex);
+            }
+        }
+
+        private void OnWorkoutSetCreate(object sender, EventArgs e)
+        {
+            WorkoutSetDisplay newWorkoutSetDisplay = new()
+            {
+                Set = new()
+                {
+                    Set = new()
+                },
+                Superset = null,
+                TargetSets = 0
+            };
+
+            WorkoutSetDisplays.Add(newWorkoutSetDisplay);
+            RefreshSetCollection();
+        }
+
+        private void RefreshSetCollection()
+        {
+            setCollection.ItemsSource = null;
+            setCollection.ItemsSource = WorkoutSetDisplays;
+        }
+
+        private async void OnSetExerciseEdit(object sender, EventArgs e)
+        {
+            await NavigationService.SearchAsync(true);
         }
     }
 }

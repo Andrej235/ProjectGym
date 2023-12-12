@@ -242,8 +242,8 @@
 
                                     <Grid RowDefinitions="*, 125">
                                         <Image Source="{Binding ImageUrl}"
-                                         Aspect="AspectFit"
-                                         BackgroundColor="#fff"/>
+                                               Aspect="AspectFit"
+                                               BackgroundColor="#fff"/>
 
                                         <Label x:Name="exercises"
                                    Text="{Binding Name}" 

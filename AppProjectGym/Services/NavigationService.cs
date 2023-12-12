@@ -31,6 +31,8 @@ namespace AppProjectGym.Services
 
         public static async Task GoToAsync(Type page) => await Shell.Current.GoToAsync(page.Name);
 
-        public static async Task SearchAsync(params string[] queryPairs) => await GoToAsync(nameof(SearchResultsPage), new KeyValuePair<string, object>("q", queryPairs.Length > 1 ? string.Join(';', queryPairs) : ""));
+        public static async Task SearchAsync(params string[] queryPairs) => await GoToAsync(nameof(SearchResultsPage), new KeyValuePair<string, object>("q", queryPairs.Length > 1 || !queryPairs.Any(x => x.Contains("strict=")) ? string.Join(';', queryPairs) : ""));
+
+        public static async Task SearchAsync(bool isInSelectionMode, params string[] queryPairs) => await GoToAsync(nameof(SearchResultsPage), new KeyValuePair<string, object>("q", queryPairs.Length > 1 || !queryPairs.Any(x => x.Contains("strict=")) ? string.Join(';', queryPairs) : ""), new KeyValuePair<string, object>("selectionMode", isInSelectionMode));
     }
 }

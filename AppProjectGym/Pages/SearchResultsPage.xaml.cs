@@ -30,6 +30,8 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
     private List<Exercise> exercises;
     private List<ExerciseDisplay> exerciseDisplays;
 
+    private bool isInSelectionMode;
+
     private async void SetExerciseDisplays()
     {
         List<ExerciseDisplay> newExerciseDisplays = [];
@@ -63,6 +65,8 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
         searchQuery = query["q"] as string;
         LoadExercises();
         LoadFilters();
+
+        isInSelectionMode = query.TryGetValue("selectionMode", out object selectionModeObj) && selectionModeObj is bool selectionMode && selectionMode;
     }
 
 
@@ -114,7 +118,7 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
         var selectedExerciseDisplay = e.CurrentSelection[0] as ExerciseDisplay;
         Debug.WriteLine($"---> Selected {selectedExerciseDisplay.Name}");
 
-        await NavigationService.GoToAsync(nameof(FullScreenExercise), new KeyValuePair<string, object>("id", selectedExerciseDisplay.Id));
+        await NavigationService.GoToAsync(nameof(FullScreenExercise), new KeyValuePair<string, object>("id", selectedExerciseDisplay.Id), new KeyValuePair<string, object>("selectionMode", isInSelectionMode));
     }
 
     #region Filters

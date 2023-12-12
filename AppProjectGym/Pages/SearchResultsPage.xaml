@@ -218,8 +218,9 @@
 
             <VerticalStackLayout Grid.Row="1">
                 <CollectionView x:Name="exercisesCollection"
-                            SelectionMode="Single"
-                            SelectionChanged="OnExerciseSelect">
+                                SelectionMode="Single"
+                                SelectionChanged="OnExerciseSelect">
+
                     <CollectionView.ItemsLayout>
                         <GridItemsLayout Orientation="Vertical" Span="1" />
                     </CollectionView.ItemsLayout>
@@ -236,20 +237,17 @@
                                          BackgroundColor="#fff"/>
 
                                     <Label x:Name="exercises"
-                                   Text="{Binding Name}" 
-                                   TextColor="#3d3d3d"
-                                   FontSize="Title"
-                                   HorizontalTextAlignment="Center"
-                                   VerticalTextAlignment="Center"
-                                   Grid.Row="1">
+                                           Text="{Binding Name}" 
+                                           TextColor="#3d3d3d"
+                                           FontSize="Title"
+                                           HorizontalTextAlignment="Center"
+                                           VerticalTextAlignment="Center"
+                                           Grid.Row="1">
 
                                         <Label.Background>
                                             <LinearGradientBrush EndPoint="0, 1">
-                                                <GradientStop Color="#fff"
-                                                      Offset="0"/>
-
-                                                <GradientStop Color="#aaa"
-                                                      Offset="1"/>
+                                                <GradientStop Color="#fff" Offset="0"/>
+                                                <GradientStop Color="#aaa" Offset="1"/>
                                             </LinearGradientBrush>
                                         </Label.Background>
                                     </Label>

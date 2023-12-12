@@ -23,7 +23,17 @@ namespace AppProjectGym.Pages
             this.deleteService = deleteService;
         }
 
-
+        public bool IsInSelectionMode
+        {
+            get => isInSelectionMode;
+            private set
+            {
+                isInSelectionMode = value;
+                OnPropertyChanged();
+            }
+        }
+        public bool IsNotInSelectionMode => !IsInSelectionMode;
+        private bool isInSelectionMode;
 
         public Exercise Exercise
         {
@@ -89,6 +99,7 @@ namespace AppProjectGym.Pages
                 OnPropertyChanged();
             }
         }
+
         private List<ExerciseNote> notes;
 
 
@@ -96,6 +107,8 @@ namespace AppProjectGym.Pages
         public async void ApplyQueryAttributes(IDictionary<string, object> query)
         {
             int id = Convert.ToInt32(query["id"]);
+            IsInSelectionMode = query.TryGetValue("selectionMode", out object selectionModeObj) && selectionModeObj is bool selectionMode && selectionMode;
+
             Exercise = await readService.Get<Exercise>("none", $"exercise/{id}");
 
             var images = await readService.Get<List<Image>>("none", ReadService.TranslateEndPoint("image", 0, 1), $"exercise={Exercise.Id}");
@@ -126,11 +139,29 @@ namespace AppProjectGym.Pages
 
 
 
-        private async void OnPrimaryMuscleGroupSearch(object sender, SelectionChangedEventArgs e) => await NavigationService.SearchAsync($"primarymusclegroup={(e.CurrentSelection[0] as MuscleGroupDisplay).Id}");
+        private async void OnPrimaryMuscleGroupSearch(object sender, SelectionChangedEventArgs e)
+        {
+            if (isInSelectionMode)
+                return;
 
-        private async void OnPrimaryMuscleSearch(object sender, SelectionChangedEventArgs e) => await NavigationService.SearchAsync($"primarymuscle={(e.CurrentSelection[0] as Muscle).Id}");
+            await NavigationService.SearchAsync($"primarymusclegroup={(e.CurrentSelection[0] as MuscleGroupDisplay).Id}");
+        }
 
-        private async void OnEquipmentSearch(object sender, SelectionChangedEventArgs e) => await NavigationService.SearchAsync($"equipment={(e.CurrentSelection[0] as Equipment).Id}");
+        private async void OnPrimaryMuscleSearch(object sender, SelectionChangedEventArgs e)
+        {
+            if (isInSelectionMode)
+                return;
+
+            await NavigationService.SearchAsync($"primarymuscle={(e.CurrentSelection[0] as Muscle).Id}");
+        }
+
+        private async void OnEquipmentSearch(object sender, SelectionChangedEventArgs e)
+        {
+            if (isInSelectionMode)
+                return;
+
+            await NavigationService.SearchAsync($"equipment={(e.CurrentSelection[0] as Equipment).Id}");
+        }
 
         private async void OnEditButtonClicked(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(ExerciseCreationPage), new KeyValuePair<string, object>("edit", Exercise));
 

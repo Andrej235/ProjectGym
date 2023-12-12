@@ -9,6 +9,50 @@
              Title="{Binding Exercise.Name}">
 
     <ContentPage.Resources>
+        <Style TargetType="Border">
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal" >
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="Transparent" />
+                                <Setter Property="StrokeThickness" Value="1"/>
+                                <Setter Property="Stroke" Value="#aaa"/>
+                            </VisualState.Setters>
+                        </VisualState>
+
+                        <VisualState x:Name="Selected">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="Transparent" />
+                                <Setter Property="StrokeThickness" Value="1"/>
+                                <Setter Property="Stroke" Value="#aaa"/>
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+
+        <Style TargetType="Grid">
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal" >
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="Transparent" />
+                            </VisualState.Setters>
+                        </VisualState>
+
+                        <VisualState x:Name="Selected">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="Transparent" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+
         <ValueConverters:IsCollectionNotEmptyConverter x:Key="IsCollectionNotEmpty"/>
     </ContentPage.Resources>
 
@@ -22,7 +66,7 @@
                         <SwipeView.LeftItems>
                             <SwipeItems>
                                 <SwipeItemView>
-                                    <Grid WidthRequest="50" HeightRequest="50">
+                                    <Grid WidthRequest="50" HeightRequest="50" IsEnabled="{Binding IsNotInSelectionMode}">
                                         <ImageButton Clicked="OnEditButtonClicked" Source="pen.png" WidthRequest="30" HeightRequest="30"/>
                                     </Grid>
                                 </SwipeItemView>
@@ -32,7 +76,7 @@
                         <SwipeView.RightItems>
                             <SwipeItems>
                                 <SwipeItemView>
-                                    <Grid WidthRequest="50" HeightRequest="50">
+                                    <Grid WidthRequest="50" HeightRequest="50" IsEnabled="{Binding IsNotInSelectionMode}">
                                         <ImageButton Clicked="OnDeleteButtonClicked" Source="trashcan.png" WidthRequest="30" HeightRequest="30"/>
                                     </Grid>
                                 </SwipeItemView>
@@ -56,17 +100,17 @@
                 <Grid RowDefinitions="Auto, Auto" IsVisible="{Binding PrimaryMuscleDisplays, Converter={StaticResource IsCollectionNotEmpty}}">
                     <Label Text="Primary Muscles:" Grid.Row="0" FontSize="Title"/>
                     <CollectionView ItemsSource="{Binding PrimaryMuscleDisplays}"
-                                Grid.Row="1"
-                                SelectionMode="Single"
-                                SelectionChanged="OnPrimaryMuscleGroupSearch">
+                                    Grid.Row="1"
+                                    SelectionMode="Single"
+                                    SelectionChanged="OnPrimaryMuscleGroupSearch">
 
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="Models:MuscleGroupDisplay">
                                 <Grid RowDefinitions="auto, auto">
                                     <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="30, 3, 5, 3" Grid.Row="0">
                                         <Label Text="{Binding Name}" 
-                                       VerticalTextAlignment="Center"
-                                       HorizontalTextAlignment="Center"/>
+                                               VerticalTextAlignment="Center"
+                                               HorizontalTextAlignment="Center"/>
                                     </Border>
 
                                     <CollectionView Grid.Row="1" ItemsSource="{Binding Muscles}" SelectionMode="Single" SelectionChanged="OnPrimaryMuscleSearch">
@@ -108,9 +152,9 @@
                                             <DataTemplate x:DataType="Models:Muscle">
                                                 <Border Padding="10" StrokeShape="RoundRectangle 10" Margin="90, 3, 65, 3" Grid.Row="0">
                                                     <Label Text="{Binding Name}"
-                                                       FontSize="Caption"
-                                                       VerticalTextAlignment="Center"
-                                                       HorizontalTextAlignment="Center"/>
+                                                           FontSize="Caption"
+                                                           VerticalTextAlignment="Center"
+                                                           HorizontalTextAlignment="Center"/>
                                                 </Border>
                                             </DataTemplate>
                                         </CollectionView.ItemTemplate>
@@ -181,5 +225,29 @@
                 Opacity="0.5" 
                 IsVisible="false"
                 Clicked="OnWhiteOverlayClicked" />
+
+        <Border HorizontalOptions="Fill" 
+                VerticalOptions="End" 
+                Margin="15, 0, 15, 25"
+                BackgroundColor="#000" 
+                StrokeShape="RoundRectangle 10"
+                ZIndex="100"
+                IsVisible="{Binding IsInSelectionMode}">
+            
+            <Button Text="Select" 
+                    BorderColor="Black" 
+                    BorderWidth="3" 
+                    Padding="5"
+                    FontSize="Subtitle" 
+                    TextColor="Black">
+                
+                <Button.Background>
+                    <RadialGradientBrush>
+                        <GradientStop Color="White" Offset=".2"/>
+                        <GradientStop Color="CadetBlue" Offset="1"/>
+                    </RadialGradientBrush>
+                </Button.Background>
+            </Button>
+        </Border>
     </Grid>
 </ContentPage>
