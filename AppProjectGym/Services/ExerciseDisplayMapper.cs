@@ -9,12 +9,12 @@ namespace AppProjectGym.Services
     {
         public async Task<ExerciseDisplay> Map(Exercise exercise)
         {
-            var imgUrl = "";
+            Image image = new();
             try
             {
                 var id = exercise.ImageIds.FirstOrDefault();
                 if (id != 0)
-                    imgUrl = (await readService.Get<Image>("none", $"image/{id}")).ImageURL;
+                    image = (await readService.Get<Image>("none", $"image/{id}"));
             }
             catch (Exception ex)
             {
@@ -23,9 +23,8 @@ namespace AppProjectGym.Services
 
             return new()
             {
-                Id = exercise.Id,
-                Name = exercise.Name,
-                ImageUrl = imgUrl
+                Exercise = exercise,
+                Image = image
             };
         }
     }

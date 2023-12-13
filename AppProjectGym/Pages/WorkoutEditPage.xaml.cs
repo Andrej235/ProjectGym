@@ -13,6 +13,9 @@ namespace AppProjectGym.Pages
         private delegate void RepRangeInputHandler(int bottom, int top);
         private RepRangeInputHandler repRangeInputHandler;
 
+        private delegate void ExerciseSelectionHandler(ExerciseDisplay selectedExercise);
+        private ExerciseSelectionHandler exerciseSelectionHandler;
+
         private readonly ICreateService createService;
         private readonly IReadService readService;
         private readonly IUpdateService updateService;
@@ -56,7 +59,13 @@ namespace AppProjectGym.Pages
 
         public async void ApplyQueryAttributes(IDictionary<string, object> query)
         {
-            if (!query.TryGetValue("workout", out object workoutObj) || workoutObj is not Models.Workout workout)
+            if (query.TryGetValue("selectedExercise", out object value) && value is Exercise exercise)
+            {
+                exerciseSelectionHandler(await exerciseDisplayMapper.Map(exercise));
+                return;
+            }
+
+            if (!query.TryGetValue("workout", out object workoutObj) || workoutObj is not Workout workout)
                 return;
 
             WorkoutSetDisplays ??= [];
@@ -171,6 +180,14 @@ namespace AppProjectGym.Pages
 
         private async void OnSetExerciseEdit(object sender, EventArgs e)
         {
+            if (sender is not Button button || button.BindingContext is not SetDisplay setDisplay)
+                return;
+
+            exerciseSelectionHandler = exercise =>
+            {
+                setDisplay.Exercise = exercise;
+            };
+
             await NavigationService.SearchAsync(true);
         }
     }

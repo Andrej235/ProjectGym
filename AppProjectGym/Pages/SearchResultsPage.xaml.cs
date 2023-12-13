@@ -38,7 +38,7 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
         foreach (var e in exercises)
             newExerciseDisplays.Add(await exerciseDisplayMapper.Map(e));
 
-        exerciseDisplays = [.. newExerciseDisplays.OrderBy(x => x.ImageUrl == "")];
+        exerciseDisplays = [.. newExerciseDisplays.OrderBy(x => x.Image.ImageURL == "")];
         exercisesCollection.ItemsSource = null;
         exercisesCollection.ItemsSource = exerciseDisplays;
         isWaitingForData = false;
@@ -58,8 +58,11 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
     private int exercisesPerPage;
     private string searchQuery;
     private bool isWaitingForData;
-    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    public async void ApplyQueryAttributes(IDictionary<string, object> query)
     {
+        if (query.TryGetValue("selectedExercise", out object value) && value is Exercise exercise)
+            await NavigationService.GoToAsync("..", new KeyValuePair<string, object>("selectedExercise", exercise));
+
         PageNumber = 1;
         exercisesPerPage = 10;
         searchQuery = query["q"] as string;
@@ -116,9 +119,9 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
             return;
 
         var selectedExerciseDisplay = e.CurrentSelection[0] as ExerciseDisplay;
-        Debug.WriteLine($"---> Selected {selectedExerciseDisplay.Name}");
+        Debug.WriteLine($"---> Selected {selectedExerciseDisplay.Exercise.Name}");
 
-        await NavigationService.GoToAsync(nameof(FullScreenExercise), new KeyValuePair<string, object>("id", selectedExerciseDisplay.Id), new KeyValuePair<string, object>("selectionMode", isInSelectionMode));
+        await NavigationService.GoToAsync(nameof(FullScreenExercise), new KeyValuePair<string, object>("id", selectedExerciseDisplay.Exercise.Id), new KeyValuePair<string, object>("selectionMode", isInSelectionMode));
     }
 
     #region Filters

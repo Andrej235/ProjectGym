@@ -232,12 +232,12 @@
                             Margin="25">
 
                                 <Grid RowDefinitions="*, 125">
-                                    <Image Source="{Binding ImageUrl}"
+                                    <Image Source="{Binding Image.ImageURL}"
                                          Aspect="AspectFit"
                                          BackgroundColor="#fff"/>
 
                                     <Label x:Name="exercises"
-                                           Text="{Binding Name}" 
+                                           Text="{Binding Exercise.Name}" 
                                            TextColor="#3d3d3d"
                                            FontSize="Title"
                                            HorizontalTextAlignment="Center"

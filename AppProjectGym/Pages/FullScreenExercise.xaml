@@ -239,7 +239,8 @@
                     BorderWidth="3" 
                     Padding="5"
                     FontSize="Subtitle" 
-                    TextColor="Black">
+                    TextColor="Black"
+                    Clicked="Button_Clicked">
                 
                 <Button.Background>
                     <RadialGradientBrush>

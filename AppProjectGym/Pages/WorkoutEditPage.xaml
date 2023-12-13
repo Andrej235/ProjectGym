@@ -23,7 +23,7 @@
                             Padding="10">
 
                                 <VerticalStackLayout>
-                                    <Image Source="{Binding Set.Exercise.ImageUrl}" />
+                                    <Image Source="{Binding Set.Exercise.Image.ImageURL}" />
                                     <Grid>
                                         <Border>
                                             <Label Text="{Binding Set.Exercise, Converter={StaticResource ExerciseDisplayToName}}" 
@@ -54,9 +54,9 @@
                                         <Border StrokeShape="RoundRectangle 15" Grid.Column="1">
                                             <HorizontalStackLayout HorizontalOptions="Center">
                                                 <Label Text="To Faliure" 
-                                               HorizontalTextAlignment="Center" 
-                                               VerticalTextAlignment="Center"
-                                               Padding="7" />
+                                                       HorizontalTextAlignment="Center" 
+                                                       VerticalTextAlignment="Center"
+                                                       Padding="7" />
 
                                                 <CheckBox IsChecked="{Binding Set.Set.ToFaliure}" VerticalOptions="Center" />
                                             </HorizontalStackLayout>

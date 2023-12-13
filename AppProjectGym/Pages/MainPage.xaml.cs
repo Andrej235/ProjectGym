@@ -144,7 +144,7 @@ namespace AppProjectGym
             foreach (var e in Exercises)
                 newExerciseDisplays.Add(await exerciseDisplayMapper.Map(e));
 
-            exerciseDisplays = [.. newExerciseDisplays.OrderByDescending(x => x.ImageUrl != "")];
+            exerciseDisplays = [.. newExerciseDisplays.OrderByDescending(x => x.Image.ImageURL != "")];
             exerciseCollectionView.ItemsSource = null;
             exerciseCollectionView.ItemsSource = exerciseDisplays;
             exerciseCollectionView.SelectedItem = null;
@@ -168,10 +168,10 @@ namespace AppProjectGym
             if (e.CurrentSelection is null || !e.CurrentSelection.Any())
                 return;
 
-            var exercise = e.CurrentSelection[0] as ExerciseDisplay;
-            Debug.WriteLine($"---> Selected {exercise.Name}");
+            var exerciseDisplay = e.CurrentSelection[0] as ExerciseDisplay;
+            Debug.WriteLine($"---> Selected {exerciseDisplay.Exercise.Name}");
 
-            await NavigationService.GoToAsync(nameof(FullScreenExercise), new KeyValuePair<string, object>("id", exercise.Id));
+            await NavigationService.GoToAsync(nameof(FullScreenExercise), new KeyValuePair<string, object>("id", exerciseDisplay.Exercise.Id));
         }
 
         private async void OnSearch(object sender, EventArgs e)
