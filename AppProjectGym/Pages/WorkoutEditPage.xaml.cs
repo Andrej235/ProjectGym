@@ -5,6 +5,9 @@ using AppProjectGym.Services.Delete;
 using AppProjectGym.Services.Read;
 using AppProjectGym.Services.Update;
 using AppProjectGym.Utilities;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.Json;
 
 namespace AppProjectGym.Pages
 {
@@ -43,6 +46,7 @@ namespace AppProjectGym.Pages
             }
         }
         private List<WorkoutSetDisplay> workoutSetDisplays;
+        private List<WorkoutSetDisplay> originalWorkoutSetDisplays;
 
 
 
@@ -85,15 +89,18 @@ namespace AppProjectGym.Pages
 
                 if (workoutSet.SuperSetId != null)
                 {
-                    var supersetDisplay = new SupersetDisplay { Superset = await readService.Get<Superset>("exercise", $"superset/{workoutSet.SuperSetId}") };
-                    var superSetsSet = await readService.Get<Set>("exercise", $"set/{supersetDisplay.Superset.SetId}");
-                    supersetDisplay.Exercise = await exerciseDisplayMapper.Map(await readService.Get<Exercise>("image", $"exercise/{superSetsSet.ExerciseId}"));
+                    var supersetDisplay = new SetDisplay { Set = await readService.Get<Set>("exercise", $"set/{workoutSet.SuperSetId}") };
+                    supersetDisplay.Exercise = await exerciseDisplayMapper.Map(await readService.Get<Exercise>("image", $"exercise/{supersetDisplay.Set.ExerciseId}"));
                     workoutSetDisplay.Superset = supersetDisplay;
                 }
 
                 WorkoutSetDisplays.Add(workoutSetDisplay);
             }
             Workout = workout;
+
+            var copiedWorkoutSetDisplays = new WorkoutSetDisplay[WorkoutSetDisplays.Count];
+            WorkoutSetDisplays.CopyTo(copiedWorkoutSetDisplays, 0);
+            originalWorkoutSetDisplays = WorkoutSetDisplays.DeepCopy();
 
             setCollection.ItemsSource = null;
             setCollection.ItemsSource = WorkoutSetDisplays;
@@ -162,7 +169,8 @@ namespace AppProjectGym.Pages
             {
                 Set = new()
                 {
-                    Set = new()
+                    Set = new(),
+                    Exercise = new()
                 },
                 Superset = null,
                 TargetSets = 0
@@ -180,15 +188,64 @@ namespace AppProjectGym.Pages
 
         private async void OnSetExerciseEdit(object sender, EventArgs e)
         {
-            if (sender is not Button button || button.BindingContext is not SetDisplay setDisplay)
+            if (sender is not Button button || button.BindingContext is not WorkoutSetDisplay setDisplay)
                 return;
 
             exerciseSelectionHandler = exercise =>
             {
-                setDisplay.Exercise = exercise;
+                setDisplay.Set.Exercise = exercise;
+                setDisplay.Set.Set.ExerciseId = exercise.Exercise.Id;
+                RefreshSetCollection();
             };
 
             await NavigationService.SearchAsync(true);
+        }
+
+        private async void OnWorkoutSetSave(object sender, EventArgs e)
+        {
+            List<object> updatedEntity = [];
+            foreach (var workoutSet in WorkoutSetDisplays.Where(x => x.Id != default))
+            {
+                var originalWorkoutSet = originalWorkoutSetDisplays.First(x => x.Id == workoutSet.Id);
+
+                if (!ShallowEqual(workoutSet, originalWorkoutSet))
+                    updatedEntity.Add(workoutSet);
+
+                if (!ShallowEqual(workoutSet.Set.Set, originalWorkoutSet.Set.Set))
+                    updatedEntity.Add(workoutSet.Set.Set);
+
+                if (workoutSet.Superset != null && !ShallowEqual(workoutSet.Superset?.Set, originalWorkoutSet.Superset?.Set))
+                    updatedEntity.Add(workoutSet.Superset.Set);
+            }
+
+            foreach (var entity in updatedEntity)
+            {
+                await updateService.Update(entity, entity.GetType().Name);
+            }
+            await NavigationService.GoToAsync("..");
+        }
+
+#nullable enable
+        private static bool ShallowEqual<T>(T? x, T? y) where T : class?
+        {
+            if (x == null && y == null)
+                return true;
+
+            if ((x == null && y != null) || (x != null && y == null))
+                return false;
+
+            var properties = (x?.GetType().GetProperties().Where(x => x.Name != "Id")) ?? throw new NullReferenceException();
+            foreach (var property in properties)
+            {
+                if (property.PropertyType.IsValueType)
+                {
+                    var valueX = property.GetValue(x);
+                    var valueY = property.GetValue(y);
+                    if (Convert.ToString(valueX) != Convert.ToString(valueY))
+                        return false;
+                }
+            }
+            return true;
         }
     }
 }

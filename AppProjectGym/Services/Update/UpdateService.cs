@@ -1,12 +1,6 @@
-﻿using AppProjectGym.Information;
-using AppProjectGym.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using AppProjectGym.Utilities;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using AppInfo = AppProjectGym.Information.AppInfo;
 
 namespace AppProjectGym.Services.Update

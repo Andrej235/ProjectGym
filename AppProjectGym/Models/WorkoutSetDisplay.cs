@@ -6,6 +6,6 @@
         public int TargetSets { get; set; }
 
         public SetDisplay Set { get; set; }
-        public SupersetDisplay Superset { get; set; }
+        public SetDisplay Superset { get; set; }
     }
 }

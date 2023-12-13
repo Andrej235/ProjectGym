@@ -58,11 +58,8 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
     private int exercisesPerPage;
     private string searchQuery;
     private bool isWaitingForData;
-    public async void ApplyQueryAttributes(IDictionary<string, object> query)
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        if (query.TryGetValue("selectedExercise", out object value) && value is Exercise exercise)
-            await NavigationService.GoToAsync("..", new KeyValuePair<string, object>("selectedExercise", exercise));
-
         PageNumber = 1;
         exercisesPerPage = 10;
         searchQuery = query["q"] as string;
@@ -71,7 +68,6 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
 
         isInSelectionMode = query.TryGetValue("selectionMode", out object selectionModeObj) && selectionModeObj is bool selectionMode && selectionMode;
     }
-
 
     public async void LoadExercises()
     {

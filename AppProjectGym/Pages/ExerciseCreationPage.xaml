@@ -232,9 +232,7 @@
                     </CollectionView>
                 </Grid>
 
-
                 <Button Text="Save" Margin="15, 10, 10, 10" Clicked="OnSaveExercise"/>
-
             </VerticalStackLayout>
         </ScrollView>
 

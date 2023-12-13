@@ -20,16 +20,18 @@
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="Models:WorkoutSetDisplay">
                             <Border Margin="15, 10, 15, 10"
-                            Padding="10">
+                                    Padding="10">
 
                                 <VerticalStackLayout>
-                                    <Image Source="{Binding Set.Exercise.Image.ImageURL}" />
                                     <Grid>
-                                        <Border>
-                                            <Label Text="{Binding Set.Exercise, Converter={StaticResource ExerciseDisplayToName}}" 
-                                           HorizontalTextAlignment="Center" 
-                                           FontSize="Subtitle" 
-                                           Margin="5" />
+                                        <Border StrokeShape="RoundRectangle 20, 20, 5, 5">
+                                            <VerticalStackLayout>
+                                                <Image Source="{Binding Set.Exercise.Image.ImageURL}" />
+                                                <Label Text="{Binding Set.Exercise, Converter={StaticResource ExerciseDisplayToName}}" 
+                                                   HorizontalTextAlignment="Center" 
+                                                   FontSize="Subtitle" 
+                                                   Margin="5" />
+                                            </VerticalStackLayout>
                                         </Border>
 
                                         <Button BackgroundColor="Transparent" Clicked="OnSetExerciseEdit"/>
@@ -58,7 +60,7 @@
                                                        VerticalTextAlignment="Center"
                                                        Padding="7" />
 
-                                                <CheckBox IsChecked="{Binding Set.Set.ToFaliure}" VerticalOptions="Center" />
+                                                <CheckBox IsChecked="{Binding Set.Set.ToFailure}" VerticalOptions="Center" />
                                             </HorizontalStackLayout>
                                         </Border>
                                     </Grid>
@@ -117,6 +119,7 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+
                 <Border StrokeShape="RoundRectangle 15"
                         Padding="15"
                         Margin="15, 10, 15, 10">
@@ -126,6 +129,8 @@
                                  HeightRequest="25"
                                  Clicked="OnWorkoutSetCreate" />
                 </Border>
+
+                <Button Text="Save" Margin="15, 10, 10, 10" Clicked="OnWorkoutSetSave"/>
             </VerticalStackLayout>
         </ScrollView>
 

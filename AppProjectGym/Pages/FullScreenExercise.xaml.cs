@@ -210,7 +210,7 @@ namespace AppProjectGym.Pages
 
         private async void Button_Clicked(object sender, EventArgs e)
         {
-            await NavigationService.GoToAsync("..", new KeyValuePair<string, object>("selectedExercise", Exercise));
+            await NavigationService.GoToAsync("../..", new KeyValuePair<string, object>("selectedExercise", Exercise));
         }
     }
 }
