@@ -5,9 +5,6 @@ using AppProjectGym.Services.Delete;
 using AppProjectGym.Services.Read;
 using AppProjectGym.Services.Update;
 using AppProjectGym.Utilities;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text.Json;
 
 namespace AppProjectGym.Pages
 {
@@ -18,6 +15,9 @@ namespace AppProjectGym.Pages
 
         private delegate void ExerciseSelectionHandler(ExerciseDisplay selectedExercise);
         private ExerciseSelectionHandler exerciseSelectionHandler;
+
+        private delegate void NumberInputHandler(int input);
+        private NumberInputHandler numberInputHandler;
 
         private readonly ICreateService createService;
         private readonly IReadService readService;
@@ -109,6 +109,7 @@ namespace AppProjectGym.Pages
         private void OnWhiteOverlayClicked(object sender, EventArgs e)
         {
             CloseRepRangeInputDialog();
+            CloseNumberInput();
         }
 
         private void OpenRepRangeInputDialog()
@@ -122,6 +123,20 @@ namespace AppProjectGym.Pages
             repRangeInputDialogWrapper.IsVisible = false;
             whiteOverlay.IsVisible = false;
         }
+
+        private void OpenNumberInput()
+        {
+            singleNumberInputDialogWrapper.IsVisible = true;
+            whiteOverlay.IsVisible = true;
+        }
+
+        private void CloseNumberInput()
+        {
+            singleNumberInputDialogWrapper.IsVisible = false;
+            whiteOverlay.IsVisible = false;
+        }
+
+        private void OnNumberSubmit(object sender, EventArgs e) => HandleNumberInput(singleNumberInput.Text);
 
         private void OnRepRangeEdit(object sender, EventArgs e)
         {
@@ -142,6 +157,21 @@ namespace AppProjectGym.Pages
             OpenRepRangeInputDialog();
         }
 
+        private void OnNumberInput(object sender, EventArgs e)
+        {
+            if (sender is not Button button)
+                return;
+
+            WorkoutSetDisplay workoutSetDisplay = button.BindingContext as WorkoutSetDisplay;
+            numberInputHandler = input =>
+            {
+                workoutSetDisplay.TargetSets = input;
+                RefreshSetCollection();
+            };
+
+            OpenNumberInput();
+        }
+
         private void OnRepRangeSubmit(object sender, EventArgs e) => HandleRepRangeInput(bottomRepRangeInput.Text, topRepRangeInput.Text);
 
         private void HandleRepRangeInput(string bottomText, string topText)
@@ -153,6 +183,25 @@ namespace AppProjectGym.Pages
 
                 CloseRepRangeInputDialog();
                 repRangeInputHandler(bottom, top);
+
+                bottomRepRangeInput.Text = "";
+                topRepRangeInput.Text = "";
+            }
+            catch (Exception ex)
+            {
+                LogDebugger.LogError(ex);
+            }
+        }
+
+        private void HandleNumberInput(string inputNumberAsText)
+        {
+            try
+            {
+                if (!int.TryParse(inputNumberAsText, out int input))
+                    throw new Exception("User entered an invalid number, couldn't parse to int");
+
+                CloseNumberInput();
+                numberInputHandler(input);
 
                 bottomRepRangeInput.Text = "";
                 topRepRangeInput.Text = "";
@@ -209,7 +258,16 @@ namespace AppProjectGym.Pages
                 var originalWorkoutSet = originalWorkoutSetDisplays.First(x => x.Id == workoutSet.Id);
 
                 if (!ShallowEqual(workoutSet, originalWorkoutSet))
-                    updatedEntity.Add(workoutSet);
+                {
+                    updatedEntity.Add(new WorkoutSet()
+                    {
+                        Id = workoutSet.Id,
+                        TargetSets = workoutSet.TargetSets,
+                        SetId = workoutSet.Set.Set.Id,
+                        SuperSetId = workoutSet.Superset?.Set.Id,
+                        WorkoutId = Workout.Id
+                    });
+                }
 
                 if (!ShallowEqual(workoutSet.Set.Set, originalWorkoutSet.Set.Set))
                     updatedEntity.Add(workoutSet.Set.Set);
@@ -219,9 +277,8 @@ namespace AppProjectGym.Pages
             }
 
             foreach (var entity in updatedEntity)
-            {
                 await updateService.Update(entity, entity.GetType().Name);
-            }
+
             await NavigationService.GoToAsync("..");
         }
 
@@ -246,6 +303,11 @@ namespace AppProjectGym.Pages
                 }
             }
             return true;
+        }
+
+        private void OnToggleCheckedSuperset(object sender, CheckedChangedEventArgs e)
+        {
+            RefreshSetCollection();
         }
     }
 }
