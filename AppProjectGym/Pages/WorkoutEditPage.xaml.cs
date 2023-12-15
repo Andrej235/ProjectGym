@@ -1,3 +1,4 @@
+using AppProjectGym.Information;
 using AppProjectGym.Models;
 using AppProjectGym.Services;
 using AppProjectGym.Services.Create;
@@ -5,6 +6,8 @@ using AppProjectGym.Services.Delete;
 using AppProjectGym.Services.Read;
 using AppProjectGym.Services.Update;
 using AppProjectGym.Utilities;
+using AppProjectGym.ValueConverters;
+using System.Diagnostics;
 
 namespace AppProjectGym.Pages
 {
@@ -47,8 +50,6 @@ namespace AppProjectGym.Pages
         }
         private List<WorkoutSetDisplay> workoutSetDisplays;
         private List<WorkoutSetDisplay> originalWorkoutSetDisplays;
-
-
 
         public WorkoutEditPage(ICreateService createService, IReadService readService, IUpdateService updateService, IDeleteService deleteService, ExerciseDisplayMapper exerciseDisplayMapper)
         {
@@ -143,6 +144,7 @@ namespace AppProjectGym.Pages
             if (sender is not Button button)
                 return;
 
+            //TODO: Make compatible with supersets
             WorkoutSetDisplay workoutSetDisplay = button.BindingContext as WorkoutSetDisplay;
             repRangeInputHandler = (bottom, top) =>
             {
@@ -250,6 +252,21 @@ namespace AppProjectGym.Pages
             await NavigationService.SearchAsync(true);
         }
 
+        private async void OnSupersetExerciseEdit(object sender, EventArgs e)
+        {
+            if (sender is not Button button || button.BindingContext is not WorkoutSetDisplay setDisplay)
+                return;
+
+            exerciseSelectionHandler = exercise =>
+            {
+                setDisplay.Superset.Exercise = exercise;
+                setDisplay.Superset.Set.ExerciseId = exercise.Exercise.Id;
+                RefreshSetCollection();
+            };
+
+            await NavigationService.SearchAsync(true);
+        }
+
         private async void OnWorkoutSetSave(object sender, EventArgs e)
         {
             List<object> updatedEntity = [];
@@ -269,10 +286,39 @@ namespace AppProjectGym.Pages
                     });
                 }
 
+                if (workoutSet.Superset != null && originalWorkoutSet.Superset == null)
+                {
+                    workoutSet.Superset.Set.CreatorId = ClientInfo.User.Id;
+                    var supersetIdString = await createService.Add(workoutSet.Superset.Set);
+
+                    if (Guid.TryParse(supersetIdString.Replace("\"", ""), out Guid supersetId))
+                        updatedEntity.Add(new WorkoutSet()
+                        {
+                            Id = workoutSet.Id,
+                            TargetSets = workoutSet.TargetSets,
+                            SetId = workoutSet.Set.Set.Id,
+                            SuperSetId = supersetId,
+                            WorkoutId = Workout.Id
+                        });
+                }
+
+                if (workoutSet.Superset == null && originalWorkoutSet.Superset != null)
+                {
+                    updatedEntity.Add(new WorkoutSet()
+                    {
+                        Id = workoutSet.Id,
+                        TargetSets = workoutSet.TargetSets,
+                        SetId = workoutSet.Set.Set.Id,
+                        SuperSetId = null,
+                        WorkoutId = Workout.Id
+                    });
+                    await deleteService.Delete(originalWorkoutSet.Superset.Set);
+                }
+
                 if (!ShallowEqual(workoutSet.Set.Set, originalWorkoutSet.Set.Set))
                     updatedEntity.Add(workoutSet.Set.Set);
 
-                if (workoutSet.Superset != null && !ShallowEqual(workoutSet.Superset?.Set, originalWorkoutSet.Superset?.Set))
+                if (workoutSet.Superset != null && originalWorkoutSet.Superset != null && !ShallowEqual(workoutSet.Superset?.Set, originalWorkoutSet.Superset?.Set))
                     updatedEntity.Add(workoutSet.Superset.Set);
             }
 
@@ -307,6 +353,21 @@ namespace AppProjectGym.Pages
 
         private void OnToggleCheckedSuperset(object sender, CheckedChangedEventArgs e)
         {
+            if (sender is not CheckBox checkBox || checkBox.BindingContext is not WorkoutSetDisplay workoutSetDisplay)
+                return;
+
+            if (!checkBox.IsChecked)
+            {
+                RefreshSetCollection();
+                return;
+            }
+
+            workoutSetDisplay.Superset ??= new SetDisplay()
+            {//TEST
+                Set = new()
+            };
+
+            IsSupersetNotNull.Superset = workoutSetDisplay.Superset;
             RefreshSetCollection();
         }
     }

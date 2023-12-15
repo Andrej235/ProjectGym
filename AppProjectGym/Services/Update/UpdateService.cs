@@ -15,11 +15,12 @@ namespace AppProjectGym.Services.Update
                     endPoint = typeof(T).Name;
 
                 string url = AppInfo.BaseApiURL + "/" + endPoint;
+                var stringContent = JsonSerializer.Serialize(updatedEntity);
                 HttpRequestMessage message = new()
                 {
                     Method = HttpMethod.Put,
                     RequestUri = new Uri(url),
-                    Content = new StringContent(JsonSerializer.Serialize(updatedEntity))
+                    Content = new StringContent(stringContent)
                     {
                         Headers =
                         {
