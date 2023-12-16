@@ -11,7 +11,7 @@ namespace AppProjectGym.ValueConverters
                 return "Exercise not found";
 
             if (value is ExerciseDisplay exerciseDisplay)
-                return exerciseDisplay.Exercise.Name ?? "Exercise not found";
+                return exerciseDisplay?.Exercise?.Name ?? "Exercise not found";
 
             if (value is string exerciseName)
                 return exerciseName ?? "Exercise not found";

@@ -51,7 +51,7 @@
                                             </Label>
                                         </Border>
 
-                                        <Button BackgroundColor="Transparent" Clicked="OnRepRangeEdit"/>
+                                        <Button BackgroundColor="Transparent" Clicked="OnRepRangeEdit" BindingContext="{Binding Set}"/>
 
                                         <Border StrokeShape="RoundRectangle 15" Grid.Column="1">
                                             <HorizontalStackLayout HorizontalOptions="Center">
@@ -148,7 +148,7 @@
                                                 </Label>
                                             </Border>
 
-                                            <Button BackgroundColor="Transparent" Clicked="OnRepRangeEdit"/>
+                                            <Button BackgroundColor="Transparent" Clicked="OnRepRangeEdit" BindingContext="{Binding Superset}" />
 
                                             <Border StrokeShape="RoundRectangle 15" Grid.Column="1">
                                                 <HorizontalStackLayout HorizontalOptions="Center">

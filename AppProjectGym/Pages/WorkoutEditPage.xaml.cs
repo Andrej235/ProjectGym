@@ -39,16 +39,16 @@ namespace AppProjectGym.Pages
         }
         private Workout workout;
 
-        public List<WorkoutSetDisplay> WorkoutSetDisplays
+        public static List<WorkoutSetDisplay> WorkoutSetDisplays
         {
             get => workoutSetDisplays;
             set
             {
                 workoutSetDisplays = value;
-                OnPropertyChanged();
+                //OnPropertyChanged();
             }
         }
-        private List<WorkoutSetDisplay> workoutSetDisplays;
+        private static List<WorkoutSetDisplay> workoutSetDisplays;
         private List<WorkoutSetDisplay> originalWorkoutSetDisplays;
 
         public WorkoutEditPage(ICreateService createService, IReadService readService, IUpdateService updateService, IDeleteService deleteService, ExerciseDisplayMapper exerciseDisplayMapper)
@@ -73,13 +73,14 @@ namespace AppProjectGym.Pages
             if (!query.TryGetValue("workout", out object workoutObj) || workoutObj is not Workout workout)
                 return;
 
-            WorkoutSetDisplays ??= [];
-            var workoutSets = await readService.Get<List<WorkoutSet>>("set", "workoutset", $"workout={workout.Id}");
+            Workout = workout;
+            WorkoutSetDisplays = [];
+            var workoutSets = await readService.Get<List<WorkoutSet>>("none", "workoutset", $"workout={workout.Id}");
 
             foreach (var workoutSet in workoutSets)
             {
-                var setDisplay = new SetDisplay { Set = await readService.Get<Set>("exercise", $"set/{workoutSet.SetId}") };
-                setDisplay.Exercise = await exerciseDisplayMapper.Map(await readService.Get<Exercise>("image", $"exercise/{setDisplay.Set.ExerciseId}"));
+                var setDisplay = new SetDisplay { Set = await readService.Get<Set>("none", $"set/{workoutSet.SetId}") };
+                setDisplay.Exercise = await exerciseDisplayMapper.Map(await readService.Get<Exercise>("none", $"exercise/{setDisplay.Set.ExerciseId}"));
 
                 WorkoutSetDisplay workoutSetDisplay = new()
                 {
@@ -90,21 +91,21 @@ namespace AppProjectGym.Pages
 
                 if (workoutSet.SuperSetId != null)
                 {
-                    var supersetDisplay = new SetDisplay { Set = await readService.Get<Set>("exercise", $"set/{workoutSet.SuperSetId}") };
-                    supersetDisplay.Exercise = await exerciseDisplayMapper.Map(await readService.Get<Exercise>("image", $"exercise/{supersetDisplay.Set.ExerciseId}"));
+                    var supersetDisplay = new SetDisplay { Set = await readService.Get<Set>("none", $"set/{workoutSet.SuperSetId}") };
+                    supersetDisplay.Exercise = await exerciseDisplayMapper.Map(await readService.Get<Exercise>("none", $"exercise/{supersetDisplay.Set.ExerciseId}"));
                     workoutSetDisplay.Superset = supersetDisplay;
                 }
 
                 WorkoutSetDisplays.Add(workoutSetDisplay);
             }
-            Workout = workout;
-
-            var copiedWorkoutSetDisplays = new WorkoutSetDisplay[WorkoutSetDisplays.Count];
-            WorkoutSetDisplays.CopyTo(copiedWorkoutSetDisplays, 0);
             originalWorkoutSetDisplays = WorkoutSetDisplays.DeepCopy();
 
             setCollection.ItemsSource = null;
             setCollection.ItemsSource = WorkoutSetDisplays;
+
+            await Task.Delay(250);
+            WorkoutSetDisplays = originalWorkoutSetDisplays.DeepCopy();
+            RefreshSetCollection();
         }
 
         private void OnWhiteOverlayClicked(object sender, EventArgs e)
@@ -144,15 +145,14 @@ namespace AppProjectGym.Pages
             if (sender is not Button button)
                 return;
 
-            //TODO: Make compatible with supersets
-            WorkoutSetDisplay workoutSetDisplay = button.BindingContext as WorkoutSetDisplay;
+            var setDisplay = button.BindingContext as SetDisplay;
             repRangeInputHandler = (bottom, top) =>
             {
                 if (top < bottom)
                     throw new Exception("User entered an invalid rep range, top is lower than bottom");
 
-                workoutSetDisplay.Set.Set.RepRange_Bottom = bottom;
-                workoutSetDisplay.Set.Set.RepRange_Top = top;
+                setDisplay.Set.RepRange_Bottom = bottom;
+                setDisplay.Set.RepRange_Top = top;
                 RefreshSetCollection();
             };
 
@@ -363,11 +363,12 @@ namespace AppProjectGym.Pages
             }
 
             workoutSetDisplay.Superset ??= new SetDisplay()
-            {//TEST
+            {
                 Set = new()
             };
 
-            IsSupersetNotNull.Superset = workoutSetDisplay.Superset;
+            //IsSupersetNotNull.Superset = workoutSetDisplay.Superset;
+            IsSupersetNotNull.WorkoutSet = workoutSetDisplay;
             RefreshSetCollection();
         }
     }
