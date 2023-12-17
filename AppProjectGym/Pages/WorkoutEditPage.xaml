@@ -16,7 +16,7 @@
     <Grid VerticalOptions="Fill" HorizontalOptions="Fill">
         <ScrollView VerticalScrollBarVisibility="Always">
             <VerticalStackLayout>
-                <CollectionView x:Name="setCollection" ItemsSource="{Binding WorkoutSetDisplays}" SelectionMode="None">
+                <CollectionView x:Name="setCollection" ItemsSource="{Binding WorkoutSetDisplaysInstance}" SelectionMode="None">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="Models:WorkoutSetDisplay">
                             <Border Margin="15, 10, 15, 10"
@@ -28,13 +28,13 @@
                                             <VerticalStackLayout>
                                                 <Image Source="{Binding Set.Exercise.Image.ImageURL}" />
                                                 <Label Text="{Binding Set.Exercise, Converter={StaticResource ExerciseDisplayToName}}" 
-                                                   HorizontalTextAlignment="Center" 
-                                                   FontSize="Subtitle" 
-                                                   Margin="5" />
+                                                       HorizontalTextAlignment="Center" 
+                                                       FontSize="Subtitle" 
+                                                       Margin="5" />
                                             </VerticalStackLayout>
                                         </Border>
 
-                                        <Button BackgroundColor="Transparent" Clicked="OnSetExerciseEdit"/>
+                                        <Button BackgroundColor="Transparent" Clicked="OnSetExerciseEdit" BindingContext="{Binding Set}"/>
                                     </Grid>
 
                                     <Grid ColumnDefinitions=".5*, .5*" Margin="5, 10, 5, 10" ColumnSpacing="15">
@@ -131,7 +131,7 @@
                                                 </VerticalStackLayout>
                                             </Border>
 
-                                            <Button BackgroundColor="Transparent" Clicked="OnSupersetExerciseEdit"/>
+                                            <Button BackgroundColor="Transparent" Clicked="OnSetExerciseEdit" BindingContext="{Binding Superset}"/>
                                         </Grid>
 
                                         <Grid ColumnDefinitions=".5*, .5*" Margin="5, 10, 5, 10" ColumnSpacing="15">

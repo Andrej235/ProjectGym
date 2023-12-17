@@ -31,7 +31,7 @@ namespace AppProjectGym.Services.Create
                 var response = await client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
                 var content = await response.Content.ReadAsStringAsync();
-                return content;
+                return content.Replace("\"", "");
             }
             catch (Exception ex)
             {

@@ -7,7 +7,6 @@ using AppProjectGym.Services.Read;
 using AppProjectGym.Services.Update;
 using AppProjectGym.Utilities;
 using AppProjectGym.ValueConverters;
-using System.Diagnostics;
 
 namespace AppProjectGym.Pages
 {
@@ -48,6 +47,7 @@ namespace AppProjectGym.Pages
                 //OnPropertyChanged();
             }
         }
+        public List<WorkoutSetDisplay> WorkoutSetDisplaysInstance => WorkoutSetDisplays;
         private static List<WorkoutSetDisplay> workoutSetDisplays;
         private List<WorkoutSetDisplay> originalWorkoutSetDisplays;
 
@@ -80,7 +80,7 @@ namespace AppProjectGym.Pages
             foreach (var workoutSet in workoutSets)
             {
                 var setDisplay = new SetDisplay { Set = await readService.Get<Set>("none", $"set/{workoutSet.SetId}") };
-                setDisplay.Exercise = await exerciseDisplayMapper.Map(await readService.Get<Exercise>("none", $"exercise/{setDisplay.Set.ExerciseId}"));
+                setDisplay.Exercise = await exerciseDisplayMapper.Map(await readService.Get<Exercise>("images", $"exercise/{setDisplay.Set.ExerciseId}"));
 
                 WorkoutSetDisplay workoutSetDisplay = new()
                 {
@@ -92,7 +92,7 @@ namespace AppProjectGym.Pages
                 if (workoutSet.SuperSetId != null)
                 {
                     var supersetDisplay = new SetDisplay { Set = await readService.Get<Set>("none", $"set/{workoutSet.SuperSetId}") };
-                    supersetDisplay.Exercise = await exerciseDisplayMapper.Map(await readService.Get<Exercise>("none", $"exercise/{supersetDisplay.Set.ExerciseId}"));
+                    supersetDisplay.Exercise = await exerciseDisplayMapper.Map(await readService.Get<Exercise>("images", $"exercise/{supersetDisplay.Set.ExerciseId}"));
                     workoutSetDisplay.Superset = supersetDisplay;
                 }
 
@@ -239,28 +239,13 @@ namespace AppProjectGym.Pages
 
         private async void OnSetExerciseEdit(object sender, EventArgs e)
         {
-            if (sender is not Button button || button.BindingContext is not WorkoutSetDisplay setDisplay)
+            if (sender is not Button button || button.BindingContext is not SetDisplay setDisplay)
                 return;
 
             exerciseSelectionHandler = exercise =>
             {
-                setDisplay.Set.Exercise = exercise;
-                setDisplay.Set.Set.ExerciseId = exercise.Exercise.Id;
-                RefreshSetCollection();
-            };
-
-            await NavigationService.SearchAsync(true);
-        }
-
-        private async void OnSupersetExerciseEdit(object sender, EventArgs e)
-        {
-            if (sender is not Button button || button.BindingContext is not WorkoutSetDisplay setDisplay)
-                return;
-
-            exerciseSelectionHandler = exercise =>
-            {
-                setDisplay.Superset.Exercise = exercise;
-                setDisplay.Superset.Set.ExerciseId = exercise.Exercise.Id;
+                setDisplay.Exercise = exercise;
+                setDisplay.Set.ExerciseId = exercise.Exercise.Id;
                 RefreshSetCollection();
             };
 
@@ -270,6 +255,8 @@ namespace AppProjectGym.Pages
         private async void OnWorkoutSetSave(object sender, EventArgs e)
         {
             List<object> updatedEntity = [];
+            IEnumerable<WorkoutSetDisplay> addedWorkoutSetDisplays = WorkoutSetDisplays.Where(x => x.Id == default);
+
             foreach (var workoutSet in WorkoutSetDisplays.Where(x => x.Id != default))
             {
                 var originalWorkoutSet = originalWorkoutSetDisplays.First(x => x.Id == workoutSet.Id);
@@ -324,6 +311,25 @@ namespace AppProjectGym.Pages
 
             foreach (var entity in updatedEntity)
                 await updateService.Update(entity, entity.GetType().Name);
+
+            foreach (var workoutSetDisplay in addedWorkoutSetDisplays)
+            {
+                var set = workoutSetDisplay.Set.Set;
+                set.CreatorId = ClientInfo.User.Id;
+                var setIdString = await createService.Add(set);
+
+                if (!Guid.TryParse(setIdString, out Guid setId) && setId != default)
+                    return;
+                
+                var workoutSet = new WorkoutSet()
+                {
+                    SetId = setId,
+                    SuperSetId = workoutSetDisplay.Superset?.Set.Id,
+                    TargetSets = workoutSetDisplay.TargetSets,
+                    WorkoutId = Workout.Id
+                };
+                await createService.Add(workoutSet);
+            }
 
             await NavigationService.GoToAsync("..");
         }
