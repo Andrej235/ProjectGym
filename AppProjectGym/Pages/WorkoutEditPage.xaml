@@ -19,119 +19,23 @@
                 <CollectionView x:Name="setCollection" ItemsSource="{Binding WorkoutSetDisplaysInstance}" SelectionMode="None">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="Models:WorkoutSetDisplay">
-                            <Border Margin="15, 10, 15, 10"
+                            <SwipeView>
+                                <Border Margin="15, 10, 15, 10"
                                     Padding="10">
 
-                                <VerticalStackLayout>
-                                    <Grid>
-                                        <Border StrokeShape="RoundRectangle 20, 20, 5, 5">
-                                            <VerticalStackLayout>
-                                                <Image Source="{Binding Set.Exercise.Image.ImageURL}" />
-                                                <Label Text="{Binding Set.Exercise, Converter={StaticResource ExerciseDisplayToName}}" 
-                                                       HorizontalTextAlignment="Center" 
-                                                       FontSize="Subtitle" 
-                                                       Margin="5" />
-                                            </VerticalStackLayout>
-                                        </Border>
-
-                                        <Button BackgroundColor="Transparent" Clicked="OnSetExerciseEdit" BindingContext="{Binding Set}"/>
-                                    </Grid>
-
-                                    <Grid ColumnDefinitions=".5*, .5*" Margin="5, 10, 5, 10" ColumnSpacing="15">
-                                        <Border StrokeShape="RoundRectangle 15">
-                                            <Label HorizontalTextAlignment="Center" VerticalTextAlignment="Center" Padding="7">
-                                                <Label.FormattedText>
-                                                    <FormattedString>
-                                                        <Span Text="Rep range: " />
-                                                        <Span Text="{Binding Set.Set.RepRange_Bottom}" />
-                                                        <Span Text=" - " />
-                                                        <Span Text="{Binding Set.Set.RepRange_Top}" />
-                                                    </FormattedString>
-                                                </Label.FormattedText>
-                                            </Label>
-                                        </Border>
-
-                                        <Button BackgroundColor="Transparent" Clicked="OnRepRangeEdit" BindingContext="{Binding Set}"/>
-
-                                        <Border StrokeShape="RoundRectangle 15" Grid.Column="1">
-                                            <HorizontalStackLayout HorizontalOptions="Center">
-                                                <Label Text="To Faliure" 
-                                                       HorizontalTextAlignment="Center" 
-                                                       VerticalTextAlignment="Center"
-                                                       Padding="7" />
-
-                                                <CheckBox IsChecked="{Binding Set.Set.ToFailure}" VerticalOptions="Center" />
-                                            </HorizontalStackLayout>
-                                        </Border>
-                                    </Grid>
-
-                                    <Grid ColumnDefinitions=".5*, .5*" Margin="5, 10, 5, 10" ColumnSpacing="15">
-                                        <Border StrokeShape="RoundRectangle 15">
-                                            <Label HorizontalTextAlignment="Center" VerticalTextAlignment="Center" Padding="7">
-                                                <Label.FormattedText>
-                                                    <FormattedString>
-                                                        <Span Text="X" />
-                                                        <Span Text=" KG" />
-                                                    </FormattedString>
-                                                </Label.FormattedText>
-                                            </Label>
-                                        </Border>
-
-                                        <Border StrokeShape="RoundRectangle 15" Grid.Column="1">
-                                            <HorizontalStackLayout HorizontalOptions="Center">
-                                                <Label Text="Dropset" 
-                                               HorizontalTextAlignment="Center" 
-                                               VerticalTextAlignment="Center"
-                                               Padding="7" />
-
-                                                <CheckBox IsChecked="{Binding Set.Set.DropSet}" VerticalOptions="Center" />
-                                            </HorizontalStackLayout>
-                                        </Border>
-                                    </Grid>
-
-                                    <Grid ColumnDefinitions=".5*, .5*" Margin="5, 10, 5, 10" ColumnSpacing="15">
-                                        <Border StrokeShape="RoundRectangle 15">
-                                            <Grid>
-                                                <Label HorizontalTextAlignment="Center" VerticalTextAlignment="Center" Padding="7">
-                                                    <Label.FormattedText>
-                                                        <FormattedString>
-                                                            <Span Text="Target sets: " />
-                                                            <Span Text="{Binding TargetSets}" />
-                                                        </FormattedString>
-                                                    </Label.FormattedText>
-                                                </Label>
-
-                                                <Button BackgroundColor="Transparent" Clicked="OnNumberInput" />
-                                            </Grid>
-                                        </Border>
-
-                                        <Border StrokeShape="RoundRectangle 15" Grid.Column="1">
-                                            <HorizontalStackLayout HorizontalOptions="Center">
-                                                <Label Text="Superset" 
-                                                       HorizontalTextAlignment="Center" 
-                                                       VerticalTextAlignment="Center"
-                                                       Padding="7" />
-
-                                                <CheckBox IsChecked="{Binding Superset, Converter={ValueConverters:IsSupersetNotNull}}"
-                                                          VerticalOptions="Center"
-                                                          CheckedChanged="OnToggleCheckedSuperset" />
-                                            </HorizontalStackLayout>
-                                        </Border>
-                                    </Grid>
-
-                                    <VerticalStackLayout x:Name="supersetWrapper" IsVisible="{Binding Superset, Converter={StaticResource IsNotNull}}">
+                                    <VerticalStackLayout>
                                         <Grid>
                                             <Border StrokeShape="RoundRectangle 20, 20, 5, 5">
                                                 <VerticalStackLayout>
-                                                    <Image Source="{Binding Superset.Exercise.Image.ImageURL}" />
-                                                    <Label Text="{Binding Superset.Exercise, Converter={StaticResource ExerciseDisplayToName}}" 
-                                                           HorizontalTextAlignment="Center" 
-                                                           FontSize="Subtitle" 
-                                                           Margin="5" />
+                                                    <Image Source="{Binding Set.Exercise.Image.ImageURL}" />
+                                                    <Label Text="{Binding Set.Exercise, Converter={StaticResource ExerciseDisplayToName}}" 
+                                                       HorizontalTextAlignment="Center" 
+                                                       FontSize="Subtitle" 
+                                                       Margin="5" />
                                                 </VerticalStackLayout>
                                             </Border>
 
-                                            <Button BackgroundColor="Transparent" Clicked="OnSetExerciseEdit" BindingContext="{Binding Superset}"/>
+                                            <Button BackgroundColor="Transparent" Clicked="OnSetExerciseEdit" BindingContext="{Binding Set}"/>
                                         </Grid>
 
                                         <Grid ColumnDefinitions=".5*, .5*" Margin="5, 10, 5, 10" ColumnSpacing="15">
@@ -140,24 +44,24 @@
                                                     <Label.FormattedText>
                                                         <FormattedString>
                                                             <Span Text="Rep range: " />
-                                                            <Span Text="{Binding Superset.Set.RepRange_Bottom}" />
+                                                            <Span Text="{Binding Set.Set.RepRange_Bottom}" />
                                                             <Span Text=" - " />
-                                                            <Span Text="{Binding Superset.Set.RepRange_Top}" />
+                                                            <Span Text="{Binding Set.Set.RepRange_Top}" />
                                                         </FormattedString>
                                                     </Label.FormattedText>
                                                 </Label>
                                             </Border>
 
-                                            <Button BackgroundColor="Transparent" Clicked="OnRepRangeEdit" BindingContext="{Binding Superset}" />
+                                            <Button BackgroundColor="Transparent" Clicked="OnRepRangeEdit" BindingContext="{Binding Set}"/>
 
                                             <Border StrokeShape="RoundRectangle 15" Grid.Column="1">
                                                 <HorizontalStackLayout HorizontalOptions="Center">
                                                     <Label Text="To Faliure" 
-                                                           HorizontalTextAlignment="Center" 
-                                                           VerticalTextAlignment="Center"
-                                                           Padding="7" />
+                                                       HorizontalTextAlignment="Center" 
+                                                       VerticalTextAlignment="Center"
+                                                       Padding="7" />
 
-                                                    <CheckBox IsChecked="{Binding Superset.Set.ToFailure}" VerticalOptions="Center" />
+                                                    <CheckBox IsChecked="{Binding Set.Set.ToFailure}" VerticalOptions="Center" />
                                                 </HorizontalStackLayout>
                                             </Border>
                                         </Grid>
@@ -177,17 +81,123 @@
                                             <Border StrokeShape="RoundRectangle 15" Grid.Column="1">
                                                 <HorizontalStackLayout HorizontalOptions="Center">
                                                     <Label Text="Dropset" 
+                                               HorizontalTextAlignment="Center" 
+                                               VerticalTextAlignment="Center"
+                                               Padding="7" />
+
+                                                    <CheckBox IsChecked="{Binding Set.Set.DropSet}" VerticalOptions="Center" />
+                                                </HorizontalStackLayout>
+                                            </Border>
+                                        </Grid>
+
+                                        <Grid ColumnDefinitions=".5*, .5*" Margin="5, 10, 5, 10" ColumnSpacing="15">
+                                            <Border StrokeShape="RoundRectangle 15">
+                                                <Grid>
+                                                    <Label HorizontalTextAlignment="Center" VerticalTextAlignment="Center" Padding="7">
+                                                        <Label.FormattedText>
+                                                            <FormattedString>
+                                                                <Span Text="Target sets: " />
+                                                                <Span Text="{Binding TargetSets}" />
+                                                            </FormattedString>
+                                                        </Label.FormattedText>
+                                                    </Label>
+
+                                                    <Button BackgroundColor="Transparent" Clicked="OnNumberInput" />
+                                                </Grid>
+                                            </Border>
+
+                                            <Border StrokeShape="RoundRectangle 15" Grid.Column="1">
+                                                <HorizontalStackLayout HorizontalOptions="Center">
+                                                    <Label Text="Superset" 
+                                                       HorizontalTextAlignment="Center" 
+                                                       VerticalTextAlignment="Center"
+                                                       Padding="7" />
+
+                                                    <CheckBox IsChecked="{Binding Superset, Mode=OneWay, Converter={ValueConverters:IsSupersetNotNull}}"
+                                                          VerticalOptions="Center"
+                                                          CheckedChanged="OnToggleCheckedSuperset" />
+                                                </HorizontalStackLayout>
+                                            </Border>
+                                        </Grid>
+
+                                        <VerticalStackLayout x:Name="supersetWrapper" IsVisible="{Binding Superset, Converter={StaticResource IsNotNull}}">
+                                            <Grid>
+                                                <Border StrokeShape="RoundRectangle 20, 20, 5, 5">
+                                                    <VerticalStackLayout>
+                                                        <Image Source="{Binding Superset.Exercise.Image.ImageURL}" />
+                                                        <Label Text="{Binding Superset.Exercise, Converter={StaticResource ExerciseDisplayToName}}" 
+                                                           HorizontalTextAlignment="Center" 
+                                                           FontSize="Subtitle" 
+                                                           Margin="5" />
+                                                    </VerticalStackLayout>
+                                                </Border>
+
+                                                <Button BackgroundColor="Transparent" Clicked="OnSetExerciseEdit" BindingContext="{Binding Superset}"/>
+                                            </Grid>
+
+                                            <Grid ColumnDefinitions=".5*, .5*" Margin="5, 10, 5, 10" ColumnSpacing="15">
+                                                <Border StrokeShape="RoundRectangle 15">
+                                                    <Label HorizontalTextAlignment="Center" VerticalTextAlignment="Center" Padding="7">
+                                                        <Label.FormattedText>
+                                                            <FormattedString>
+                                                                <Span Text="Rep range: " />
+                                                                <Span Text="{Binding Superset.Set.RepRange_Bottom}" />
+                                                                <Span Text=" - " />
+                                                                <Span Text="{Binding Superset.Set.RepRange_Top}" />
+                                                            </FormattedString>
+                                                        </Label.FormattedText>
+                                                    </Label>
+                                                </Border>
+
+                                                <Button BackgroundColor="Transparent" Clicked="OnRepRangeEdit" BindingContext="{Binding Superset}" />
+
+                                                <Border StrokeShape="RoundRectangle 15" Grid.Column="1">
+                                                    <HorizontalStackLayout HorizontalOptions="Center">
+                                                        <Label Text="To Faliure" 
+                                                           HorizontalTextAlignment="Center" 
+                                                           VerticalTextAlignment="Center"
+                                                           Padding="7" />
+
+                                                        <CheckBox IsChecked="{Binding Superset.Set.ToFailure}" VerticalOptions="Center" />
+                                                    </HorizontalStackLayout>
+                                                </Border>
+                                            </Grid>
+
+                                            <Grid ColumnDefinitions=".5*, .5*" Margin="5, 10, 5, 10" ColumnSpacing="15">
+                                                <Border StrokeShape="RoundRectangle 15">
+                                                    <Label HorizontalTextAlignment="Center" VerticalTextAlignment="Center" Padding="7">
+                                                        <Label.FormattedText>
+                                                            <FormattedString>
+                                                                <Span Text="X" />
+                                                                <Span Text=" KG" />
+                                                            </FormattedString>
+                                                        </Label.FormattedText>
+                                                    </Label>
+                                                </Border>
+
+                                                <Border StrokeShape="RoundRectangle 15" Grid.Column="1">
+                                                    <HorizontalStackLayout HorizontalOptions="Center">
+                                                        <Label Text="Dropset" 
                                                             HorizontalTextAlignment="Center" 
                                                             VerticalTextAlignment="Center"
                                                             Padding="7" />
 
-                                                    <CheckBox IsChecked="{Binding Superset.Set.DropSet}" VerticalOptions="Center" />
-                                                </HorizontalStackLayout>
-                                            </Border>
-                                        </Grid>
+                                                        <CheckBox IsChecked="{Binding Superset.Set.DropSet}" VerticalOptions="Center" />
+                                                    </HorizontalStackLayout>
+                                                </Border>
+                                            </Grid>
+                                        </VerticalStackLayout>
                                     </VerticalStackLayout>
-                                </VerticalStackLayout>
-                            </Border>
+                                </Border>
+
+                                <SwipeView.RightItems>
+                                    <SwipeItemView>
+                                        <Grid Margin="25" WidthRequest="100">
+                                            <ImageButton Source="trashcan.png" Clicked="OnWorkoutSetDelete" />
+                                        </Grid>
+                                    </SwipeItemView>
+                                </SwipeView.RightItems>
+                            </SwipeView>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>

@@ -16,8 +16,9 @@ namespace AppProjectGym.ValueConverters
             if (value is not bool isEnabled)
                 return null;
 
-            var a = WorkoutEditPage.WorkoutSetDisplays.FirstOrDefault(x => x.Id == WorkoutSet?.Id);
-            return isEnabled ? a?.Superset : null;
+            var workoutSetFromEditPage = WorkoutEditPage.WorkoutSetDisplays.FirstOrDefault(x => x.Id == WorkoutSet?.Id);
+            WorkoutSet = null;
+            return isEnabled ? workoutSetFromEditPage?.Superset : null;
         }
     }
 }
