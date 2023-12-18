@@ -81,9 +81,9 @@
                                             <Border StrokeShape="RoundRectangle 15" Grid.Column="1">
                                                 <HorizontalStackLayout HorizontalOptions="Center">
                                                     <Label Text="Dropset" 
-                                               HorizontalTextAlignment="Center" 
-                                               VerticalTextAlignment="Center"
-                                               Padding="7" />
+                                                           HorizontalTextAlignment="Center" 
+                                                           VerticalTextAlignment="Center"
+                                                           Padding="7" />
 
                                                     <CheckBox IsChecked="{Binding Set.Set.DropSet}" VerticalOptions="Center" />
                                                 </HorizontalStackLayout>
@@ -107,20 +107,27 @@
                                             </Border>
 
                                             <Border StrokeShape="RoundRectangle 15" Grid.Column="1">
+                                                <Button Clicked="OnToggleSuperset" />
+                                            </Border>
+                                        </Grid>
+
+                                        <!--
+                                            <Border StrokeShape="RoundRectangle 15" Grid.Column="1">
                                                 <HorizontalStackLayout HorizontalOptions="Center">
                                                     <Label Text="Superset" 
                                                        HorizontalTextAlignment="Center" 
                                                        VerticalTextAlignment="Center"
                                                        Padding="7" />
 
-                                                    <CheckBox IsChecked="{Binding Superset, Mode=OneWay, Converter={ValueConverters:IsSupersetNotNull}}"
-                                                          VerticalOptions="Center"
-                                                          CheckedChanged="OnToggleCheckedSuperset" />
+                                                    <CheckBox x:Name="supersetCheckBox"
+                                                              IsChecked="{Binding Superset, Mode=OneWay, Converter={ValueConverters:IsSupersetNotNull}}"
+                                                              VerticalOptions="Center"
+                                                              CheckedChanged="OnToggleCheckedSuperset" />
                                                 </HorizontalStackLayout>
                                             </Border>
-                                        </Grid>
+                                            -->
 
-                                        <VerticalStackLayout x:Name="supersetWrapper" IsVisible="{Binding Superset, Converter={StaticResource IsNotNull}}">
+                                        <VerticalStackLayout x:Name="supersetWrapper" IsVisible="{Binding Superset, Converter={ValueConverters:IsSupersetNotNull}}">
                                             <Grid>
                                                 <Border StrokeShape="RoundRectangle 20, 20, 5, 5">
                                                     <VerticalStackLayout>
@@ -271,13 +278,13 @@
                 IsVisible="false">
 
             <VerticalStackLayout>
-                    <Border WidthRequest="150" HeightRequest="50" Margin="0, 15, 0, 10">
-                        <Entry x:Name="singleNumberInput"
+                <Border WidthRequest="150" HeightRequest="50" Margin="0, 15, 0, 10">
+                    <Entry x:Name="singleNumberInput"
                                HorizontalTextAlignment="Center"
                                Placeholder="3"
                                FontSize="Subtitle"
                                WidthRequest="100"/>
-                    </Border>
+                </Border>
 
                 <Button Text="Submit" Clicked="OnNumberSubmit" />
             </VerticalStackLayout>

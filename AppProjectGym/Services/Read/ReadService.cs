@@ -1,6 +1,6 @@
 ﻿using AppProjectGym.Utilities;
-using AppInfo = AppProjectGym.Information.AppInfo;
 using System.Text.Json;
+using AppInfo = AppProjectGym.Information.AppInfo;
 
 namespace AppProjectGym.Services.Read
 {
@@ -20,7 +20,13 @@ namespace AppProjectGym.Services.Read
                 url += !endPoint.Contains('?') ? "?" : "&";
                 url += $"include={include}&q={string.Join(";", query)}";
 
-                HttpResponseMessage response = await client.GetAsync(url);
+                HttpRequestMessage request = new()
+                {
+                    Method = HttpMethod.Get,
+                    RequestUri = new Uri($"{AppInfo.BaseApiURL}/{endPoint}")
+                };
+
+                HttpResponseMessage response = await client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 string content = await response.Content.ReadAsStringAsync();

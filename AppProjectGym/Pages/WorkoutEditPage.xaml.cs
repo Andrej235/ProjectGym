@@ -6,8 +6,6 @@ using AppProjectGym.Services.Delete;
 using AppProjectGym.Services.Read;
 using AppProjectGym.Services.Update;
 using AppProjectGym.Utilities;
-using AppProjectGym.ValueConverters;
-using System.ComponentModel.DataAnnotations;
 
 namespace AppProjectGym.Pages
 {
@@ -39,17 +37,17 @@ namespace AppProjectGym.Pages
         }
         private Workout workout;
 
-        public static List<WorkoutSetDisplay> WorkoutSetDisplays
+        public List<WorkoutSetDisplay> WorkoutSetDisplays
         {
             get => workoutSetDisplays;
             set
             {
                 workoutSetDisplays = value;
-                //OnPropertyChanged();
+                OnPropertyChanged();
             }
         }
         public List<WorkoutSetDisplay> WorkoutSetDisplaysInstance => WorkoutSetDisplays;
-        private static List<WorkoutSetDisplay> workoutSetDisplays;
+        private List<WorkoutSetDisplay> workoutSetDisplays;
         private List<WorkoutSetDisplay> originalWorkoutSetDisplays;
 
         public WorkoutEditPage(ICreateService createService, IReadService readService, IUpdateService updateService, IDeleteService deleteService, ExerciseDisplayMapper exerciseDisplayMapper)
@@ -253,6 +251,7 @@ namespace AppProjectGym.Pages
         {
             setCollection.ItemsSource = null;
             setCollection.ItemsSource = WorkoutSetDisplays;
+            //WorkoutSetDisplays = workoutSetDisplays;
         }
 
         private async void OnSetExerciseEdit(object sender, EventArgs e)
@@ -376,38 +375,22 @@ namespace AppProjectGym.Pages
             return true;
         }
 
-        private void OnToggleCheckedSuperset(object sender, CheckedChangedEventArgs e)
-        {
-            if (sender is not CheckBox checkBox || checkBox.BindingContext is not WorkoutSetDisplay workoutSetDisplay)
-                return;
-
-            if (!checkBox.IsChecked)
-            {
-                workoutSetDisplay.Superset = null;
-                //RefreshSetCollection();
-                //return;
-            }
-            else
-            {
-                workoutSetDisplay.Superset ??= new SetDisplay()
-                {
-                    Set = new()
-                };
-            }
-
-            //IsSupersetNotNull.Superset = workoutSetDisplay.Superset;
-            //IsSupersetNotNull.WorkoutSet = workoutSetDisplay;
-
-            //Refresh but only once, maybe a counter to keep track of how many buttons were refreshed??
-            //RefreshSetCollection();
-            checkBox.BindingContext = null;
-            checkBox.BindingContext = workoutSetDisplay;
-        }
-
         protected override void OnDisappearing()
         {
             WorkoutSetDisplays = [];
             base.OnDisappearing();
+        }
+
+        private void OnToggleSuperset(object sender, EventArgs e)
+        {
+            //UNTESTED
+            //**************************************
+            if (sender is not Button button || button.BindingContext is not WorkoutSetDisplay workoutSetDisplay)
+                return;
+
+            workoutSetDisplay.Superset = workoutSetDisplay.Superset is null ? new() : null;
+            RefreshSetCollection();
+            //**************************************
         }
     }
 }
