@@ -3,9 +3,11 @@ using AppProjectGym.Models;
 using AppProjectGym.Services;
 using AppProjectGym.Services.Create;
 using AppProjectGym.Services.Delete;
+using AppProjectGym.Services.Mapping;
 using AppProjectGym.Services.Read;
 using AppProjectGym.Services.Update;
 using AppProjectGym.Utilities;
+using System.Linq;
 
 namespace AppProjectGym.Pages
 {
@@ -24,7 +26,8 @@ namespace AppProjectGym.Pages
         private readonly IReadService readService;
         private readonly IUpdateService updateService;
         private readonly IDeleteService deleteService;
-        private readonly ExerciseDisplayMapper exerciseDisplayMapper;
+        private readonly IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper;
+        private readonly IEntityDisplayMapper<WorkoutSet, WorkoutSetDisplay> workoutSetDisplayMapper;
 
         public Workout Workout
         {
@@ -46,11 +49,10 @@ namespace AppProjectGym.Pages
                 OnPropertyChanged();
             }
         }
-        public List<WorkoutSetDisplay> WorkoutSetDisplaysInstance => WorkoutSetDisplays;
         private List<WorkoutSetDisplay> workoutSetDisplays;
         private List<WorkoutSetDisplay> originalWorkoutSetDisplays;
 
-        public WorkoutEditPage(ICreateService createService, IReadService readService, IUpdateService updateService, IDeleteService deleteService, ExerciseDisplayMapper exerciseDisplayMapper)
+        public WorkoutEditPage(ICreateService createService, IReadService readService, IUpdateService updateService, IDeleteService deleteService, IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper, IEntityDisplayMapper<WorkoutSet, WorkoutSetDisplay> workoutSetDisplayMapper)
         {
             InitializeComponent();
             BindingContext = this;
@@ -59,6 +61,7 @@ namespace AppProjectGym.Pages
             this.updateService = updateService;
             this.deleteService = deleteService;
             this.exerciseDisplayMapper = exerciseDisplayMapper;
+            this.workoutSetDisplayMapper = workoutSetDisplayMapper;
         }
 
         public async void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -74,36 +77,11 @@ namespace AppProjectGym.Pages
 
             Workout = workout;
             WorkoutSetDisplays = [];
+
             var workoutSets = await readService.Get<List<WorkoutSet>>("none", "workoutset", $"workout={workout.Id}");
+            WorkoutSetDisplays.AddRange(await Task.WhenAll(workoutSets.Select(async workoutSet => await workoutSetDisplayMapper.Map(workoutSet))));
 
-            foreach (var workoutSet in workoutSets)
-            {
-                var setDisplay = new SetDisplay { Set = await readService.Get<Set>("none", $"set/{workoutSet.SetId}") };
-                setDisplay.Exercise = await exerciseDisplayMapper.Map(await readService.Get<Exercise>("images", $"exercise/{setDisplay.Set.ExerciseId}"));
-
-                WorkoutSetDisplay workoutSetDisplay = new()
-                {
-                    Id = workoutSet.Id,
-                    TargetSets = workoutSet.TargetSets,
-                    Set = setDisplay,
-                };
-
-                if (workoutSet.SuperSetId != null)
-                {
-                    var supersetDisplay = new SetDisplay { Set = await readService.Get<Set>("none", $"set/{workoutSet.SuperSetId}") };
-                    supersetDisplay.Exercise = await exerciseDisplayMapper.Map(await readService.Get<Exercise>("images", $"exercise/{supersetDisplay.Set.ExerciseId}"));
-                    workoutSetDisplay.Superset = supersetDisplay;
-                }
-
-                WorkoutSetDisplays.Add(workoutSetDisplay);
-            }
             originalWorkoutSetDisplays = WorkoutSetDisplays.DeepCopy();
-
-            setCollection.ItemsSource = null;
-            setCollection.ItemsSource = WorkoutSetDisplays;
-
-            await Task.Delay(250);
-            WorkoutSetDisplays = originalWorkoutSetDisplays.DeepCopy();
             RefreshSetCollection();
         }
 

@@ -315,7 +315,8 @@
 
                         <ImageButton Source="workout.png" 
                                      Padding="125" 
-                                     BackgroundColor="#181818"/>
+                                     BackgroundColor="#181818"
+                                     Clicked="OnOpenUserWorkoutsPage" />
                     </Border>
 
                     <Border WidthRequest="60" 

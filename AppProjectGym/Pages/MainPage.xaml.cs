@@ -5,13 +5,14 @@ using AppProjectGym.Services;
 using AppProjectGym.Information;
 using AppProjectGym.Services.Read;
 using System.Linq;
+using AppProjectGym.Services.Mapping;
 
 namespace AppProjectGym
 {
     public partial class MainPage : ContentPage
     {
         private readonly IReadService readService;
-        private readonly ExerciseDisplayMapper exerciseDisplayMapper;
+        private readonly IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper;
 
         public int PageNumber
         {
@@ -65,7 +66,7 @@ namespace AppProjectGym
         private List<ExerciseDisplay> exerciseDisplays;
 
         public MainPage(
-            ExerciseDisplayMapper exerciseDisplayMapper,
+            IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper,
             IReadService readService)
         {
             InitializeComponent();
@@ -236,6 +237,7 @@ namespace AppProjectGym
         }
 
         private async void OnOpenProfilePage(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(ProfilePage));
+        private async void OnOpenUserWorkoutsPage(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(UserWorkoutsPage));
 
 
 
@@ -342,5 +344,15 @@ namespace AppProjectGym
         private async void OnEquipmentCreateClicked(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(EquipmentCreationPage));
 
         private async void OnWorkoutCreateClicked(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(WorkoutCreationPage));
+
+        private void ImageButton_Clicked(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ImageButton_Clicked_1(object sender, EventArgs e)
+        {
+
+        }
     }
 }

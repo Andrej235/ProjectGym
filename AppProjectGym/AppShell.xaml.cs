@@ -17,6 +17,8 @@ namespace AppProjectGym
             Routing.RegisterRoute(nameof(EquipmentCreationPage), typeof(EquipmentCreationPage));
             Routing.RegisterRoute(nameof(WorkoutCreationPage), typeof(WorkoutCreationPage));
             Routing.RegisterRoute(nameof(WorkoutEditPage), typeof(WorkoutEditPage));
+            Routing.RegisterRoute(nameof(UserWorkoutsPage), typeof(UserWorkoutsPage));
+            Routing.RegisterRoute(nameof(StartedWorkoutPage), typeof(StartedWorkoutPage));
         }
     }
 }

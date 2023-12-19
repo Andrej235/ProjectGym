@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:Pages="clr-namespace:AppProjectGym.Pages"
+             xmlns:Models="clr-namespace:AppProjectGym.Models"
+             xmlns:ValueConverters="clr-namespace:AppProjectGym.ValueConverters"
+             x:DataType="Pages:StartedWorkoutPage"
+             x:Class="AppProjectGym.Pages.StartedWorkoutPage"
+             Title="StartedWorkoutPage">
+    <VerticalStackLayout>
+        <CollectionView x:Name="setCollection" ItemsSource="{Binding WorkoutSetDisplays}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="Models:WorkoutSetDisplay">
+                    <Label Text="{Binding Set.Exercise.Exercise.Name}"/>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
+</ContentPage>

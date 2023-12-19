@@ -1,5 +1,6 @@
 using AppProjectGym.Models;
 using AppProjectGym.Services;
+using AppProjectGym.Services.Mapping;
 using AppProjectGym.Services.Read;
 using System.Diagnostics;
 
@@ -7,7 +8,7 @@ namespace AppProjectGym.Pages;
 
 public partial class SearchResultsPage : ContentPage, IQueryAttributable
 {
-    public SearchResultsPage(IReadService readService, ExerciseDisplayMapper exerciseDisplayMapper)
+    public SearchResultsPage(IReadService readService, IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper)
     {
         InitializeComponent();
         BindingContext = this;
@@ -16,7 +17,7 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
         this.exerciseDisplayMapper = exerciseDisplayMapper;
     }
     private readonly IReadService readService;
-    private readonly ExerciseDisplayMapper exerciseDisplayMapper;
+    private readonly IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper;
 
     public List<Exercise> Exercises
     {

@@ -9,6 +9,7 @@ using Image = AppProjectGym.Models.Image;
 using AppProjectGym.Services.Create;
 using AppProjectGym.Services.Update;
 using AppProjectGym.Services.Delete;
+using AppProjectGym.Services.Mapping;
 
 namespace AppProjectGym
 {
@@ -40,13 +41,16 @@ namespace AppProjectGym
             builder.Services.AddTransient<EquipmentCreationPage>();
             builder.Services.AddTransient<WorkoutCreationPage>();
             builder.Services.AddTransient<WorkoutEditPage>();
+            builder.Services.AddTransient<UserWorkoutsPage>();
+            builder.Services.AddTransient<StartedWorkoutPage>();
 
             builder.Services.AddTransient<IReadService, ReadService>();
             builder.Services.AddTransient<ICreateService, CreateService>();
             builder.Services.AddTransient<IUpdateService, UpdateService>();
             builder.Services.AddTransient<IDeleteService, DeleteService>();
 
-            builder.Services.AddTransient<ExerciseDisplayMapper>();
+            builder.Services.AddTransient<IEntityDisplayMapper<Exercise, ExerciseDisplay>, ExerciseDisplayMapper>();
+            builder.Services.AddTransient<IEntityDisplayMapper<WorkoutSet, WorkoutSetDisplay>, WorkoutSetDisplayMapper>();
 
             builder.Services.AddTransient<HttpClient>();
 

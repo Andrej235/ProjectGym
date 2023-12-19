@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:Pages="clr-namespace:AppProjectGym.Pages"
+             xmlns:Models="clr-namespace:AppProjectGym.Models"
+             xmlns:ValueConverters="clr-namespace:AppProjectGym.ValueConverters"
+             x:DataType="Pages:UserWorkoutsPage"
+             x:Class="AppProjectGym.Pages.UserWorkoutsPage"
+             Title="My Workouts">
+    
+    <Grid>
+        <CollectionView ItemsSource="{Binding Workouts}" SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="Models:Workout">
+                    <Grid Margin="25, 5, 25, 5">
+                        <Border HorizontalOptions="Fill"
+                                StrokeShape="RoundRectangle 15"
+                                Padding="10">
+
+                            <Label Text="{Binding Name}" HorizontalTextAlignment="Center"/>
+                        </Border>
+
+                        <Button Clicked="OnWorkoutClicked" BackgroundColor="Transparent"/>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Border x:Name="startDialogWrapper"
+                HorizontalOptions="Center" 
+                VerticalOptions="Center" 
+                BackgroundColor="#000" 
+                Padding="25"
+                StrokeShape="RoundRectangle 10"
+                StrokeThickness="10"
+                Stroke="White"
+                ZIndex="10"
+                IsVisible="false">
+
+            <VerticalStackLayout>
+                <Label x:Name="startDialogMessage" 
+                       Text="Are you sure you want to start this workout?"
+                       Margin="0, 0, 0, 10" />
+
+                <FlexLayout JustifyContent="Center" HeightRequest="100">
+                    <Button Text="Cancel" WidthRequest="100"  Margin="10" Padding="10" Clicked="OnCancelClicked" />
+                    <Button Text="Yes" WidthRequest="100" Margin="10" Padding="10" Clicked="OnYesClicked" />
+                </FlexLayout>
+            </VerticalStackLayout>
+        </Border>
+
+        <Button x:Name="whiteOverlay"
+                HorizontalOptions="Fill" 
+                VerticalOptions="Fill" 
+                BackgroundColor="White"
+                Opacity="0.5" 
+                IsVisible="false"
+                Clicked="OnWhiteOverlayClicked" />
+    </Grid>
+</ContentPage>

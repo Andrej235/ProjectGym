@@ -1,6 +1,7 @@
 using AppProjectGym.Models;
 using AppProjectGym.Services;
 using AppProjectGym.Services.Delete;
+using AppProjectGym.Services.Mapping;
 using AppProjectGym.Services.Read;
 using AppProjectGym.Utilities;
 
@@ -13,9 +14,9 @@ namespace AppProjectGym.Pages
 
         private readonly IReadService readService;
         private readonly IDeleteService deleteService;
-        private readonly ExerciseDisplayMapper exerciseDisplayMapper;
+        private readonly IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper;
 
-        public FullScreenExercisePage(IReadService readService, IDeleteService deleteService, ExerciseDisplayMapper exerciseDisplayMapper)
+        public FullScreenExercisePage(IReadService readService, IDeleteService deleteService, IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper)
         {
             InitializeComponent();
             BindingContext = this;

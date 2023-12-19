@@ -17,7 +17,7 @@
     <Grid VerticalOptions="Fill" HorizontalOptions="Fill">
         <ScrollView VerticalScrollBarVisibility="Always">
             <VerticalStackLayout>
-                <CollectionView x:Name="setCollection" ItemsSource="{Binding WorkoutSetDisplaysInstance}" SelectionMode="None">
+                <CollectionView x:Name="setCollection" ItemsSource="{Binding WorkoutSetDisplays}" SelectionMode="None">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="Models:WorkoutSetDisplay">
                             <SwipeView>
