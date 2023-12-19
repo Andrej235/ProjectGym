@@ -16,14 +16,12 @@ namespace AppProjectGym.Services.Read
                     endPoint = type.IsGenericType ? type.GetGenericArguments()[0].Name : type.Name;
                 }
 
-                string url = $"{AppInfo.BaseApiURL}/{endPoint}";
-                url += !endPoint.Contains('?') ? "?" : "&";
-                url += $"include={include}&q={string.Join(";", query)}";
+                string url = $"{AppInfo.BaseApiURL}/{endPoint}{(!endPoint.Contains('?') ? "?" : "&")}include={include}&q={string.Join(";", query)}";
 
                 HttpRequestMessage request = new()
                 {
                     Method = HttpMethod.Get,
-                    RequestUri = new Uri($"{AppInfo.BaseApiURL}/{endPoint}")
+                    RequestUri = new Uri(url)
                 };
 
                 HttpResponseMessage response = await client.SendAsync(request);

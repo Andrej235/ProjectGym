@@ -14,13 +14,15 @@ namespace AppProjectGym.Pages
 
         private readonly IReadService readService;
         private readonly IDeleteService deleteService;
+        private readonly ExerciseDisplayMapper exerciseDisplayMapper;
 
-        public FullScreenExercise(IReadService readService, IDeleteService deleteService)
+        public FullScreenExercise(IReadService readService, IDeleteService deleteService, ExerciseDisplayMapper exerciseDisplayMapper)
         {
             InitializeComponent();
             BindingContext = this;
             this.readService = readService;
             this.deleteService = deleteService;
+            this.exerciseDisplayMapper = exerciseDisplayMapper;
         }
 
         public bool IsInSelectionMode
@@ -30,32 +32,24 @@ namespace AppProjectGym.Pages
             {
                 isInSelectionMode = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(IsNotInSelectionMode));
             }
         }
         public bool IsNotInSelectionMode => !IsInSelectionMode;
         private bool isInSelectionMode;
 
-        public Exercise Exercise
-        {
-            get => exercise;
-            set
-            {
-                exercise = value;
-                OnPropertyChanged();
-            }
-        }
-        private Exercise exercise;
+        public Exercise Exercise { get; private set; }
 
-        public Image MainImage
+        public ExerciseDisplay ExerciseDisplay
         {
-            get => mainImage;
+            get => exerciseDisplay;
             set
             {
-                mainImage = value;
+                exerciseDisplay = value;
                 OnPropertyChanged();
             }
         }
-        private Image mainImage;
+        private ExerciseDisplay exerciseDisplay;
 
         public List<MuscleGroupDisplay> PrimaryMuscleDisplays
         {
@@ -99,7 +93,6 @@ namespace AppProjectGym.Pages
                 OnPropertyChanged();
             }
         }
-
         private List<ExerciseNote> notes;
 
 
@@ -110,10 +103,7 @@ namespace AppProjectGym.Pages
             IsInSelectionMode = query.TryGetValue("selectionMode", out object selectionModeObj) && selectionModeObj is bool selectionMode && selectionMode;
 
             Exercise = await readService.Get<Exercise>("none", $"exercise/{id}");
-
-            var images = await readService.Get<List<Image>>("none", ReadService.TranslateEndPoint("image", 0, 1), $"exercise={Exercise.Id}");
-            if (images != null && images.Count != 0)
-                MainImage = images.First();
+            ExerciseDisplay = await exerciseDisplayMapper.Map(Exercise);
 
             var primaryMuscleGroups = await readService.Get<List<MuscleGroup>>("none", "musclegroup", $"primary={Exercise.Id}");
             var primaryMuscles = await readService.Get<List<Muscle>>("none", "muscle", $"primary={Exercise.Id}");
@@ -137,32 +127,6 @@ namespace AppProjectGym.Pages
             Equipment = await readService.Get<List<Equipment>>("none", "equipment", $"exercise={Exercise.Id}");
         }
 
-
-
-        private async void OnPrimaryMuscleGroupSearch(object sender, SelectionChangedEventArgs e)
-        {
-            if (isInSelectionMode)
-                return;
-
-            await NavigationService.SearchAsync($"primarymusclegroup={(e.CurrentSelection[0] as MuscleGroupDisplay).Id}");
-        }
-
-        private async void OnPrimaryMuscleSearch(object sender, SelectionChangedEventArgs e)
-        {
-            if (isInSelectionMode)
-                return;
-
-            await NavigationService.SearchAsync($"primarymuscle={(e.CurrentSelection[0] as Muscle).Id}");
-        }
-
-        private async void OnEquipmentSearch(object sender, SelectionChangedEventArgs e)
-        {
-            if (isInSelectionMode)
-                return;
-
-            await NavigationService.SearchAsync($"equipment={(e.CurrentSelection[0] as Equipment).Id}");
-        }
-
         private async void OnEditButtonClicked(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(ExerciseCreationPage), new KeyValuePair<string, object>("edit", Exercise));
 
         private void OnDeleteButtonClicked(object sender, EventArgs e)
@@ -178,9 +142,33 @@ namespace AppProjectGym.Pages
             OpenConfirmDialog("Are you sure you want to delete this exercise?");
         }
 
+        private async void OnExerciseSelect(object sender, EventArgs e) => await NavigationService.GoToAsync("../..", new KeyValuePair<string, object>("selectedExercise", Exercise));
 
+        #region Search
+        private async void OnPrimaryMuscleGroupSearch(object sender, SelectionChangedEventArgs e)
+        {
+            if (isInSelectionMode)
+                return;
 
-        //Confirm dialog
+            await NavigationService.SearchAsync($"primarymusclegroup={(e.CurrentSelection[0] as MuscleGroupDisplay).Id}");
+        }
+        private async void OnPrimaryMuscleSearch(object sender, SelectionChangedEventArgs e)
+        {
+            if (isInSelectionMode)
+                return;
+
+            await NavigationService.SearchAsync($"primarymuscle={(e.CurrentSelection[0] as Muscle).Id}");
+        }
+        private async void OnEquipmentSearch(object sender, SelectionChangedEventArgs e)
+        {
+            if (isInSelectionMode)
+                return;
+
+            await NavigationService.SearchAsync($"equipment={(e.CurrentSelection[0] as Equipment).Id}");
+        }
+        #endregion
+
+        #region Confirm Dialog
         private void OnWhiteOverlayClicked(object sender, EventArgs e) => CloseConfirmDialog();
         private void OnCancelClicked(object sender, EventArgs e) => HandleConfirmDialog(false);
         private void OnYesClicked(object sender, EventArgs e) => HandleConfirmDialog(true);
@@ -207,10 +195,6 @@ namespace AppProjectGym.Pages
                 LogDebugger.LogError(ex);
             }
         }
-
-        private async void Button_Clicked(object sender, EventArgs e)
-        {
-            await NavigationService.GoToAsync("../..", new KeyValuePair<string, object>("selectedExercise", Exercise));
-        }
+        #endregion
     }
 }

@@ -193,6 +193,8 @@ namespace AppProjectGym.Pages
         {
             try
             {
+                originalEntities ??= [];
+
                 var idProperty = typeof(T).GetProperty("Id");
                 var entitiesToAdd = entities.Where(x => Convert.ToInt32(idProperty.GetValue(x)) == 0);
                 var entitiesToDelete = originalEntities.Where(x => Convert.ToInt32(idProperty.GetValue(x)) != 0).Except(entities);

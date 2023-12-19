@@ -375,12 +375,6 @@ namespace AppProjectGym.Pages
             return true;
         }
 
-        protected override void OnDisappearing()
-        {
-            //WorkoutSetDisplays = [];
-            base.OnDisappearing();
-        }
-
         private void OnToggleSuperset(object sender, EventArgs e)
         {
             if (sender is not Button button || button.BindingContext is not WorkoutSetDisplay workoutSetDisplay)

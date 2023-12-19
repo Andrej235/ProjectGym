@@ -261,7 +261,7 @@
         <Border x:Name="confirmDialogWrapper"
                 HorizontalOptions="Center" 
                 VerticalOptions="Center" 
-                BackgroundColor="#000" 
+                BackgroundColor="Black" 
                 Padding="25"
                 StrokeShape="RoundRectangle 10"
                 StrokeThickness="10"

@@ -4,6 +4,7 @@ using AppProjectGym.Models;
 using AppProjectGym.Services;
 using AppProjectGym.Information;
 using AppProjectGym.Services.Read;
+using System.Linq;
 
 namespace AppProjectGym
 {
@@ -11,9 +12,6 @@ namespace AppProjectGym
     {
         private readonly IReadService readService;
         private readonly ExerciseDisplayMapper exerciseDisplayMapper;
-
-        public static List<Exercise> Exercises { get => exercises; set => exercises = value; }
-        private static List<Exercise> exercises;
 
         public int PageNumber
         {
@@ -139,28 +137,23 @@ namespace AppProjectGym
                 return;
             }
 
-            Exercises = loadedExercises;
-            var newExerciseDisplays = new List<ExerciseDisplay>();
-            foreach (var e in Exercises)
-                newExerciseDisplays.Add(await exerciseDisplayMapper.Map(e));
+            exerciseDisplays = [.. ((await Task.WhenAll(loadedExercises.Select(async e => await exerciseDisplayMapper.Map(e)))).OrderByDescending(x => x.Image.ImageURL != ""))];
 
-            exerciseDisplays = [.. newExerciseDisplays.OrderByDescending(x => x.Image.ImageURL != "")];
             exerciseCollectionView.ItemsSource = null;
             exerciseCollectionView.ItemsSource = exerciseDisplays;
             exerciseCollectionView.SelectedItem = null;
+
             await exerciseCollectionScrollView.ScrollToAsync(0, 0, true);
             isWaitingForExerciseData = false;
         }
 
         protected override void OnAppearing()
         {
-            LoadExercises();
             if (areCreateOptionsOpen)
                 ToggleCreateOptions();
 
+            LoadExercises();
             base.OnAppearing();
-            if (exerciseCollectionView.ItemsSource is not null)
-                exerciseCollectionView.SelectedItem = null;
         }
 
         private async void OnExerciseSelect(object sender, SelectionChangedEventArgs e)

@@ -228,8 +228,9 @@
 
                 <Grid RowDefinitions="*, Auto">
                     <CollectionView x:Name="exerciseCollectionView" 
-                                SelectionMode="Single"
-                                SelectionChanged="OnExerciseSelect">
+                                    SelectionMode="Single"
+                                    SelectionChanged="OnExerciseSelect">
+                        
                         <CollectionView.ItemsLayout>
                             <GridItemsLayout Orientation="Vertical" Span="1" />
                         </CollectionView.ItemsLayout>
@@ -237,8 +238,8 @@
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="Models:ExerciseDisplay">
                                 <Border Stroke="#aaa"
-                            StrokeThickness="7"
-                            Margin="25">
+                                        StrokeThickness="7"
+                                        Margin="25">
 
                                     <Grid RowDefinitions="*, 125">
                                         <Image Source="{Binding Image.ImageURL}"
@@ -246,12 +247,12 @@
                                                BackgroundColor="#fff"/>
 
                                         <Label x:Name="exercises"
-                                   Text="{Binding Exercise.Name}" 
-                                   TextColor="#3d3d3d"
-                                   FontSize="Title"
-                                   HorizontalTextAlignment="Center"
-                                   VerticalTextAlignment="Center"
-                                   Grid.Row="1">
+                                               Text="{Binding Exercise.Name}" 
+                                               TextColor="#3d3d3d"
+                                               FontSize="Title"
+                                               HorizontalTextAlignment="Center"
+                                               VerticalTextAlignment="Center"
+                                               Grid.Row="1">
 
                                             <Label.Background>
                                                 <LinearGradientBrush EndPoint="0, 1">
@@ -270,21 +271,21 @@
                     </CollectionView>
 
                     <FlexLayout HorizontalOptions="FillAndExpand"
-                            JustifyContent="Center"
-                            Grid.Row="1">
+                                JustifyContent="Center"
+                                Grid.Row="1">
 
                         <Button Text="Prev"
-                        Margin="5, 0, 5, 0"
-                        Clicked="LoadPreviousPage"/>
+                                Margin="5, 0, 5, 0"
+                                Clicked="LoadPreviousPage"/>
 
                         <Label x:Name="pageNumberLabel"
-                       Margin="5, 0, 5, 0"
-                       VerticalTextAlignment="Center"
-                       HorizontalTextAlignment="Center"/>
+                               Margin="5, 0, 5, 0"
+                               VerticalTextAlignment="Center"
+                               HorizontalTextAlignment="Center"/>
 
                         <Button Text="Next"
-                        Margin="5, 0, 5, 0"
-                        Clicked="LoadNextPage"/>
+                                Margin="5, 0, 5, 0"
+                                Clicked="LoadNextPage"/>
 
                     </FlexLayout>
                 </Grid>
