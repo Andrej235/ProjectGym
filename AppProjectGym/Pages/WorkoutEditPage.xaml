@@ -11,6 +11,7 @@
     <ContentPage.Resources>
         <ValueConverters:IsNotNullConverter x:Key="IsNotNull"/>
         <ValueConverters:ExerciseDisplayNameSafeConverter x:Key="ExerciseDisplayToName"/>
+        <ValueConverters:IsSupersetNotNull x:Key="IsSupersetNotNull"/>
     </ContentPage.Resources>
 
     <Grid VerticalOptions="Fill" HorizontalOptions="Fill">
@@ -107,27 +108,17 @@
                                             </Border>
 
                                             <Border StrokeShape="RoundRectangle 15" Grid.Column="1">
-                                                <Button Clicked="OnToggleSuperset" />
+                                                <Button Clicked="OnToggleSuperset" 
+                                                        Text="Superset" 
+                                                        TextColor="White" 
+                                                        BackgroundColor="Black" 
+                                                        CornerRadius="14"
+                                                        BorderColor="{Binding Superset, Converter={StaticResource IsSupersetNotNull}}"
+                                                        BorderWidth="3" />
                                             </Border>
                                         </Grid>
 
-                                        <!--
-                                            <Border StrokeShape="RoundRectangle 15" Grid.Column="1">
-                                                <HorizontalStackLayout HorizontalOptions="Center">
-                                                    <Label Text="Superset" 
-                                                       HorizontalTextAlignment="Center" 
-                                                       VerticalTextAlignment="Center"
-                                                       Padding="7" />
-
-                                                    <CheckBox x:Name="supersetCheckBox"
-                                                              IsChecked="{Binding Superset, Mode=OneWay, Converter={ValueConverters:IsSupersetNotNull}}"
-                                                              VerticalOptions="Center"
-                                                              CheckedChanged="OnToggleCheckedSuperset" />
-                                                </HorizontalStackLayout>
-                                            </Border>
-                                            -->
-
-                                        <VerticalStackLayout x:Name="supersetWrapper" IsVisible="{Binding Superset, Converter={ValueConverters:IsSupersetNotNull}}">
+                                        <VerticalStackLayout x:Name="supersetWrapper" IsVisible="{Binding Superset, Converter={StaticResource IsNotNull}}">
                                             <Grid>
                                                 <Border StrokeShape="RoundRectangle 20, 20, 5, 5">
                                                     <VerticalStackLayout>

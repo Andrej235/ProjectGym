@@ -377,20 +377,20 @@ namespace AppProjectGym.Pages
 
         protected override void OnDisappearing()
         {
-            WorkoutSetDisplays = [];
+            //WorkoutSetDisplays = [];
             base.OnDisappearing();
         }
 
         private void OnToggleSuperset(object sender, EventArgs e)
         {
-            //UNTESTED
-            //**************************************
             if (sender is not Button button || button.BindingContext is not WorkoutSetDisplay workoutSetDisplay)
                 return;
 
-            workoutSetDisplay.Superset = workoutSetDisplay.Superset is null ? new() : null;
+            workoutSetDisplay.Superset = workoutSetDisplay.Superset is null ? new()
+            {
+                Set = new()
+            } : null;
             RefreshSetCollection();
-            //**************************************
         }
     }
 }
