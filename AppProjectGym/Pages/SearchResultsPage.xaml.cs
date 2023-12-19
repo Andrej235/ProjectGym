@@ -117,7 +117,7 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
         var selectedExerciseDisplay = e.CurrentSelection[0] as ExerciseDisplay;
         Debug.WriteLine($"---> Selected {selectedExerciseDisplay.Exercise.Name}");
 
-        await NavigationService.GoToAsync(nameof(FullScreenExercise), new KeyValuePair<string, object>("id", selectedExerciseDisplay.Exercise.Id), new KeyValuePair<string, object>("selectionMode", isInSelectionMode));
+        await NavigationService.GoToAsync(nameof(FullScreenExercisePage), new KeyValuePair<string, object>("id", selectedExerciseDisplay.Exercise.Id), new KeyValuePair<string, object>("selectionMode", isInSelectionMode));
     }
 
     #region Filters

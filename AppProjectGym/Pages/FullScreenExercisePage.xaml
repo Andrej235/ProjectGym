@@ -4,8 +4,8 @@
              xmlns:Models="clr-namespace:AppProjectGym.Models"
              xmlns:Pages="clr-namespace:AppProjectGym.Pages"
              xmlns:ValueConverters="clr-namespace:AppProjectGym.ValueConverters"
-             x:Class="AppProjectGym.Pages.FullScreenExercise"
-             x:DataType="Pages:FullScreenExercise"
+             x:Class="AppProjectGym.Pages.FullScreenExercisePage"
+             x:DataType="Pages:FullScreenExercisePage"
              Title="{Binding ExerciseDisplay.Exercise.Name}">
 
     <ContentPage.Resources>

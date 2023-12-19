@@ -32,7 +32,7 @@ namespace AppProjectGym
 #endif
 
             builder.Services.AddSingleton<MainPage>();
-            builder.Services.AddTransient<FullScreenExercise>();
+            builder.Services.AddTransient<FullScreenExercisePage>();
             builder.Services.AddTransient<SearchResultsPage>();
             builder.Services.AddTransient<ProfilePage>();
             builder.Services.AddTransient<ExerciseCreationPage>();

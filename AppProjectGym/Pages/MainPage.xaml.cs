@@ -164,7 +164,7 @@ namespace AppProjectGym
             var exerciseDisplay = e.CurrentSelection[0] as ExerciseDisplay;
             Debug.WriteLine($"---> Selected {exerciseDisplay.Exercise.Name}");
 
-            await NavigationService.GoToAsync(nameof(FullScreenExercise), new KeyValuePair<string, object>("id", exerciseDisplay.Exercise.Id));
+            await NavigationService.GoToAsync(nameof(FullScreenExercisePage), new KeyValuePair<string, object>("id", exerciseDisplay.Exercise.Id));
         }
 
         private async void OnSearch(object sender, EventArgs e)

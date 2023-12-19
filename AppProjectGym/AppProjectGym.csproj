@@ -51,13 +51,18 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Pages\FullScreenExercisePage.xaml.cs">
+      <DependentUpon>FullScreenExercisePage.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <MauiXaml Update="Pages\EquipmentCreationPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
     <MauiXaml Update="Pages\ExerciseCreationPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
-    <MauiXaml Update="Pages\FullScreenExercise.xaml">
+    <MauiXaml Update="Pages\FullScreenExercisePage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
     <MauiXaml Update="Pages\LoginPage.xaml">

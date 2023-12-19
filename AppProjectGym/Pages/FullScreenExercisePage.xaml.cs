@@ -3,11 +3,10 @@ using AppProjectGym.Services;
 using AppProjectGym.Services.Delete;
 using AppProjectGym.Services.Read;
 using AppProjectGym.Utilities;
-using Image = AppProjectGym.Models.Image;
 
 namespace AppProjectGym.Pages
 {
-    public partial class FullScreenExercise : ContentPage, IQueryAttributable
+    public partial class FullScreenExercisePage : ContentPage, IQueryAttributable
     {
         private delegate Task ConfirmHandler(bool input);
         private ConfirmHandler confirmHandler;
@@ -16,7 +15,7 @@ namespace AppProjectGym.Pages
         private readonly IDeleteService deleteService;
         private readonly ExerciseDisplayMapper exerciseDisplayMapper;
 
-        public FullScreenExercise(IReadService readService, IDeleteService deleteService, ExerciseDisplayMapper exerciseDisplayMapper)
+        public FullScreenExercisePage(IReadService readService, IDeleteService deleteService, ExerciseDisplayMapper exerciseDisplayMapper)
         {
             InitializeComponent();
             BindingContext = this;
