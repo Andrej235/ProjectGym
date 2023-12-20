@@ -103,24 +103,24 @@
                                     <Border Margin="5" Padding="10" StrokeShape="RoundRectangle 7">
                                         <Grid RowDefinitions="auto, *" RowSpacing="10">
                                             <Label Text="{Binding MuscleGroupDisplay.Name}"
-                                           Grid.Row="0" 
-                                           FontSize="Subtitle"
-                                           HorizontalTextAlignment="Center"
-                                           FontAttributes="Bold"/>
+                                                   Grid.Row="0" 
+                                                   FontSize="Subtitle"
+                                                   HorizontalTextAlignment="Center"
+                                                   FontAttributes="Bold"/>
 
                                             <CollectionView ItemsSource="{Binding MuscleGroupDisplay.Muscles}"
-                                                    SelectionMode="Multiple"
-                                                    SelectedItems="{Binding SelectedMuscles, Converter={StaticResource ToObjectList}}"
-                                                    Grid.Row="1"
-                                                    SelectionChanged="OnMuscleSelect">
+                                                            SelectionMode="Multiple"
+                                                            SelectedItems="{Binding SelectedMuscles, Converter={StaticResource ToObjectList}}"
+                                                            Grid.Row="1"
+                                                            SelectionChanged="OnMuscleSelect">
 
                                                 <CollectionView.ItemTemplate>
                                                     <DataTemplate x:DataType="Models:Muscle">
                                                         <Border WidthRequest="200" Margin="35, 3, 35, 3" Padding="10" StrokeShape="RoundRectangle 15">
                                                             <Label Text="{Binding Name}" 
-                                                               FontSize="Caption"
-                                                               VerticalOptions="Center"
-                                                               HorizontalTextAlignment="Center"/>
+                                                                   FontSize="Caption"
+                                                                   VerticalOptions="Center"
+                                                                   HorizontalTextAlignment="Center"/>
                                                         </Border>
                                                     </DataTemplate>
                                                 </CollectionView.ItemTemplate>

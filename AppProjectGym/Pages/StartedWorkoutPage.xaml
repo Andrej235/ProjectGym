@@ -7,13 +7,233 @@
              x:DataType="Pages:StartedWorkoutPage"
              x:Class="AppProjectGym.Pages.StartedWorkoutPage"
              Title="StartedWorkoutPage">
-    <VerticalStackLayout>
-        <CollectionView x:Name="setCollection" ItemsSource="{Binding WorkoutSetDisplays}">
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="Models:WorkoutSetDisplay">
-                    <Label Text="{Binding Set.Exercise.Exercise.Name}"/>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-    </VerticalStackLayout>
+
+    <ContentPage.Resources>
+        <ValueConverters:IsNotNullConverter x:Key="IsNotNull"/>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout>
+            <CollectionView x:Name="setCollection"
+                        ItemsSource="{Binding WorkoutSetDisplays}" 
+                        ItemsLayout="HorizontalList"
+                        SelectionMode="Single"
+                        SelectionChanged="OnSetSelected">
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="Models:WorkoutSetDisplay">
+                        <Border Margin="10" 
+                            Padding="10"
+                            StrokeShape="RoundRectangle 15">
+
+                            <VerticalStackLayout VerticalOptions="Start">
+                                <Border StrokeShape="RoundRectangle 15, 15, 10, 10" StrokeThickness="0">
+                                    <Image Source="{Binding Set.Exercise.Image.ImageURL}" 
+                                   WidthRequest="225"
+                                   VerticalOptions="Start"/>
+                                </Border>
+
+                                <Label Text="{Binding Set.Exercise.Exercise.Name}"
+                                   HorizontalTextAlignment="Center" 
+                                   FontSize="Subtitle" 
+                                   FontAttributes="Bold"
+                                   Margin="5"/>
+
+                                <Grid ColumnDefinitions=".5*, .5*" ColumnSpacing="10">
+                                    <HorizontalStackLayout>
+                                        <Label Text="To Failure" VerticalOptions="Center"/>
+                                        <CheckBox VerticalOptions="Center"
+                                          IsChecked="{Binding Set.Set.ToFailure, Mode=OneWay}" 
+                                          IsEnabled="False" />
+                                    </HorizontalStackLayout>
+
+                                    <HorizontalStackLayout Grid.Column="1">
+                                        <Label Text="Dropset" VerticalOptions="Center"/>
+                                        <CheckBox VerticalOptions="Center"
+                                          IsChecked="{Binding Set.Set.DropSet, Mode=OneWay}" 
+                                          IsEnabled="False" />
+                                    </HorizontalStackLayout>
+                                </Grid>
+
+                                <Label>
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <FormattedString.Spans>
+                                                <Span Text="Target sets: "/>
+                                                <Span Text="{Binding TargetSets}"/>
+                                            </FormattedString.Spans>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Grid x:Name="selectedWorkoutSetWrapper" 
+                  RowDefinitions="Auto, *"
+                  BindingContext="{Binding SelectedWorkoutSet}"
+                  IsVisible="{Binding ., Converter={StaticResource IsNotNull}}">
+
+                <Border StrokeThickness="3"
+                    Margin="15, 25, 15, 25" 
+                    StrokeShape="RoundRectangle 100"
+                    Stroke="CadetBlue"/>
+
+                <Border Grid.Row="1"
+                        Padding="15" 
+                        Margin="10, 0, 10, 10"
+                        StrokeShape="RoundRectangle 15">
+
+                    <VerticalStackLayout x:DataType="Models:WorkoutSetDisplay">
+                        <Grid BindingContext="{Binding Set}">
+                            <VerticalStackLayout x:DataType="Models:SetDisplay">
+                                <Image Source="{Binding Exercise.Image.ImageURL}" 
+                                       WidthRequest="300"
+                                       VerticalOptions="Start"/>
+
+                                <Label Text="{Binding Exercise.Exercise.Name}"
+                                       HorizontalTextAlignment="Center" 
+                                       FontSize="Subtitle" 
+                                       Margin="5"/>
+
+                                <Grid ColumnDefinitions=".5*, .5*" ColumnSpacing="10">
+                                    <Border HorizontalOptions="Fill"
+                                            HeightRequest="47"
+                                            StrokeShape="RoundRectangle 5, 25, 5, 25"
+                                            Padding="20, 10, 20, 10"
+                                            Margin="0, 10, 0, 10">
+
+                                        <Label VerticalTextAlignment="Center" HorizontalOptions="Center">
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <FormattedString.Spans>
+                                                        <Span Text="{Binding Set.RepRange_Bottom}"/>
+                                                        <Span Text=" - "/>
+                                                        <Span Text="{Binding Set.RepRange_Top}"/>
+                                                    </FormattedString.Spans>
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+                                    </Border>
+
+                                    <Border HorizontalOptions="Fill"
+                                            HeightRequest="47"
+                                            StrokeShape="RoundRectangle 25, 5, 25, 5"
+                                            Grid.Column="1"
+                                            Padding="20, 10, 20, 10"
+                                            Margin="0, 10, 0, 10">
+
+                                        <Label Text="X KG" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                                    </Border>
+                                </Grid>
+
+                                <Grid ColumnDefinitions=".5*, .5*" ColumnSpacing="10">
+                                    <Border Padding="3" StrokeShape="RoundRectangle 5, 25, 5, 25" Grid.Column="0">
+                                        <HorizontalStackLayout HorizontalOptions="Center">
+                                            <Label Text="To Failure" VerticalOptions="Center"/>
+                                            <CheckBox VerticalOptions="Center"
+                                                      IsChecked="{Binding Set.ToFailure, Mode=OneWay}" 
+                                                      IsEnabled="False" />
+                                        </HorizontalStackLayout>
+                                    </Border>
+
+                                    <Border Padding="3" StrokeShape="RoundRectangle 25, 5, 25, 5" Grid.Column="1">
+                                        <HorizontalStackLayout HorizontalOptions="Center">
+                                            <Label Text="Dropset" VerticalOptions="Center"/>
+                                            <CheckBox VerticalOptions="Center"
+                                                      IsChecked="{Binding Set.DropSet, Mode=OneWay}" 
+                                                      IsEnabled="False" />
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <VerticalStackLayout BindingContext="{Binding Superset}"
+                                             x:Name="selectedSetSupersetWrapper"
+                                             IsVisible="{Binding ., Converter={StaticResource IsNotNull}}">
+
+                            <Label Text="Superset with: " FontSize="Subtitle" Margin="0, 25, 0, 5"/>
+
+                            <VerticalStackLayout x:DataType="Models:SetDisplay">
+                                <Image Source="{Binding Exercise.Image.ImageURL}" 
+                               WidthRequest="300"
+                               VerticalOptions="Start"/>
+
+                                <Label Text="{Binding Exercise.Exercise.Name}"
+                                       HorizontalTextAlignment="Center" 
+                                       FontSize="Subtitle" 
+                                       Margin="5"/>
+
+                                <Grid ColumnDefinitions=".5*, .5*" ColumnSpacing="10">
+                                    <Border HorizontalOptions="Fill"
+                                            HeightRequest="47"
+                                            StrokeShape="RoundRectangle 5, 25, 5, 25"
+                                            Padding="20, 10, 20, 10"
+                                            Margin="0, 10, 0, 10">
+                                        
+                                        <Label VerticalTextAlignment="Center" HorizontalOptions="Center">
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <FormattedString.Spans>
+                                                        <Span Text="{Binding Set.RepRange_Bottom}"/>
+                                                        <Span Text=" - "/>
+                                                        <Span Text="{Binding Set.RepRange_Top}"/>
+                                                    </FormattedString.Spans>
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+                                    </Border>
+
+                                    <Border HorizontalOptions="Fill"
+                                            HeightRequest="47"
+                                            StrokeShape="RoundRectangle 25, 5, 25, 5"
+                                            Grid.Column="1"
+                                            Padding="20, 10, 20, 10"
+                                            Margin="0, 10, 0, 10">
+
+                                        <Label Text="X KG" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                                    </Border>
+                                </Grid>
+
+                                <Grid ColumnDefinitions=".5*, .5*" ColumnSpacing="10">
+                                    <Border Padding="3" StrokeShape="RoundRectangle 5, 25, 5, 25" Grid.Column="0">
+                                        <HorizontalStackLayout HorizontalOptions="Center">
+                                            <Label Text="To Failure" VerticalOptions="Center"/>
+                                            <CheckBox VerticalOptions="Center"
+                                                      IsChecked="{Binding Set.ToFailure, Mode=OneWay}" 
+                                                      IsEnabled="False" />
+                                        </HorizontalStackLayout>
+                                    </Border>
+
+                                    <Border Padding="3" StrokeShape="RoundRectangle 25, 5, 25, 5" Grid.Column="1">
+                                        <HorizontalStackLayout HorizontalOptions="Center">
+                                            <Label Text="Dropset" VerticalOptions="Center"/>
+                                            <CheckBox VerticalOptions="Center"
+                                                      IsChecked="{Binding Set.DropSet, Mode=OneWay}" 
+                                                      IsEnabled="False" />
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+
+                        <Label Margin="0, 20, 0, 0">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <FormattedString.Spans>
+                                        <Span Text="Target sets: "/>
+                                        <Span Text="{Binding TargetSets}"/>
+                                    </FormattedString.Spans>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

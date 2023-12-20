@@ -1,6 +1,4 @@
 ﻿using System.Globalization;
-using AppProjectGym.Models;
-using AppProjectGym.Pages;
 
 namespace AppProjectGym.ValueConverters
 {

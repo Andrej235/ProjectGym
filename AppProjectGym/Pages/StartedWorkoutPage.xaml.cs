@@ -35,6 +35,19 @@ public partial class StartedWorkoutPage : ContentPage, IQueryAttributable
     }
     private Workout workout;
 
+    public WorkoutSetDisplay SelectedWorkoutSet
+    {
+        get => selectedWorkoutSet;
+        set
+        {
+            selectedWorkoutSet = value;
+            OnPropertyChanged();
+        }
+    }
+    private WorkoutSetDisplay selectedWorkoutSet;
+
+
+
     public StartedWorkoutPage(IReadService readService, IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper, IEntityDisplayMapper<WorkoutSet, WorkoutSetDisplay> workoutSetDisplayMapper)
     {
         InitializeComponent();
@@ -46,8 +59,8 @@ public partial class StartedWorkoutPage : ContentPage, IQueryAttributable
 
     public async void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-		if (!query.TryGetValue("workout", out object workoutObj) || workoutObj is not Workout workout)
-			return;
+        if (!query.TryGetValue("workout", out object workoutObj) || workoutObj is not Workout workout)
+            return;
 
         Workout = workout;
         WorkoutSetDisplays = [];
@@ -57,5 +70,14 @@ public partial class StartedWorkoutPage : ContentPage, IQueryAttributable
 
         setCollection.ItemsSource = null;
         setCollection.ItemsSource = WorkoutSetDisplays;
+        SelectedWorkoutSet = null;
+    }
+
+    private void OnSetSelected(object sender, SelectionChangedEventArgs e)
+    {
+        if (e.CurrentSelection[0] is not WorkoutSetDisplay workoutSetDisplay)
+            return;
+
+        SelectedWorkoutSet = workoutSetDisplay;
     }
 }
