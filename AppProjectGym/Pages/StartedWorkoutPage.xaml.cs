@@ -122,10 +122,28 @@ public partial class StartedWorkoutPage : ContentPage, IQueryAttributable
                 return;
 
             setDisplay.Weight = newWeight;
+
+            foreach (var workoutSetDisplay in WorkoutSetDisplays)
+            {
+                if (workoutSetDisplay.Set.Set.Id == setDisplay.Set.Id)
+                {
+                    workoutSetDisplay.Set.Weight = setDisplay.Weight;
+                    SelectedWorkoutSet = workoutSetDisplay.DeepCopy();
+                    break;
+                }
+                else if (workoutSetDisplay.Superset?.Set.Id == setDisplay.Set.Id)
+                {
+                    workoutSetDisplay.Superset.Weight = setDisplay.Weight;
+                    SelectedWorkoutSet = workoutSetDisplay.DeepCopy();
+                    break;
+                }
+            }
+
+            CloseWeighEditorDialog();
             RefreshSetCollection();
         };
 
-        OpenWeighEditorDialog();
+        OpenWeighEditorDialog(setDisplay.Weight.Weight);
     }
 
     private void OnWeightEdited(object sender, EventArgs e)
@@ -159,7 +177,6 @@ public partial class StartedWorkoutPage : ContentPage, IQueryAttributable
         try
         {
             await createNewWeightHandler(newWeight);
-            CloseWeighEditorDialog();
         }
         catch (Exception ex)
         {

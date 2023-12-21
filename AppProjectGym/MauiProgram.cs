@@ -10,6 +10,8 @@ using AppProjectGym.Services.Create;
 using AppProjectGym.Services.Update;
 using AppProjectGym.Services.Delete;
 using AppProjectGym.Services.Mapping;
+using AppProjectGym.Information;
+using System.Diagnostics;
 
 namespace AppProjectGym
 {
@@ -53,8 +55,19 @@ namespace AppProjectGym
             builder.Services.AddTransient<IEntityDisplayMapper<WorkoutSet, WorkoutSetDisplay>, WorkoutSetDisplayMapper>();
 
             builder.Services.AddTransient<HttpClient>();
-
+            LoadUser();
             return builder.Build();
+        }
+
+        private static async void LoadUser()
+        {
+            if (!await ClientInfo.SetUser())
+            {
+                Debug.WriteLine("---> Open login page");
+                await NavigationService.GoToAsync(nameof(LoginPage));
+            }
+
+            Debug.WriteLine($"---> Client guid: {ClientInfo.ClientGuid}");
         }
     }
 }

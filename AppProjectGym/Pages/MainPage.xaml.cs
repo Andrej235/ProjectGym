@@ -83,6 +83,7 @@ namespace AppProjectGym
 
         private async void OnLoad()
         {
+            //TODO: Add a isLoadingData field for this initial stuff so user can't navigate to other pages at least until they are verified
             Equipment = await readService.Get<List<Equipment>>();
             var muscles = await readService.Get<List<Muscle>>();
             var muscleGroups = await readService.Get<List<MuscleGroup>>();
@@ -109,17 +110,8 @@ namespace AppProjectGym
             primaryMuscleFilter.ItemsSource = PrimaryMuscleGroupRepresentations;
             secondaryMuscleFilter.ItemsSource = null;
             secondaryMuscleFilter.ItemsSource = SecondaryMuscleGroupRepresentations;
-
-
-
-            if (!await ClientInfo.SetUser())
-            {
-                Debug.WriteLine("---> Open login page");
-                await NavigationService.GoToAsync(nameof(LoginPage));
-            }
-
-            Debug.WriteLine($"---> Client guid: {ClientInfo.ClientGuid}");
         }
+
 
         private bool areFiltersOpen = false;
         private bool isPlayingFilterAnimation = false;
@@ -344,15 +336,5 @@ namespace AppProjectGym
         private async void OnEquipmentCreateClicked(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(EquipmentCreationPage));
 
         private async void OnWorkoutCreateClicked(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(WorkoutCreationPage));
-
-        private void ImageButton_Clicked(object sender, EventArgs e)
-        {
-
-        }
-
-        private void ImageButton_Clicked_1(object sender, EventArgs e)
-        {
-
-        }
     }
 }
