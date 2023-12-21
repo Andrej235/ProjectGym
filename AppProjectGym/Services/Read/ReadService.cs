@@ -28,7 +28,23 @@ namespace AppProjectGym.Services.Read
                 response.EnsureSuccessStatusCode();
 
                 string content = await response.Content.ReadAsStringAsync();
-                T result = JsonSerializer.Deserialize<T>(content, AppInfo.DeserializationOptions);
+                T result = default;
+                try
+                {
+                    result = JsonSerializer.Deserialize<T>(content, AppInfo.DeserializationOptions);
+                }
+                catch (Exception)
+                {
+                    try
+                    {
+                        if (!typeof(T).IsGenericType || typeof(T).GetGenericTypeDefinition() != typeof(IEnumerable<>))
+                            result = JsonSerializer.Deserialize<IEnumerable<T>>(content, AppInfo.DeserializationOptions).First();
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+                }
                 return result;
             }
             catch (Exception ex)

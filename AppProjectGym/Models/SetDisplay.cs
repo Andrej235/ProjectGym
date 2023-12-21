@@ -4,5 +4,6 @@
     {
         public Set Set { get; set; }
         public ExerciseDisplay Exercise { get; set; }
+        public PersonalExerciseWeight Weight { get; set; }
     }
 }
