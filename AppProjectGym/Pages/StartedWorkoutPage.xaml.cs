@@ -4,6 +4,8 @@ using AppProjectGym.Services.Create;
 using AppProjectGym.Services.Mapping;
 using AppProjectGym.Services.Read;
 using AppProjectGym.Utilities;
+using Microsoft.Maui.Controls;
+using System.Numerics;
 
 namespace AppProjectGym.Pages;
 
@@ -190,37 +192,47 @@ public partial class StartedWorkoutPage : ContentPage, IQueryAttributable
         isDoingASet = !isDoingASet;
 
         if (isDoingASet)
-            PlayClockAnimation();
+            PlayClockAnimation(90);
     }
 
-    private async void PlayClockAnimation()
+    private async void PlayClockAnimation(float distanceFromEdge)
     {
         Vector2 vector = new(0, -1);
         vector.Normalize();
 
+        await Task.Run(() => innerCircle.ScaleTo(1, 300, Easing.SpringIn));
+        await innerCircle.TranslateTo(0, vector.Y * distanceFromEdge, 400, Easing.CubicIn);
+
+        var currentTick = 5;
+        var currentTime = 0;
         do
         {
-            await innerCircle.TranslateTo(vector.X * 75, vector.Y * 75, 10);
-            vector.Rotate(3.6f);
+            await innerCircle.TranslateTo(vector.X * distanceFromEdge, vector.Y * distanceFromEdge, 5);
+            vector.Rotate(6);
+
+            currentTick++;
+            if (currentTick >= 60)
+            {
+                currentTime++;
+                currentTick = 0;
+                UpdateClock(currentTime);
+            }
         } while (isDoingASet);
 
         EndClockAnimation();
     }
 
-    private async void EndClockAnimation()
+    private async void UpdateClock(float seconds)
     {
-        Vector2 vector = new((float)innerCircle.TranslationX, (float)innerCircle.TranslationY);
-        vector.Normalize();
+        await clockLabel.ScaleTo(1.25, 125, Easing.CubicIn);
+        clockLabel.Text = seconds.ToString("#");
+        await clockLabel.ScaleTo(1, 250, Easing.CubicOut);
+    }
 
-        var currentAngle = vector.GetRotationAngle();
-        while (Math.Abs(currentAngle - 270) > 3.6f)
-        {
-            await innerCircle.TranslateTo(vector.X * 75, vector.Y * 75, 1);
-            vector.Rotate(3.6f);
-            currentAngle += 3.6f;
-        }
-
-        await innerCircle.TranslateTo(0, -75, 1);
+    private void EndClockAnimation()
+    {
+        innerCircle.TranslateTo(0, 0, 100);
+        innerCircle.ScaleTo(2.75, 500, Easing.SpringOut);
     }
 
     public class Vector2(float x, float y)
@@ -251,17 +263,13 @@ public partial class StartedWorkoutPage : ContentPage, IQueryAttributable
 
         public static float GetRotationAngle(Vector2 vector1, Vector2 vector2)
         {
+            float crossProduct = vector1.X * vector2.Y - vector1.Y * vector2.X;
             float dotProduct = vector1.X * vector2.X + vector1.Y * vector2.Y;
-            float magnitudeProduct = vector1.Magnitude * vector2.Magnitude;
 
-            if (magnitudeProduct == 0)
-                throw new InvalidOperationException("Cannot calculate angle with zero magnitude vectors.");
+            float angleRadians = (float)Math.Atan2(crossProduct, dotProduct);
+            float angleDegrees = (float)(angleRadians * 180.0 / Math.PI);
 
-            float cosTheta = dotProduct / magnitudeProduct;
-            float thetaRadians = (float)Math.Acos(cosTheta);
-            float thetaDegrees = (float)(thetaRadians * 180.0 / Math.PI);
-
-            return thetaDegrees;
+            return angleDegrees;
         }
         public float GetRotationAngle(Vector2 vector2) => GetRotationAngle(this, vector2);
         public float GetRotationAngle()

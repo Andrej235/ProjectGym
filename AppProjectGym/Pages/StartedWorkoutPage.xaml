@@ -9,7 +9,7 @@
              Title="StartedWorkoutPage">
 
     <ContentPage.Resources>
-        <Style TargetType="Border">
+        <Style x:Key="setsStyle" TargetType="Border">
             <Setter Property="VisualStateManager.VisualStateGroups">
                 <VisualStateGroupList>
                     <VisualStateGroup x:Name="CommonStates">
@@ -48,8 +48,9 @@
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="Models:WorkoutSetDisplay">
                             <Border Margin="10" 
-                                Padding="10"
-                                StrokeShape="RoundRectangle 15">
+                                    Padding="10"
+                                    StrokeShape="RoundRectangle 15"
+                                    Style="{x:StaticResource Key=setsStyle}">
 
                                 <VerticalStackLayout VerticalOptions="Start" WidthRequest="225">
                                     <Border StrokeShape="RoundRectangle 15, 15, 10, 10" StrokeThickness="0" IsVisible="{Binding Set.Exercise.Image.ImageURL, Converter={StaticResource IsNotNull}}">
@@ -334,24 +335,40 @@
             </VerticalStackLayout>
         </Border>
 
-        <Grid BackgroundColor="#181818">
+        <Grid BackgroundColor="#181818" IsVisible="True">
             <Border WidthRequest="300"
                     HeightRequest="300" 
-                    StrokeShape="RoundRectangle 1000"/>
+                    StrokeShape="RoundRectangle 1000"
+                    Background="Black"/>
 
-            <Border WidthRequest="300"
-                    HeightRequest="300" 
-                    StrokeShape="RoundRectangle 1000">
+            <Grid WidthRequest="300"
+                  HeightRequest="300"
+                  Background="Transparent">
+                
+                <Border StrokeShape="RoundRectangle 1000"
+                        Stroke="Black"
+                        WidthRequest="90"
+                        HeightRequest="90"
+                        x:Name="innerCircle">
+                    
+                    <Border.Background>
+                        <RadialGradientBrush>
+                            <RadialGradientBrush.GradientStops>
+                                <GradientStop Color="CadetBlue" Offset="0"/>
+                                <GradientStop Color="Black" Offset="1"/>
+                            </RadialGradientBrush.GradientStops>
+                        </RadialGradientBrush>
+                    </Border.Background>
+                </Border>
+                
+                <Button Clicked="OnInnerCircleClicked" BackgroundColor="Transparent" CornerRadius="1000"/>
 
-                <Button x:Name="innerCircle"
-                        CornerRadius="100"
-                        BackgroundColor="Blue" 
-                        WidthRequest="100"
-                        HeightRequest="100"
-                        Clicked="OnInnerCircleClicked" >
-
-                </Button>
-            </Border>
+                <Label Text="0" 
+                       VerticalTextAlignment="Center"
+                       HorizontalTextAlignment="Center"
+                       FontSize="90"
+                       x:Name="clockLabel"/>
+            </Grid>
         </Grid>
     </Grid>
 </ContentPage>
