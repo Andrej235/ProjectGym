@@ -280,7 +280,7 @@
                                 </Label.FormattedText>
                             </Label>
 
-                            <Button Text="Start" Margin="10"/>
+                            <Button Text="Start" Margin="10" Clicked="OnSetStarted"/>
                         </VerticalStackLayout>
                     </Border>
                 </Grid>
@@ -335,7 +335,7 @@
             </VerticalStackLayout>
         </Border>
 
-        <Grid BackgroundColor="#181818" IsVisible="True">
+        <Grid BackgroundColor="#181818" IsVisible="False" x:Name="timerWrapper">
             <Border WidthRequest="300"
                     HeightRequest="300" 
                     StrokeShape="RoundRectangle 1000"
@@ -349,7 +349,8 @@
                         Stroke="Black"
                         WidthRequest="90"
                         HeightRequest="90"
-                        x:Name="innerCircle">
+                        x:Name="innerCircle"
+                        Scale="2.75">
                     
                     <Border.Background>
                         <RadialGradientBrush>
@@ -361,13 +362,13 @@
                     </Border.Background>
                 </Border>
                 
-                <Button Clicked="OnInnerCircleClicked" BackgroundColor="Transparent" CornerRadius="1000"/>
+                <Button Clicked="OnTimerToggled" BackgroundColor="Transparent" CornerRadius="1000"/>
 
                 <Label Text="0" 
                        VerticalTextAlignment="Center"
                        HorizontalTextAlignment="Center"
                        FontSize="90"
-                       x:Name="clockLabel"/>
+                       x:Name="timerLabel"/>
             </Grid>
         </Grid>
     </Grid>

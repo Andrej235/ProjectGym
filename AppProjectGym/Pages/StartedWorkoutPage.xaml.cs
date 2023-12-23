@@ -4,8 +4,6 @@ using AppProjectGym.Services.Create;
 using AppProjectGym.Services.Mapping;
 using AppProjectGym.Services.Read;
 using AppProjectGym.Utilities;
-using Microsoft.Maui.Controls;
-using System.Numerics;
 
 namespace AppProjectGym.Pages;
 
@@ -187,16 +185,17 @@ public partial class StartedWorkoutPage : ContentPage, IQueryAttributable
     }
 
     private bool isDoingASet = false;
-    private void OnInnerCircleClicked(object sender, EventArgs e)
+    private void OnTimerToggled(object sender, EventArgs e)
     {
         isDoingASet = !isDoingASet;
 
         if (isDoingASet)
-            PlayClockAnimation(90);
+            StartTimer(90);
     }
 
-    private async void PlayClockAnimation(float distanceFromEdge)
+    private async void StartTimer(float distanceFromEdge)
     {
+        timerLabel.Text = "0";
         Vector2 vector = new(0, -1);
         vector.Normalize();
 
@@ -215,21 +214,21 @@ public partial class StartedWorkoutPage : ContentPage, IQueryAttributable
             {
                 currentTime++;
                 currentTick = 0;
-                UpdateClock(currentTime);
+                UpdateTimer(currentTime);
             }
         } while (isDoingASet);
 
-        EndClockAnimation();
+        EndTimerAnimation();
     }
 
-    private async void UpdateClock(float seconds)
+    private async void UpdateTimer(float seconds)
     {
-        await clockLabel.ScaleTo(1.25, 125, Easing.CubicIn);
-        clockLabel.Text = seconds.ToString("#");
-        await clockLabel.ScaleTo(1, 250, Easing.CubicOut);
+        await timerLabel.ScaleTo(1.25, 125, Easing.CubicIn);
+        timerLabel.Text = seconds.ToString("#");
+        await timerLabel.ScaleTo(1, 250, Easing.CubicOut);
     }
 
-    private void EndClockAnimation()
+    private void EndTimerAnimation()
     {
         innerCircle.TranslateTo(0, 0, 100);
         innerCircle.ScaleTo(2.75, 500, Easing.SpringOut);
@@ -284,4 +283,13 @@ public partial class StartedWorkoutPage : ContentPage, IQueryAttributable
 
         public override string ToString() => $"({X}, {Y})";
     }
+
+    private void OnSetStarted(object sender, EventArgs e)
+    {
+        OpenTimer();
+    }
+
+    private void OpenTimer() => timerWrapper.IsVisible = true;
+
+    private void CloseTimer() => timerWrapper.IsVisible = false;
 }
