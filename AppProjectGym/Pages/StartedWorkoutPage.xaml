@@ -278,6 +278,8 @@
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
+
+                            <Button Text="Start" Margin="10"/>
                         </VerticalStackLayout>
                     </Border>
                 </Grid>
@@ -331,5 +333,25 @@
                 <Button Clicked="OnWeightCreate"/>
             </VerticalStackLayout>
         </Border>
+
+        <Grid BackgroundColor="#181818">
+            <Border WidthRequest="300"
+                    HeightRequest="300" 
+                    StrokeShape="RoundRectangle 1000"/>
+
+            <Border WidthRequest="300"
+                    HeightRequest="300" 
+                    StrokeShape="RoundRectangle 1000">
+
+                <Button x:Name="innerCircle"
+                        CornerRadius="100"
+                        BackgroundColor="Blue" 
+                        WidthRequest="100"
+                        HeightRequest="100"
+                        Clicked="OnInnerCircleClicked" >
+
+                </Button>
+            </Border>
+        </Grid>
     </Grid>
 </ContentPage>
