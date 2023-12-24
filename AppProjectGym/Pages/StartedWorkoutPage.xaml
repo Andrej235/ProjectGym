@@ -33,6 +33,8 @@
             </Setter>
         </Style>
 
+        <StyleSheet Source="/Resources/Styles/StyleCSS.css" />
+
         <ValueConverters:IsNotNullConverter x:Key="IsNotNull"/>
     </ContentPage.Resources>
 
@@ -40,26 +42,29 @@
         <ScrollView x:Name="mainScrollView">
             <VerticalStackLayout>
                 <CollectionView x:Name="setCollection"
-                            ItemsSource="{Binding WorkoutSetDisplays}" 
-                            ItemsLayout="HorizontalList"
-                            SelectionMode="Single"
-                            SelectionChanged="OnSetSelected">
+                                ItemsSource="{Binding WorkoutSetDisplays}" 
+                                ItemsLayout="HorizontalList"
+                                SelectionMode="Single"
+                                SelectionChanged="OnSetSelected">
 
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="Models:WorkoutSetDisplay">
+                        <DataTemplate x:DataType="Models:StartedWorkout_SetDisplay">
                             <Border Margin="10" 
                                     Padding="10"
                                     StrokeShape="RoundRectangle 15"
                                     Style="{x:StaticResource Key=setsStyle}">
 
                                 <VerticalStackLayout VerticalOptions="Start" WidthRequest="225">
-                                    <Border StrokeShape="RoundRectangle 15, 15, 10, 10" StrokeThickness="0" IsVisible="{Binding Set.Exercise.Image.ImageURL, Converter={StaticResource IsNotNull}}">
-                                        <Image Source="{Binding Set.Exercise.Image.ImageURL}" 
+                                    <Border StrokeShape="RoundRectangle 15, 15, 10, 10"
+                                            StrokeThickness="0" 
+                                            IsVisible="{Binding WorkoutSet.Set.Exercise.Image.ImageURL, Converter={StaticResource IsNotNull}}">
+
+                                        <Image Source="{Binding WorkoutSet.Set.Exercise.Image.ImageURL}" 
                                            WidthRequest="225"
                                            VerticalOptions="Start"/>
                                     </Border>
 
-                                    <Label Text="{Binding Set.Exercise.Exercise.Name}"
+                                    <Label Text="{Binding WorkoutSet.Set.Exercise.Exercise.Name}"
                                        HorizontalTextAlignment="Center" 
                                        FontSize="Subtitle" 
                                        FontAttributes="Bold"
@@ -69,14 +74,14 @@
                                         <HorizontalStackLayout>
                                             <Label Text="To Failure" VerticalOptions="Center"/>
                                             <CheckBox VerticalOptions="Center"
-                                                  IsChecked="{Binding Set.Set.ToFailure, Mode=OneWay}" 
+                                                  IsChecked="{Binding WorkoutSet.Set.Set.ToFailure, Mode=OneWay}" 
                                                   IsEnabled="False" />
                                         </HorizontalStackLayout>
 
                                         <HorizontalStackLayout Grid.Column="1">
                                             <Label Text="Dropset" VerticalOptions="Center"/>
                                             <CheckBox VerticalOptions="Center"
-                                                      IsChecked="{Binding Set.Set.DropSet, Mode=OneWay}" 
+                                                      IsChecked="{Binding WorkoutSet.Set.Set.DropSet, Mode=OneWay}" 
                                                       IsEnabled="False" />
                                         </HorizontalStackLayout>
                                     </Grid>
@@ -86,7 +91,7 @@
                                             <FormattedString>
                                                 <FormattedString.Spans>
                                                     <Span Text="Target sets: "/>
-                                                    <Span Text="{Binding TargetSets}"/>
+                                                    <Span Text="{Binding WorkoutSet.TargetSets}"/>
                                                 </FormattedString.Spans>
                                             </FormattedString>
                                         </Label.FormattedText>
@@ -99,22 +104,22 @@
                 </CollectionView>
 
                 <Grid x:Name="selectedWorkoutSetWrapper" 
-                  RowDefinitions="Auto, *"
-                  BindingContext="{Binding SelectedWorkoutSet}"
-                  IsVisible="{Binding ., Converter={StaticResource IsNotNull}}">
+                      RowDefinitions="Auto, *"
+                      BindingContext="{Binding SelectedWorkoutSet}"
+                      IsVisible="{Binding ., Converter={StaticResource IsNotNull}}">
 
                     <Border StrokeThickness="3"
-                    Margin="15, 25, 15, 25" 
-                    StrokeShape="RoundRectangle 100"
-                    Stroke="CadetBlue"/>
+                            Margin="15, 25, 15, 25" 
+                            StrokeShape="RoundRectangle 100"
+                            Stroke="CadetBlue"/>
 
                     <Border Grid.Row="1"
                         Padding="15" 
                         Margin="10, 0, 10, 10"
                         StrokeShape="RoundRectangle 15">
 
-                        <VerticalStackLayout x:DataType="Models:WorkoutSetDisplay">
-                            <Grid BindingContext="{Binding Set}">
+                        <VerticalStackLayout x:DataType="Models:StartedWorkout_SetDisplay" StyleClass="myClass">
+                            <Grid BindingContext="{Binding WorkoutSet.Set}">
                                 <VerticalStackLayout x:DataType="Models:SetDisplay">
                                     <Image Source="{Binding Exercise.Image.ImageURL}" 
                                        WidthRequest="300"
@@ -189,7 +194,7 @@
                                 </VerticalStackLayout>
                             </Grid>
 
-                            <VerticalStackLayout BindingContext="{Binding Superset}"
+                            <VerticalStackLayout BindingContext="{Binding WorkoutSet.Superset}"
                                              x:Name="selectedSetSupersetWrapper"
                                              IsVisible="{Binding ., Converter={StaticResource IsNotNull}}">
 
@@ -226,11 +231,11 @@
                                         </Border>
 
                                         <Border HorizontalOptions="Fill"
-                                            HeightRequest="47"
-                                            StrokeShape="RoundRectangle 25, 5, 25, 5"
-                                            Grid.Column="1"
-                                            Padding="20, 10, 20, 10"
-                                            Margin="0, 10, 0, 10">
+                                                HeightRequest="47"
+                                                StrokeShape="RoundRectangle 25, 5, 25, 5"
+                                                Grid.Column="1"
+                                                Padding="20, 10, 20, 10"
+                                                Margin="0, 10, 0, 10">
 
                                             <Grid>
                                                 <Label HorizontalTextAlignment="Center" VerticalTextAlignment="Center">
@@ -269,12 +274,24 @@
                                 </VerticalStackLayout>
                             </VerticalStackLayout>
 
+                            <CollectionView ItemsSource="{Binding FinishedSets}">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="Models:FinishedSetDisplay">
+                                        <Border>
+                                            <VerticalStackLayout>
+                                                <Label Text="{Binding Time}"/>
+                                            </VerticalStackLayout>
+                                        </Border>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                            
                             <Label Margin="0, 20, 0, 0">
                                 <Label.FormattedText>
                                     <FormattedString>
                                         <FormattedString.Spans>
                                             <Span Text="Target sets: "/>
-                                            <Span Text="{Binding TargetSets}"/>
+                                            <Span Text="{Binding WorkoutSet.TargetSets}"/>
                                         </FormattedString.Spans>
                                     </FormattedString>
                                 </Label.FormattedText>
