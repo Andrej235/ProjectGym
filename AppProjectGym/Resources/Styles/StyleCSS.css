@@ -1,4 +1,9 @@
-﻿.myClass button{
-    background-color: blue;
-    padding: 100;
+﻿/*.finishedSet *{
+    opacity: 1;
 }
+
+.unfinishedSet * {
+    opacity: 0;
+    margin: 100;
+    padding: 100;
+}*/

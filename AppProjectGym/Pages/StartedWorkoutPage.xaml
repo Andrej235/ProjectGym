@@ -36,6 +36,7 @@
         <StyleSheet Source="/Resources/Styles/StyleCSS.css" />
 
         <ValueConverters:IsNotNullConverter x:Key="IsNotNull"/>
+        <ValueConverters:IsNot0Converter x:Key="IsNot0"/>
     </ContentPage.Resources>
 
     <Grid>
@@ -74,8 +75,8 @@
                                         <HorizontalStackLayout>
                                             <Label Text="To Failure" VerticalOptions="Center"/>
                                             <CheckBox VerticalOptions="Center"
-                                                  IsChecked="{Binding WorkoutSet.Set.Set.ToFailure, Mode=OneWay}" 
-                                                  IsEnabled="False" />
+                                                      IsChecked="{Binding WorkoutSet.Set.Set.ToFailure, Mode=OneWay}" 
+                                                      IsEnabled="False" />
                                         </HorizontalStackLayout>
 
                                         <HorizontalStackLayout Grid.Column="1">
@@ -118,7 +119,7 @@
                         Margin="10, 0, 10, 10"
                         StrokeShape="RoundRectangle 15">
 
-                        <VerticalStackLayout x:DataType="Models:StartedWorkout_SetDisplay" StyleClass="myClass">
+                        <VerticalStackLayout x:DataType="Models:StartedWorkout_SetDisplay">
                             <Grid BindingContext="{Binding WorkoutSet.Set}">
                                 <VerticalStackLayout x:DataType="Models:SetDisplay">
                                     <Image Source="{Binding Exercise.Image.ImageURL}" 
@@ -132,10 +133,10 @@
 
                                     <Grid ColumnDefinitions=".5*, .5*" ColumnSpacing="10">
                                         <Border HorizontalOptions="Fill"
-                                            HeightRequest="47"
-                                            StrokeShape="RoundRectangle 5, 25, 5, 25"
-                                            Padding="20, 10, 20, 10"
-                                            Margin="0, 10, 0, 10">
+                                                HeightRequest="47"
+                                                StrokeShape="RoundRectangle 5, 25, 5, 25"
+                                                Padding="20, 10, 20, 10"
+                                                Margin="0, 10, 0, 10">
 
                                             <Label VerticalTextAlignment="Center" HorizontalOptions="Center">
                                                 <Label.FormattedText>
@@ -277,15 +278,51 @@
                             <CollectionView ItemsSource="{Binding FinishedSets}">
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate x:DataType="Models:FinishedSetDisplay">
-                                        <Border>
+                                        <Border IsVisible="{Binding Time, Converter={StaticResource IsNot0}}"
+                                                StrokeShape="RoundRectangle 10"
+                                                Margin="0, 10, 0, 10"
+                                                Padding="10">
+
                                             <VerticalStackLayout>
-                                                <Label Text="{Binding Time}"/>
+                                                <Label>
+                                                    <Label.FormattedText>
+                                                        <FormattedString>
+                                                            <FormattedString.Spans>
+                                                                <Span Text="Time spent: "/>
+                                                                <Span Text="{Binding Time}"/>
+                                                            </FormattedString.Spans>
+                                                        </FormattedString>
+                                                    </Label.FormattedText>
+                                                </Label>
+
+                                                <Label>
+                                                    <Label.FormattedText>
+                                                        <FormattedString>
+                                                            <FormattedString.Spans>
+                                                                <Span Text="Completed reps: "/>
+                                                                <Span Text="{Binding FinishedReps}"/>
+                                                            </FormattedString.Spans>
+                                                        </FormattedString>
+                                                    </Label.FormattedText>
+                                                </Label>
+
+                                                <Label>
+                                                    <Label.FormattedText>
+                                                        <FormattedString>
+                                                            <FormattedString.Spans>
+                                                                <Span Text="Weight used: "/>
+                                                                <Span Text="{Binding Weight.Weight}"/>
+                                                                <Span Text="KG"/>
+                                                            </FormattedString.Spans>
+                                                        </FormattedString>
+                                                    </Label.FormattedText>
+                                                </Label>
                                             </VerticalStackLayout>
                                         </Border>
                                     </DataTemplate>
                                 </CollectionView.ItemTemplate>
                             </CollectionView>
-                            
+
                             <Label Margin="0, 20, 0, 0">
                                 <Label.FormattedText>
                                     <FormattedString>
@@ -326,12 +363,9 @@
             <VerticalStackLayout Spacing="10">
                 <ScrollView>
                     <HorizontalStackLayout Spacing="5">
-                        <Button Clicked="OnWeightEdited" Text="-1.25"/>
                         <Button Clicked="OnWeightEdited" Text="-2.5"/>
                         <Button Clicked="OnWeightEdited" Text="-5"/>
                         <Button Clicked="OnWeightEdited" Text="-10"/>
-                        <Button Clicked="OnWeightEdited" Text="-15"/>
-                        <Button Clicked="OnWeightEdited" Text="-20"/>
                     </HorizontalStackLayout>
                 </ScrollView>
 
@@ -339,12 +373,9 @@
 
                 <ScrollView HorizontalScrollBarVisibility="Always">
                     <HorizontalStackLayout Spacing="5" HorizontalOptions="FillAndExpand">
-                        <Button Clicked="OnWeightEdited" Text="+1.25"/>
                         <Button Clicked="OnWeightEdited" Text="+2.5"/>
                         <Button Clicked="OnWeightEdited" Text="+5"/>
                         <Button Clicked="OnWeightEdited" Text="+10"/>
-                        <Button Clicked="OnWeightEdited" Text="+15"/>
-                        <Button Clicked="OnWeightEdited" Text="+20"/>
                     </HorizontalStackLayout>
                 </ScrollView>
 
@@ -361,14 +392,14 @@
             <Grid WidthRequest="300"
                   HeightRequest="300"
                   Background="Transparent">
-                
+
                 <Border StrokeShape="RoundRectangle 1000"
                         Stroke="Black"
                         WidthRequest="90"
                         HeightRequest="90"
                         x:Name="innerCircle"
                         Scale="2.75">
-                    
+
                     <Border.Background>
                         <RadialGradientBrush>
                             <RadialGradientBrush.GradientStops>
@@ -378,7 +409,7 @@
                         </RadialGradientBrush>
                     </Border.Background>
                 </Border>
-                
+
                 <Button Clicked="OnTimerToggled" BackgroundColor="Transparent" CornerRadius="1000"/>
 
                 <Label Text="0" 
@@ -387,6 +418,67 @@
                        FontSize="90"
                        x:Name="timerLabel"/>
             </Grid>
+        </Grid>
+
+        <Grid BackgroundColor="#181818" 
+              IsVisible="False"
+              x:Name="finishedSetDialogWrapper"
+              x:DataType="Models:FinishedSetDisplay">
+
+            <Border HorizontalOptions="Fill" VerticalOptions="Start" Margin="15, 10, 15, 10">
+                <VerticalStackLayout>
+                    <Label FontSize="Title" HorizontalTextAlignment="Center">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <FormattedString.Spans>
+                                    <Span Text="Time: "/>
+                                    <Span Text="{Binding Time}"/>
+                                    <Span Text="s!"/>
+                                </FormattedString.Spans>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+
+                    <Border HorizontalOptions="Fill"
+                            HeightRequest="50"
+                            StrokeShape="RoundRectangle 25, 25, 25, 25"
+                            Grid.Column="1"
+                            Margin="0, 10, 0, 0" 
+                            WidthRequest="325">
+
+                        <HorizontalStackLayout HorizontalOptions="Center">
+                            <Label FontSize="Subtitle" VerticalTextAlignment="Center" Text="Completed reps: "/>
+                            <Entry FontSize="Subtitle" VerticalTextAlignment="Center" x:Name="completedRepsEntry" />
+                        </HorizontalStackLayout>
+                    </Border>
+
+                    <Border HorizontalOptions="Fill"
+                            HeightRequest="50"
+                            StrokeShape="RoundRectangle 25, 25, 25, 25"
+                            Grid.Column="1"
+                            Margin="0, 10, 0, 10" 
+                            WidthRequest="325">
+
+                        <Grid>
+                            <Label HorizontalTextAlignment="Center" VerticalTextAlignment="Center">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="{Binding Weight.Weight}"/>
+                                        <Span Text=" KG"/>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+
+                            <Button BackgroundColor="Transparent" Clicked="OnWeightClicked" BindingContext="{Binding Weight}"/>
+                        </Grid>
+                    </Border>
+
+                    <Grid ColumnDefinitions=".5*, .5*" ColumnSpacing="15" Margin="15">
+                        <Button Text="Back" Clicked="OnExitFinishedSetDialog"/>
+                        <Button Text="Continue" Grid.Column="1" Clicked="OnStartNextSetPressed"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
         </Grid>
     </Grid>
 </ContentPage>
