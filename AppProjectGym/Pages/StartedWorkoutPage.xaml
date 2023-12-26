@@ -37,6 +37,7 @@
 
         <ValueConverters:IsNotNullConverter x:Key="IsNotNull"/>
         <ValueConverters:IsNot0Converter x:Key="IsNot0"/>
+        <ValueConverters:Is0Converter x:Key="Is0"/>
     </ContentPage.Resources>
 
     <Grid>
@@ -66,10 +67,10 @@
                                     </Border>
 
                                     <Label Text="{Binding WorkoutSet.Set.Exercise.Exercise.Name}"
-                                       HorizontalTextAlignment="Center" 
-                                       FontSize="Subtitle" 
-                                       FontAttributes="Bold"
-                                       Margin="5"/>
+                                           HorizontalTextAlignment="Center" 
+                                           FontSize="Subtitle" 
+                                           FontAttributes="Bold"
+                                           Margin="5"/>
 
                                     <Grid ColumnDefinitions=".5*, .5*" ColumnSpacing="10">
                                         <HorizontalStackLayout>
@@ -275,64 +276,56 @@
                                 </VerticalStackLayout>
                             </VerticalStackLayout>
 
-                            <CollectionView ItemsSource="{Binding FinishedSets}">
+                            <CollectionView ItemsSource="{Binding FinishedSets}" Margin="0, 15, 0, 0">
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate x:DataType="Models:FinishedSetDisplay">
-                                        <Border IsVisible="{Binding Time, Converter={StaticResource IsNot0}}"
-                                                StrokeShape="RoundRectangle 10"
+                                        <Border StrokeShape="RoundRectangle 10"
                                                 Margin="0, 10, 0, 10"
                                                 Padding="10">
 
-                                            <VerticalStackLayout>
-                                                <Label>
-                                                    <Label.FormattedText>
-                                                        <FormattedString>
-                                                            <FormattedString.Spans>
-                                                                <Span Text="Time spent: "/>
-                                                                <Span Text="{Binding Time}"/>
-                                                            </FormattedString.Spans>
-                                                        </FormattedString>
-                                                    </Label.FormattedText>
-                                                </Label>
+                                            <Grid>
+                                                <VerticalStackLayout IsVisible="{Binding Time, Converter={StaticResource IsNot0}}">
+                                                    <Label>
+                                                        <Label.FormattedText>
+                                                            <FormattedString>
+                                                                <FormattedString.Spans>
+                                                                    <Span Text="Time spent: "/>
+                                                                    <Span Text="{Binding Time}"/>
+                                                                </FormattedString.Spans>
+                                                            </FormattedString>
+                                                        </Label.FormattedText>
+                                                    </Label>
 
-                                                <Label>
-                                                    <Label.FormattedText>
-                                                        <FormattedString>
-                                                            <FormattedString.Spans>
-                                                                <Span Text="Completed reps: "/>
-                                                                <Span Text="{Binding FinishedReps}"/>
-                                                            </FormattedString.Spans>
-                                                        </FormattedString>
-                                                    </Label.FormattedText>
-                                                </Label>
+                                                    <Label>
+                                                        <Label.FormattedText>
+                                                            <FormattedString>
+                                                                <FormattedString.Spans>
+                                                                    <Span Text="Completed reps: "/>
+                                                                    <Span Text="{Binding FinishedReps}"/>
+                                                                </FormattedString.Spans>
+                                                            </FormattedString>
+                                                        </Label.FormattedText>
+                                                    </Label>
 
-                                                <Label>
-                                                    <Label.FormattedText>
-                                                        <FormattedString>
-                                                            <FormattedString.Spans>
-                                                                <Span Text="Weight used: "/>
-                                                                <Span Text="{Binding Weight.Weight}"/>
-                                                                <Span Text="KG"/>
-                                                            </FormattedString.Spans>
-                                                        </FormattedString>
-                                                    </Label.FormattedText>
-                                                </Label>
-                                            </VerticalStackLayout>
+                                                    <Label>
+                                                        <Label.FormattedText>
+                                                            <FormattedString>
+                                                                <FormattedString.Spans>
+                                                                    <Span Text="Weight used: "/>
+                                                                    <Span Text="{Binding Weight.Weight}"/>
+                                                                    <Span Text="KG"/>
+                                                                </FormattedString.Spans>
+                                                            </FormattedString>
+                                                        </Label.FormattedText>
+                                                    </Label>
+                                                </VerticalStackLayout>
+
+                                                <Label Text="Not Yet Attempted" IsVisible="{Binding Time, Converter={StaticResource Is0}}"/>
+                                            </Grid>
                                         </Border>
                                     </DataTemplate>
                                 </CollectionView.ItemTemplate>
                             </CollectionView>
-
-                            <Label Margin="0, 20, 0, 0">
-                                <Label.FormattedText>
-                                    <FormattedString>
-                                        <FormattedString.Spans>
-                                            <Span Text="Target sets: "/>
-                                            <Span Text="{Binding WorkoutSet.TargetSets}"/>
-                                        </FormattedString.Spans>
-                                    </FormattedString>
-                                </Label.FormattedText>
-                            </Label>
 
                             <Button Text="Start" Margin="10" Clicked="OnSetStarted"/>
                         </VerticalStackLayout>
@@ -383,41 +376,63 @@
             </VerticalStackLayout>
         </Border>
 
-        <Grid BackgroundColor="#181818" IsVisible="False" x:Name="timerWrapper">
+        <Grid BackgroundColor="#181818" IsVisible="False" x:Name="timerWrapper" RowDefinitions="Auto, *, Auto">
+            <VerticalStackLayout Grid.Column="0" Spacing="5" Margin="10">
+                <Label HorizontalTextAlignment="Center" 
+                       Text="Exercise name" 
+                       FontSize="Title" />
+
+                <Label HorizontalOptions="Center"
+                   Text="Aim for above X reps"/>
+
+                <Label HorizontalOptions="Center"
+                   Text="Weight you used last time: X KG"/>
+            </VerticalStackLayout>
+
             <Border WidthRequest="300"
                     HeightRequest="300" 
                     StrokeShape="RoundRectangle 1000"
-                    Background="Black"/>
+                    Background="Black"
+                    Grid.Row="1"
+                    VerticalOptions="Start"
+                    Margin="50">
 
-            <Grid WidthRequest="300"
+                <Grid WidthRequest="300"
                   HeightRequest="300"
                   Background="Transparent">
 
-                <Border StrokeShape="RoundRectangle 1000"
+                    <Border StrokeShape="RoundRectangle 1000"
                         Stroke="Black"
                         WidthRequest="90"
                         HeightRequest="90"
                         x:Name="innerCircle"
                         Scale="2.75">
 
-                    <Border.Background>
-                        <RadialGradientBrush>
-                            <RadialGradientBrush.GradientStops>
-                                <GradientStop Color="CadetBlue" Offset="0"/>
-                                <GradientStop Color="Black" Offset="1"/>
-                            </RadialGradientBrush.GradientStops>
-                        </RadialGradientBrush>
-                    </Border.Background>
-                </Border>
+                        <Border.Background>
+                            <RadialGradientBrush>
+                                <RadialGradientBrush.GradientStops>
+                                    <GradientStop Color="CadetBlue" Offset="0"/>
+                                    <GradientStop Color="Black" Offset="1"/>
+                                </RadialGradientBrush.GradientStops>
+                            </RadialGradientBrush>
+                        </Border.Background>
+                    </Border>
 
-                <Button Clicked="OnTimerToggled" BackgroundColor="Transparent" CornerRadius="1000"/>
+                    <Button Clicked="OnTimerToggled" BackgroundColor="Transparent" CornerRadius="1000"/>
 
-                <Label Text="0" 
+                    <Label Text="0" 
                        VerticalTextAlignment="Center"
                        HorizontalTextAlignment="Center"
                        FontSize="90"
                        x:Name="timerLabel"/>
-            </Grid>
+                </Grid>
+            </Border>
+
+            <Button Grid.Row="2" 
+                    Text="Cancel" 
+                    Margin="25, 10, 25, 30" 
+                    CornerRadius="12" 
+                    Clicked="Button_Clicked"/>
         </Grid>
 
         <Grid BackgroundColor="#181818" 

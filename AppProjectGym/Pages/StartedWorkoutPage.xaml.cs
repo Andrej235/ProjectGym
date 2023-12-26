@@ -123,74 +123,24 @@ namespace AppProjectGym.Pages
             if (sender is not Button button)
                 return;
 
-            if (button.BindingContext is not SetDisplay setDisplay)
+            PersonalExerciseWeight selectedWeight = null;
+            selectedWeight = button.BindingContext as PersonalExerciseWeight;
+            if (selectedWeight is null)
             {
-                if (button.BindingContext is not PersonalExerciseWeight selectedWeight)
+                if (button.BindingContext is not SetDisplay setDisplay)
                     return;
 
-                editWeightHandler = weightDif =>
-                {
-                    var newWeight = selectedWeight.Weight + weightDif;
-                    if (newWeight < 0)
-                        return;
-
-                    weightEditorEntry.Text = newWeight.ToString();
-                    selectedWeight.Weight = newWeight;
-                };
-
-                createNewWeightHandler = async weight =>
-                {
-                    PersonalExerciseWeight newWeight = new()
-                    {
-                        Weight = weight,
-                        ExerciseId = selectedWeight.ExerciseId,
-                        UserId = ClientInfo.User.Id,
-                    };
-
-                    if (await createService.Add(newWeight, "weight") == default)
-                        return;
-
-                    var setsUsingWeight = WorkoutSetDisplays.Where(x => x.WorkoutSet.Set.Weight.ExerciseId == newWeight.ExerciseId);
-                    var supersetsUsingWeight = WorkoutSetDisplays.Where(x => x.WorkoutSet.Superset?.Weight.ExerciseId == newWeight.ExerciseId);
-
-                    foreach (var set in setsUsingWeight)
-                        set.WorkoutSet.Set.Weight = newWeight;
-
-                    foreach (var superset in supersetsUsingWeight)
-                        superset.WorkoutSet.Superset.Weight = newWeight;
-
-                    foreach (var workoutSetDisplay in WorkoutSetDisplays)
-                    {
-                        if (setsUsingWeight.Any(x => x.WorkoutSet.Set.Set.Id == workoutSetDisplay.WorkoutSet.Set.Set.Id))
-                        {
-                            workoutSetDisplay.WorkoutSet.Set.Weight = newWeight;
-                            SelectedWorkoutSet = workoutSetDisplay.DeepCopy();
-                            break;
-                        }
-                        else if (setsUsingWeight.Any(x => x.WorkoutSet.Superset?.Set.Id == workoutSetDisplay.WorkoutSet.Superset?.Set.Id))
-                        {
-                            workoutSetDisplay.WorkoutSet.Set.Weight = newWeight;
-                            SelectedWorkoutSet = workoutSetDisplay.DeepCopy();
-                            break;
-                        }
-                    }
-
-                    CloseWeighEditorDialog();
-                    RefreshSetCollection();
-                };
-
-                OpenWeighEditorDialog(selectedWeight.Weight);
-                return;
+                selectedWeight = setDisplay.Weight;
             }
 
             editWeightHandler = weightDif =>
             {
-                var newWeight = setDisplay.Weight.Weight + weightDif;
+                var newWeight = selectedWeight.Weight + weightDif;
                 if (newWeight < 0)
                     return;
 
                 weightEditorEntry.Text = newWeight.ToString();
-                setDisplay.Weight.Weight = newWeight;
+                selectedWeight.Weight = newWeight;
             };
 
             createNewWeightHandler = async weight =>
@@ -198,36 +148,39 @@ namespace AppProjectGym.Pages
                 PersonalExerciseWeight newWeight = new()
                 {
                     Weight = weight,
-                    ExerciseId = setDisplay.Exercise.Exercise.Id,
+                    ExerciseId = selectedWeight.ExerciseId,
                     UserId = ClientInfo.User.Id,
                 };
 
                 if (await createService.Add(newWeight, "weight") == default)
                     return;
 
-                setDisplay.Weight = newWeight;
+                var setsUsingWeight = WorkoutSetDisplays.Where(x => x.WorkoutSet.Set.Weight.ExerciseId == newWeight.ExerciseId).Select(x => x.WorkoutSet.Set);
+                var supersetsUsingWeight = WorkoutSetDisplays.Where(x => x.WorkoutSet.Superset?.Weight.ExerciseId == newWeight.ExerciseId).Select(x => x.WorkoutSet.Superset);
 
-                foreach (var workoutSetDisplay in WorkoutSetDisplays)
+                foreach (var set in setsUsingWeight)
+                    set.Weight = newWeight;
+
+                foreach (var superset in supersetsUsingWeight)
+                    superset.Weight = newWeight;
+
+                if (SelectedWorkoutSet.WorkoutSet.Set.Weight.ExerciseId == newWeight.ExerciseId)
                 {
-                    if (workoutSetDisplay.WorkoutSet.Set.Set.Id == setDisplay.Set.Id)
-                    {
-                        workoutSetDisplay.WorkoutSet.Set.Weight = setDisplay.Weight;
-                        SelectedWorkoutSet = workoutSetDisplay.DeepCopy();
-                        break;
-                    }
-                    else if (workoutSetDisplay.WorkoutSet.Superset?.Set.Id == setDisplay.Set.Id)
-                    {
-                        workoutSetDisplay.WorkoutSet.Superset.Weight = setDisplay.Weight;
-                        SelectedWorkoutSet = workoutSetDisplay.DeepCopy();
-                        break;
-                    }
+                    SelectedWorkoutSet.WorkoutSet.Set.Weight = newWeight;
+                    SelectedWorkoutSet = selectedWorkoutSet.DeepCopy();
+                }
+
+                if (SelectedWorkoutSet.WorkoutSet.Superset.Weight.ExerciseId == newWeight.ExerciseId)
+                {
+                    SelectedWorkoutSet.WorkoutSet.Superset.Weight = newWeight;
+                    SelectedWorkoutSet = selectedWorkoutSet.DeepCopy();
                 }
 
                 CloseWeighEditorDialog();
                 RefreshSetCollection();
             };
 
-            OpenWeighEditorDialog(setDisplay.Weight.Weight);
+            OpenWeighEditorDialog(selectedWeight.Weight);
         }
 
         private void OnWeightEdited(object sender, EventArgs e)
@@ -325,7 +278,7 @@ namespace AppProjectGym.Pages
                 return;
 
             finishedSet.Time = time;
-            finishedSet.Weight = activeWorkoutSet.WorkoutSet.Set.Weight;
+            finishedSet.Weight = activeWorkoutSet.WorkoutSet.Set.Weight.DeepCopy();
 
             finishedSetDialogWrapper.BindingContext = null;
             finishedSetDialogWrapper.BindingContext = finishedSet;
@@ -401,7 +354,11 @@ namespace AppProjectGym.Pages
 
         private void CloseTimer() => timerWrapper.IsVisible = false;
 
-        private void OpenFinishedSetDialog() => finishedSetDialogWrapper.IsVisible = true;
+        private void OpenFinishedSetDialog()
+        {
+            completedRepsEntry.Text = "0";
+            finishedSetDialogWrapper.IsVisible = true;
+        }
 
         private void CloseFinishedSetDialog() => finishedSetDialogWrapper.IsVisible = false;
 
@@ -416,14 +373,25 @@ namespace AppProjectGym.Pages
             CloseTimer();
             RefreshSetCollection();
 
-            var workoutSet = WorkoutSetDisplays.First(x => x.WorkoutSet.Id == SelectedWorkoutSet.WorkoutSet.Id);
             SelectedWorkoutSet = null;
-            SelectedWorkoutSet = workoutSet;
+            SelectedWorkoutSet = activeWorkoutSet;
+
+            activeWorkoutSet = null;
+            activeFinishedSet = null;
         }
 
         private void OnStartNextSetPressed(object sender, EventArgs e)
         {
 
+        }
+
+        private void Button_Clicked(object sender, EventArgs e)
+        {
+            CloseTimer();
+            innerCircle.TranslateTo(0, 0, 100);
+            innerCircle.ScaleTo(2.75, 500, Easing.SpringOut);
+            activeWorkoutSet = null;
+            activeFinishedSet = null;
         }
     }
 }
