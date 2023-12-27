@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProjectGym.Services.DatabaseSerialization.Exceptions;
+using ProjectGym.Utilities;
 using System.Dynamic;
 using System.Reflection;
 using System.Text.Json;
@@ -123,6 +124,12 @@ namespace ProjectGym.Services.DatabaseSerialization
                         continue;
                     }
 
+                    if (IsNumericType(entityPropertyInfo.PropertyType))
+                    {
+                        entityPropertyInfo.SetValue(newEntityInstance, Convert.ChangeType(propertyValue, entityPropertyInfo.PropertyType));
+                        continue;
+                    }
+
                     entityPropertyInfo.SetValue(newEntityInstance, propertyValue);
                 }
 
@@ -146,34 +153,57 @@ namespace ProjectGym.Services.DatabaseSerialization
 
         private static object ProcessJSON(JsonElement jsonElement)
         {
-            switch (jsonElement.ValueKind)
+            try
             {
-                case JsonValueKind.Undefined:
-                    throw new NullReferenceException();
-                case JsonValueKind.Object:
-                    dynamic entity = new ExpandoObject();
-                    foreach (JsonProperty property in jsonElement.EnumerateObject())
-                        ((IDictionary<string, object>)entity).Add(property.Name, ProcessJSON(property.Value)); //Replace property.Value with ProcessJSONProperty(property.Value) for fully deciphered objects
+                switch (jsonElement.ValueKind)
+                {
+                    case JsonValueKind.Undefined:
+                        throw new NullReferenceException();
+                    case JsonValueKind.Object:
+                        dynamic entity = new ExpandoObject();
+                        foreach (JsonProperty property in jsonElement.EnumerateObject())
+                            ((IDictionary<string, object>)entity).Add(property.Name, ProcessJSON(property.Value));
 
-                    return entity;
-                case JsonValueKind.Array:
-                    List<dynamic> expandoList = [];
-                    expandoList.AddRange(jsonElement.EnumerateArray().Select(ProcessJSON));
+                        return entity;
+                    case JsonValueKind.Array:
+                        List<dynamic> expandoList = [];
+                        expandoList.AddRange(jsonElement.EnumerateArray().Select(ProcessJSON));
 
-                    return expandoList;
-                case JsonValueKind.String:
-                    return jsonElement.GetString() ?? "";
-                case JsonValueKind.Number:
-                    return jsonElement.GetInt32();
-                case JsonValueKind.True:
-                    return true;
-                case JsonValueKind.False:
-                    return false;
-                case JsonValueKind.Null:
-                    throw new NullReferenceException();
-                default:
-                    throw new NullReferenceException();
+                        return expandoList;
+                    case JsonValueKind.String:
+                        return jsonElement.GetString() ?? "";
+                    case JsonValueKind.Number:
+                        return jsonElement.TryGetDouble(out double doubleValue) ? doubleValue : 0d;
+                    case JsonValueKind.True:
+                        return true;
+                    case JsonValueKind.False:
+                        return false;
+                    case JsonValueKind.Null:
+                        throw new NullReferenceException();
+                    default:
+                        throw new NullReferenceException();
+                }
+
             }
+            catch (Exception ex)
+            {
+                LogDebugger.LogError(ex);
+                throw;
+            }
+        }
+
+        private static bool IsNumericType(Type type)
+        {
+            if (type.IsPrimitive)
+            {
+                // Check for specific numeric types
+                return type == typeof(int) ||
+                       type == typeof(float) ||
+                       type == typeof(double) ||
+                       type == typeof(decimal);
+            }
+
+            return false;
         }
     }
 }
