@@ -47,7 +47,7 @@
                                 ItemsSource="{Binding WorkoutSetDisplays}" 
                                 ItemsLayout="HorizontalList"
                                 SelectionMode="Single"
-                                SelectionChanged="OnSetSelected">
+                                SelectionChanged="OnWorkoutSetDisplaySelected">
 
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="Models:StartedWorkout_SetDisplay">
@@ -356,9 +356,9 @@
 
             <VerticalStackLayout Spacing="10">
                 <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
-                    <Button Clicked="OnWeightEdited" Text="+2.5" FontSize="Subtitle"/>
-                    <Button Clicked="OnWeightEdited" Text="+5" FontSize="Subtitle"/>
-                    <Button Clicked="OnWeightEdited" Text="+10" FontSize="Subtitle"/>
+                    <Button Clicked="OnWeightEditedUsingButtons" Text="+2.5" FontSize="Subtitle"/>
+                    <Button Clicked="OnWeightEditedUsingButtons" Text="+5" FontSize="Subtitle"/>
+                    <Button Clicked="OnWeightEditedUsingButtons" Text="+10" FontSize="Subtitle"/>
                 </HorizontalStackLayout>
 
                 <Entry x:Name="weightEditorEntry" 
@@ -368,9 +368,9 @@
                        FontSize="Title"/>
 
                 <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
-                    <Button Clicked="OnWeightEdited" Text="-2.5" FontSize="Subtitle"/>
-                    <Button Clicked="OnWeightEdited" Text="-5" FontSize="Subtitle"/>
-                    <Button Clicked="OnWeightEdited" Text="-10" FontSize="Subtitle"/>
+                    <Button Clicked="OnWeightEditedUsingButtons" Text="-2.5" FontSize="Subtitle"/>
+                    <Button Clicked="OnWeightEditedUsingButtons" Text="-5" FontSize="Subtitle"/>
+                    <Button Clicked="OnWeightEditedUsingButtons" Text="-10" FontSize="Subtitle"/>
                 </HorizontalStackLayout>
 
                 <Button Clicked="OnWeightCreate"
@@ -394,7 +394,7 @@
             <VerticalStackLayout>
                 <Label Text="How many reps did you do?"/>
                 <Entry x:Name="completedRepsForcedInputDialogEntry"/>
-                <Button Text="Save" Clicked="OnEnterCompletedRepsForcedDialog"/>
+                <Button Text="Save" Clicked="OnSubmitCompletedRepsForcedDialog"/>
             </VerticalStackLayout>
         </Border>
 
@@ -534,8 +534,8 @@
                     </Border>
 
                     <Grid ColumnDefinitions=".5*, .5*" ColumnSpacing="15" Margin="15">
-                        <Button Text="Back" Clicked="OnExitFinishedSetDialog"/>
-                        <Button Text="Continue" Grid.Column="1" Clicked="OnStartNextSetPressed"/>
+                        <Button Text="Back" Clicked="OnBackButtonPressed_FinishedSetDialog"/>
+                        <Button Text="Continue" Grid.Column="1" Clicked="OnStartNextSetButtonPressed"/>
                     </Grid>
                 </VerticalStackLayout>
             </Border>

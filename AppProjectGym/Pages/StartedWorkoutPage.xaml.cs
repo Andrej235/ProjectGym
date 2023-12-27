@@ -4,24 +4,16 @@ using AppProjectGym.Services.Create;
 using AppProjectGym.Services.Mapping;
 using AppProjectGym.Services.Read;
 using AppProjectGym.Utilities;
+using AppProjectGym.Utilities.Models;
 
 namespace AppProjectGym.Pages
 {
     public partial class StartedWorkoutPage : ContentPage, IQueryAttributable
     {
-        private delegate void EditWeightHandler(float weightDifference);
-        private EditWeightHandler editWeightHandler;
-
-        private delegate Task CreateNewWeightHandler(float newWeight);
-        private CreateNewWeightHandler createNewWeightHandler;
-
-        //private delegate void FinishedSetHandler(FinishedSetDisplay finishedSet);
-        //private FinishedSetHandler finishedSetHandler;
-
         private readonly IReadService readService;
         private readonly ICreateService createService;
         private readonly IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper;
-        private readonly IEntityDisplayMapper<WorkoutSet, WorkoutSetDisplay> workoutSetDisplayMapper;
+        private readonly IEntityDisplayMapper<WorkoutSet, StartedWorkout_SetDisplay> startedWorkoutSetDisplayMapper;
 
         public List<StartedWorkout_SetDisplay> WorkoutSetDisplays
         {
@@ -56,16 +48,15 @@ namespace AppProjectGym.Pages
         }
         private StartedWorkout_SetDisplay selectedWorkoutSet;
 
-
-
-        public StartedWorkoutPage(IReadService readService, IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper, IEntityDisplayMapper<WorkoutSet, WorkoutSetDisplay> workoutSetDisplayMapper, ICreateService createService)
+        public StartedWorkoutPage(IReadService readService, IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper, IEntityDisplayMapper<WorkoutSet, StartedWorkout_SetDisplay> startedWorkoutSetDisplayMapper, ICreateService createService)
         {
             InitializeComponent();
+            BindingContext = this;
+
             this.readService = readService;
             this.createService = createService;
-            BindingContext = this;
             this.exerciseDisplayMapper = exerciseDisplayMapper;
-            this.workoutSetDisplayMapper = workoutSetDisplayMapper;
+            this.startedWorkoutSetDisplayMapper = startedWorkoutSetDisplayMapper;
         }
 
         public async void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -77,46 +68,47 @@ namespace AppProjectGym.Pages
             WorkoutSetDisplays = [];
 
             var workoutSets = await readService.Get<List<WorkoutSet>>("none", "workoutset", $"workout={workout.Id}");
-            WorkoutSetDisplays.AddRange(await Task.WhenAll(workoutSets.Select(async workoutSet => await MapToStartedWorkoutSets(workoutSet))));
+            WorkoutSetDisplays.AddRange(await Task.WhenAll(workoutSets.Select(async workoutSet => await startedWorkoutSetDisplayMapper.Map(workoutSet))));
 
             RefreshSetCollection();
             SelectedWorkoutSet = null;
         }
-
-        private async Task<StartedWorkout_SetDisplay> MapToStartedWorkoutSets(WorkoutSet workoutSet)
-        {
-            var workoutSetDisplay = await workoutSetDisplayMapper.Map(workoutSet);
-            var finishedSets = new List<FinishedSetDisplay>();
-            for (int i = 0; i < workoutSet.TargetSets; i++)
-            {
-                finishedSets.Add(new()
-                {
-                    FinishedReps = 0,
-                    Time = 0,
-                    Weight = null
-                });
-            }
-
-            return new StartedWorkout_SetDisplay()
-            {
-                WorkoutSet = workoutSetDisplay,
-                FinishedSets = finishedSets
-            };
-        }
-
-        private void RefreshSetCollection()
-        {
-            setCollection.ItemsSource = null;
-            setCollection.ItemsSource = WorkoutSetDisplays;
-        }
-
-        private void OnSetSelected(object sender, SelectionChangedEventArgs e)
+        
+        private void OnWorkoutSetDisplaySelected(object sender, SelectionChangedEventArgs e)
         {
             if (e.CurrentSelection[0] is not StartedWorkout_SetDisplay workoutSetDisplay)
                 return;
 
             SelectedWorkoutSet = workoutSetDisplay;
         }
+
+        #region Weight
+        private delegate void EditWeightHandler(float weightDifference);
+        private EditWeightHandler editWeightHandler;
+
+        private delegate Task CreateNewWeightHandler(float newWeight);
+        private CreateNewWeightHandler createNewWeightHandler;
+
+        private void OpenWeighEditorDialog(float currentWeight = 0)
+        {
+            weightEditorDialogWrapper.IsVisible = true;
+            whiteOverlay.IsVisible = true;
+            weightEditorEntry.Text = currentWeight.ToString();
+        }
+
+        private void CloseWeighEditorDialog()
+        {
+            weightEditorDialogWrapper.IsVisible = false;
+            whiteOverlay.IsVisible = false;
+        }
+
+        private void OnWhiteOverlayClicked(object sender, EventArgs e)
+        {
+            if (weightEditorDialogWrapper.IsVisible)
+                CloseWeighEditorDialog();
+        }
+
+
 
         private void OnWeightClicked(object sender, EventArgs e)
         {
@@ -190,43 +182,12 @@ namespace AppProjectGym.Pages
             OpenWeighEditorDialog(selectedWeight.Weight);
         }
 
-        private void OnWeightEdited(object sender, EventArgs e)
+        private void OnWeightEditedUsingButtons(object sender, EventArgs e)
         {
             if (sender is not Button button || !float.TryParse(button.Text, out float weightDif))
                 return;
 
             editWeightHandler(weightDif);
-        }
-
-        private void OpenWeighEditorDialog(float currentWeight = 0)
-        {
-            weightEditorDialogWrapper.IsVisible = true;
-            whiteOverlay.IsVisible = true;
-            weightEditorEntry.Text = currentWeight.ToString();
-        }
-
-        private void CloseWeighEditorDialog()
-        {
-            weightEditorDialogWrapper.IsVisible = false;
-            whiteOverlay.IsVisible = false;
-        }
-
-        private void OpenRepsForcedInputDialog()
-        {
-            completedRepsForcedInputDialogWrapper.IsVisible = true;
-            whiteOverlay.IsVisible = true;
-        }
-
-        private void CloseRepsForcedInputDialog()
-        {
-            completedRepsForcedInputDialogWrapper.IsVisible = false;
-            whiteOverlay.IsVisible = false;
-        }
-
-        private void OnWhiteOverlayClicked(object sender, EventArgs e)
-        {
-            if (weightEditorDialogWrapper.IsVisible)
-                CloseWeighEditorDialog();
         }
 
         private async void OnWeightCreate(object sender, EventArgs e)
@@ -242,9 +203,50 @@ namespace AppProjectGym.Pages
             {
                 LogDebugger.LogError(ex);
             }
+        } 
+        #endregion
+
+        #region Started set
+        StartedWorkout_SetDisplay activeWorkoutSet = null;
+        FinishedSetDisplay activeFinishedSet = null;
+
+        private void OnSetStarted(object sender, EventArgs e)
+        {
+            if (sender is not Button button || button.BindingContext is not StartedWorkout_SetDisplay startedWorkout_SetDisplay)
+                return;
+
+            activeWorkoutSet = startedWorkout_SetDisplay;
+            activeFinishedSet = startedWorkout_SetDisplay.FinishedSets.FirstOrDefault(x => x.Time == 0);
+            if (activeFinishedSet is null)
+                return;
+
+            OpenTimer(startedWorkout_SetDisplay.WorkoutSet.Set);
         }
 
+        private void OnCancelStartedSet(object sender, EventArgs e)
+        {
+            CloseTimer();
+            innerCircle.TranslateTo(0, 0, 100);
+            innerCircle.ScaleTo(2.75, 500, Easing.SpringOut);
+            activeWorkoutSet = null;
+            activeFinishedSet = null;
+        }
+
+        #region Timer
         private bool isDoingASet = false;
+
+        private void OpenTimer(SetDisplay setDisplay)
+        {
+            timerWrapper.BindingContext = setDisplay;
+            timerWrapper.IsVisible = true;
+        }
+
+        private void CloseTimer()
+        {
+            timerWrapper.IsVisible = false;
+            timerWrapper.BindingContext = null;
+        }
+
         private void OnTimerToggled(object sender, EventArgs e)
         {
             isDoingASet = !isDoingASet;
@@ -307,85 +309,9 @@ namespace AppProjectGym.Pages
             finishedSetDialogWrapper.BindingContext = finishedSet;
             OpenFinishedSetDialog();
         }
+        #endregion
 
-        public class Vector2(float x, float y)
-        {
-            public float X { get; private set; } = x;
-            public float Y { get; private set; } = y;
-
-            public void Normalize()
-            {
-                float length = (float)Math.Sqrt(X * X + Y * Y);
-
-                if (length != 0)
-                {
-                    X /= length;
-                    Y /= length;
-                }
-            }
-
-            public void Rotate(float degrees)
-            {
-                float radians = (float)(degrees * Math.PI / 180.0);
-                float newX = X * (float)Math.Cos(radians) - Y * (float)Math.Sin(radians);
-                float newY = X * (float)Math.Sin(radians) + Y * (float)Math.Cos(radians);
-
-                X = newX;
-                Y = newY;
-            }
-
-            public static float GetRotationAngle(Vector2 vector1, Vector2 vector2)
-            {
-                float crossProduct = vector1.X * vector2.Y - vector1.Y * vector2.X;
-                float dotProduct = vector1.X * vector2.X + vector1.Y * vector2.Y;
-
-                float angleRadians = (float)Math.Atan2(crossProduct, dotProduct);
-                float angleDegrees = (float)(angleRadians * 180.0 / Math.PI);
-
-                return angleDegrees;
-            }
-            public float GetRotationAngle(Vector2 vector2) => GetRotationAngle(this, vector2);
-            public float GetRotationAngle()
-            {
-                var vector2 = new Vector2(0, -1);
-                vector2.Normalize();
-
-                return GetRotationAngle(this, vector2);
-            }
-
-            public float Magnitude => (float)Math.Sqrt(X * X + Y * Y);
-
-            public override string ToString() => $"({X}, {Y})";
-        }
-
-        StartedWorkout_SetDisplay activeWorkoutSet = null;
-        FinishedSetDisplay activeFinishedSet = null;
-
-        private void OnSetStarted(object sender, EventArgs e)
-        {
-            if (sender is not Button button || button.BindingContext is not StartedWorkout_SetDisplay startedWorkout_SetDisplay)
-                return;
-
-            activeWorkoutSet = startedWorkout_SetDisplay;
-            activeFinishedSet = startedWorkout_SetDisplay.FinishedSets.FirstOrDefault(x => x.Time == 0);
-            if (activeFinishedSet is null)
-                return;
-
-            OpenTimer(startedWorkout_SetDisplay.WorkoutSet.Set);
-        }
-
-        private void OpenTimer(SetDisplay setDisplay)
-        {
-            timerWrapper.BindingContext = setDisplay;
-            timerWrapper.IsVisible = true;
-        }
-
-        private void CloseTimer()
-        {
-            timerWrapper.IsVisible = false;
-            timerWrapper.BindingContext = null;
-        }
-
+        #region Finished set
         private void OpenFinishedSetDialog()
         {
             completedRepsEntry.Text = "";
@@ -394,7 +320,7 @@ namespace AppProjectGym.Pages
 
         private void CloseFinishedSetDialog() => finishedSetDialogWrapper.IsVisible = false;
 
-        private void OnExitFinishedSetDialog(object sender, EventArgs e)
+        private void OnBackButtonPressed_FinishedSetDialog(object sender, EventArgs e)
         {
             if (!int.TryParse(timerLabel.Text, out int time) || time <= 0)
                 return;
@@ -405,10 +331,15 @@ namespace AppProjectGym.Pages
                 return;
             }
 
-            SaveFinishedSet(completedReps);
+            SaveActiveFinishedSetChanges(completedReps);
         }
 
-        private void SaveFinishedSet(int completedReps)
+        private void OnStartNextSetButtonPressed(object sender, EventArgs e)
+        {
+
+        }
+
+        private void SaveActiveFinishedSetChanges(int completedReps)
         {
             activeFinishedSet.FinishedReps = completedReps;
 
@@ -423,43 +354,37 @@ namespace AppProjectGym.Pages
             activeFinishedSet = null;
         }
 
-        private void OnStartNextSetPressed(object sender, EventArgs e)
+        #region Forced reps dialog
+        private void OpenRepsForcedInputDialog()
         {
-
+            completedRepsForcedInputDialogWrapper.IsVisible = true;
+            whiteOverlay.IsVisible = true;
         }
 
-        private void OnCancelStartedSet(object sender, EventArgs e)
+        private void CloseRepsForcedInputDialog()
         {
-            CloseTimer();
-            innerCircle.TranslateTo(0, 0, 100);
-            innerCircle.ScaleTo(2.75, 500, Easing.SpringOut);
-            activeWorkoutSet = null;
-            activeFinishedSet = null;
+            completedRepsForcedInputDialogWrapper.IsVisible = false;
+            whiteOverlay.IsVisible = false;
         }
 
-        private void OnEnterCompletedRepsForcedDialog(object sender, EventArgs e)
+        private void OnSubmitCompletedRepsForcedDialog(object sender, EventArgs e)
         {
             if (!int.TryParse(completedRepsForcedInputDialogEntry.Text, out int reps))
                 return;
 
-            SaveFinishedSet(reps);
+            SaveActiveFinishedSetChanges(reps);
             CloseRepsForcedInputDialog();
         }
-    }
-}
+        #endregion
 
-namespace AppProjectGym.Models
-{
-    public class StartedWorkout_SetDisplay
-    {
-        public WorkoutSetDisplay WorkoutSet { get; set; }
-        public List<FinishedSetDisplay> FinishedSets { get; set; } //At the start make this have the correct number of sets (== WorkoutSet.TargetSets)
-    }
+        #endregion
 
-    public class FinishedSetDisplay
-    {
-        public int FinishedReps { get; set; }
-        public int Time { get; set; } //If this prop is 0 display not yet attempted
-        public PersonalExerciseWeight Weight { get; set; }
+        #endregion
+
+        private void RefreshSetCollection()
+        {
+            setCollection.ItemsSource = null;
+            setCollection.ItemsSource = WorkoutSetDisplays;
+        }
     }
 }

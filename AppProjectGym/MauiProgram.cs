@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Core;
 using AppProjectGym.Services.Read;
-using Image = AppProjectGym.Models.Image;
 using AppProjectGym.Services.Create;
 using AppProjectGym.Services.Update;
 using AppProjectGym.Services.Delete;
@@ -53,6 +52,7 @@ namespace AppProjectGym
 
             builder.Services.AddTransient<IEntityDisplayMapper<Exercise, ExerciseDisplay>, ExerciseDisplayMapper>();
             builder.Services.AddTransient<IEntityDisplayMapper<WorkoutSet, WorkoutSetDisplay>, WorkoutSetDisplayMapper>();
+            builder.Services.AddTransient<IEntityDisplayMapper<WorkoutSet, StartedWorkout_SetDisplay>, StartedWorkoutSetDisplayMapper>();
 
             builder.Services.AddTransient<HttpClient>();
             LoadUser();
