@@ -178,6 +178,13 @@ namespace AppProjectGym.Pages
 
                 CloseWeighEditorDialog();
                 RefreshSetCollection();
+
+                if (activeWorkoutSet is not null)
+                {
+                    activeFinishedSet.Weight = newWeight;
+                    finishedSetDialogWrapper.BindingContext = null;
+                    finishedSetDialogWrapper.BindingContext = activeFinishedSet;
+                }
             };
 
             OpenWeighEditorDialog(selectedWeight.Weight);
@@ -194,8 +201,8 @@ namespace AppProjectGym.Pages
         private void OpenWeighEditorDialog(float currentWeight = 0)
         {
             weightEditorDialogWrapper.IsVisible = true;
-            weightEditorEntry.Text = currentWeight.ToString();
             whiteOverlay.IsVisible = true;
+            weightEditorEntry.Text = currentWeight.ToString();
         }
 
         private void CloseWeighEditorDialog()
@@ -204,7 +211,23 @@ namespace AppProjectGym.Pages
             whiteOverlay.IsVisible = false;
         }
 
-        private void OnWhiteOverlayClicked(object sender, EventArgs e) => CloseWeighEditorDialog();
+        private void OpenRepsForcedInputDialog()
+        {
+            completedRepsForcedInputDialogWrapper.IsVisible = true;
+            whiteOverlay.IsVisible = true;
+        }
+
+        private void CloseRepsForcedInputDialog()
+        {
+            completedRepsForcedInputDialogWrapper.IsVisible = false;
+            whiteOverlay.IsVisible = false;
+        }
+
+        private void OnWhiteOverlayClicked(object sender, EventArgs e)
+        {
+            if (weightEditorDialogWrapper.IsVisible)
+                CloseWeighEditorDialog();
+        }
 
         private async void OnWeightCreate(object sender, EventArgs e)
         {
@@ -337,6 +360,7 @@ namespace AppProjectGym.Pages
 
         StartedWorkout_SetDisplay activeWorkoutSet = null;
         FinishedSetDisplay activeFinishedSet = null;
+
         private void OnSetStarted(object sender, EventArgs e)
         {
             if (sender is not Button button || button.BindingContext is not StartedWorkout_SetDisplay startedWorkout_SetDisplay)
@@ -347,16 +371,24 @@ namespace AppProjectGym.Pages
             if (activeFinishedSet is null)
                 return;
 
-            OpenTimer();
+            OpenTimer(startedWorkout_SetDisplay.WorkoutSet.Set);
         }
 
-        private void OpenTimer() => timerWrapper.IsVisible = true;
+        private void OpenTimer(SetDisplay setDisplay)
+        {
+            timerWrapper.BindingContext = setDisplay;
+            timerWrapper.IsVisible = true;
+        }
 
-        private void CloseTimer() => timerWrapper.IsVisible = false;
+        private void CloseTimer()
+        {
+            timerWrapper.IsVisible = false;
+            timerWrapper.BindingContext = null;
+        }
 
         private void OpenFinishedSetDialog()
         {
-            completedRepsEntry.Text = "0";
+            completedRepsEntry.Text = "";
             finishedSetDialogWrapper.IsVisible = true;
         }
 
@@ -364,9 +396,20 @@ namespace AppProjectGym.Pages
 
         private void OnExitFinishedSetDialog(object sender, EventArgs e)
         {
-            if (!int.TryParse(timerLabel.Text, out int time) || time <= 0 || !int.TryParse(completedRepsEntry.Text, out int completedReps) || completedReps <= 0)
+            if (!int.TryParse(timerLabel.Text, out int time) || time <= 0)
                 return;
 
+            if (!int.TryParse(completedRepsEntry.Text, out int completedReps) || completedReps <= 0)
+            {
+                OpenRepsForcedInputDialog();
+                return;
+            }
+
+            SaveFinishedSet(completedReps);
+        }
+
+        private void SaveFinishedSet(int completedReps)
+        {
             activeFinishedSet.FinishedReps = completedReps;
 
             CloseFinishedSetDialog();
@@ -385,13 +428,22 @@ namespace AppProjectGym.Pages
 
         }
 
-        private void Button_Clicked(object sender, EventArgs e)
+        private void OnCancelStartedSet(object sender, EventArgs e)
         {
             CloseTimer();
             innerCircle.TranslateTo(0, 0, 100);
             innerCircle.ScaleTo(2.75, 500, Easing.SpringOut);
             activeWorkoutSet = null;
             activeFinishedSet = null;
+        }
+
+        private void OnEnterCompletedRepsForcedDialog(object sender, EventArgs e)
+        {
+            if (!int.TryParse(completedRepsForcedInputDialogEntry.Text, out int reps))
+                return;
+
+            SaveFinishedSet(reps);
+            CloseRepsForcedInputDialog();
         }
     }
 }

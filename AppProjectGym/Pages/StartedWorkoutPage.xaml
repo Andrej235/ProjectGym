@@ -340,53 +340,98 @@
                 BackgroundColor="White"
                 Opacity="0.5" 
                 IsVisible="false"
+                ZIndex="9"
                 Clicked="OnWhiteOverlayClicked"/>
 
         <Border x:Name="weightEditorDialogWrapper"
-                    HorizontalOptions="Center" 
-                    VerticalOptions="Center" 
-                    BackgroundColor="#000" 
-                    Padding="25"
-                    StrokeShape="RoundRectangle 10"
-                    StrokeThickness="10"
-                    Stroke="White"
-                    ZIndex="10"
-                    IsVisible="false">
+                HorizontalOptions="Center" 
+                VerticalOptions="Center" 
+                BackgroundColor="#000" 
+                Padding="25"
+                StrokeShape="RoundRectangle 10"
+                StrokeThickness="10"
+                Stroke="White"
+                ZIndex="10"
+                IsVisible="false">
 
             <VerticalStackLayout Spacing="10">
-                <ScrollView>
-                    <HorizontalStackLayout Spacing="5">
-                        <Button Clicked="OnWeightEdited" Text="-2.5"/>
-                        <Button Clicked="OnWeightEdited" Text="-5"/>
-                        <Button Clicked="OnWeightEdited" Text="-10"/>
-                    </HorizontalStackLayout>
-                </ScrollView>
+                <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                    <Button Clicked="OnWeightEdited" Text="+2.5" FontSize="Subtitle"/>
+                    <Button Clicked="OnWeightEdited" Text="+5" FontSize="Subtitle"/>
+                    <Button Clicked="OnWeightEdited" Text="+10" FontSize="Subtitle"/>
+                </HorizontalStackLayout>
 
-                <Entry x:Name="weightEditorEntry" Text="0"/>
+                <Entry x:Name="weightEditorEntry" 
+                       Text="0"
+                       Placeholder="Weight you are using: "
+                       HorizontalTextAlignment="Center"
+                       FontSize="Title"/>
 
-                <ScrollView HorizontalScrollBarVisibility="Always">
-                    <HorizontalStackLayout Spacing="5" HorizontalOptions="FillAndExpand">
-                        <Button Clicked="OnWeightEdited" Text="+2.5"/>
-                        <Button Clicked="OnWeightEdited" Text="+5"/>
-                        <Button Clicked="OnWeightEdited" Text="+10"/>
-                    </HorizontalStackLayout>
-                </ScrollView>
+                <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                    <Button Clicked="OnWeightEdited" Text="-2.5" FontSize="Subtitle"/>
+                    <Button Clicked="OnWeightEdited" Text="-5" FontSize="Subtitle"/>
+                    <Button Clicked="OnWeightEdited" Text="-10" FontSize="Subtitle"/>
+                </HorizontalStackLayout>
 
-                <Button Clicked="OnWeightCreate"/>
+                <Button Clicked="OnWeightCreate"
+                        Text="Save" 
+                        FontSize="Subtitle"
+                        Margin="0, 20, 0, 0"/>
             </VerticalStackLayout>
         </Border>
 
-        <Grid BackgroundColor="#181818" IsVisible="False" x:Name="timerWrapper" RowDefinitions="Auto, *, Auto">
+        <Border x:Name="completedRepsForcedInputDialogWrapper"
+                HorizontalOptions="Center" 
+                VerticalOptions="Center" 
+                BackgroundColor="#000" 
+                Padding="25"
+                StrokeShape="RoundRectangle 10"
+                StrokeThickness="10"
+                Stroke="White"
+                ZIndex="10"
+                IsVisible="false">
+
+            <VerticalStackLayout>
+                <Label Text="How many reps did you do?"/>
+                <Entry x:Name="completedRepsForcedInputDialogEntry"/>
+                <Button Text="Save" Clicked="OnEnterCompletedRepsForcedDialog"/>
+            </VerticalStackLayout>
+        </Border>
+
+        <Grid BackgroundColor="#181818"
+              IsVisible="False"
+              x:Name="timerWrapper" 
+              x:DataType="Models:SetDisplay"
+              RowDefinitions="Auto, *, Auto">
+
             <VerticalStackLayout Grid.Column="0" Spacing="5" Margin="10">
                 <Label HorizontalTextAlignment="Center" 
-                       Text="Exercise name" 
+                       Text="{Binding Exercise.Exercise.Name}" 
                        FontSize="Title" />
 
-                <Label HorizontalOptions="Center"
-                   Text="Aim for above X reps"/>
+                <Label HorizontalOptions="Center">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <FormattedString.Spans>
+                                <Span Text="Aim for above "/>
+                                <Span Text="{Binding Set.RepRange_Bottom}"/>
+                                <Span Text=" reps"/>
+                            </FormattedString.Spans>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
 
-                <Label HorizontalOptions="Center"
-                   Text="Weight you used last time: X KG"/>
+                <Label HorizontalOptions="Center">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <FormattedString.Spans>
+                                <Span Text="Weight you used last time: "/>
+                                <Span Text="{Binding Weight.Weight}"/>
+                                <Span Text=" KG"/>
+                            </FormattedString.Spans>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
             </VerticalStackLayout>
 
             <Border WidthRequest="300"
@@ -432,7 +477,7 @@
                     Text="Cancel" 
                     Margin="25, 10, 25, 30" 
                     CornerRadius="12" 
-                    Clicked="Button_Clicked"/>
+                    Clicked="OnCancelStartedSet"/>
         </Grid>
 
         <Grid BackgroundColor="#181818" 
