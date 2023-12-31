@@ -2,9 +2,7 @@
 using AppProjectGym.Pages;
 using AppProjectGym.Models;
 using AppProjectGym.Services;
-using AppProjectGym.Information;
 using AppProjectGym.Services.Read;
-using System.Linq;
 using AppProjectGym.Services.Mapping;
 
 namespace AppProjectGym

@@ -11,6 +11,8 @@ using AppProjectGym.Services.Delete;
 using AppProjectGym.Services.Mapping;
 using AppProjectGym.Information;
 using System.Diagnostics;
+using AppProjectGym.LocalDatabase;
+using AppProjectGym.LocalDatabase.Models;
 
 namespace AppProjectGym
 {
@@ -56,8 +58,12 @@ namespace AppProjectGym
 
             builder.Services.AddTransient<HttpClient>();
             LoadUser();
+            InitializeLocalDB();
+
             return builder.Build();
         }
+
+        private async static void InitializeLocalDB() => await new FinishedWorkoutContext(new()).Initialize();
 
         private static async void LoadUser()
         {

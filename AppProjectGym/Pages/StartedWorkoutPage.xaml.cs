@@ -1,4 +1,6 @@
 using AppProjectGym.Information;
+using AppProjectGym.LocalDatabase;
+using AppProjectGym.LocalDatabase.Models;
 using AppProjectGym.Models;
 using AppProjectGym.Services.Create;
 using AppProjectGym.Services.Mapping;
@@ -307,6 +309,7 @@ namespace AppProjectGym.Pages
 
             finishedSetDialogWrapper.BindingContext = null;
             finishedSetDialogWrapper.BindingContext = finishedSet;
+
             OpenFinishedSetDialog();
         }
         #endregion
@@ -346,6 +349,19 @@ namespace AppProjectGym.Pages
             CloseFinishedSetDialog();
             CloseTimer();
             RefreshSetCollection();
+
+            FinishedSet a = new()
+            {
+                SetId = activeWorkoutSet.WorkoutSet.Set.Set.Id,
+                Reps = activeFinishedSet.FinishedReps,
+                Time = activeFinishedSet.Time,
+                Weight = activeFinishedSet.Weight.Weight,
+            };
+            FinishedWorkoutContext.Context.Add(a);
+            FinishedWorkoutContext.Context.SaveChanges();
+
+            var aa = FinishedWorkoutContext.Context.FinishedSets.GetJSONForm();
+            var aaa = FinishedWorkoutContext.Context.FinishedWorkoutSets.GetJSONForm();
 
             SelectedWorkoutSet = null;
             SelectedWorkoutSet = activeWorkoutSet;
