@@ -331,6 +331,11 @@
                         </VerticalStackLayout>
                     </Border>
                 </Grid>
+
+                <Button Text="Finish Workout" 
+                        Margin="20, 25, 20, 10" 
+                        CornerRadius="15"
+                        Clicked="OnFinishWorkoutClicked"/>
             </VerticalStackLayout>
         </ScrollView>
 
@@ -395,6 +400,27 @@
                 <Label Text="How many reps did you do?"/>
                 <Entry x:Name="completedRepsForcedInputDialogEntry"/>
                 <Button Text="Save" Clicked="OnSubmitCompletedRepsForcedDialog"/>
+            </VerticalStackLayout>
+        </Border>
+
+        <Border x:Name="finishWorkoutConfirmDialog"
+                HorizontalOptions="Center" 
+                VerticalOptions="Center" 
+                BackgroundColor="Black" 
+                Padding="25"
+                StrokeShape="RoundRectangle 10"
+                StrokeThickness="10"
+                Stroke="White"
+                ZIndex="10"
+                IsVisible="false">
+
+            <VerticalStackLayout>
+                <Label Text="Are you sure you want to finish this workout?" Margin="0, 0, 0, 10" />
+
+                <FlexLayout JustifyContent="Center" HeightRequest="100">
+                    <Button Text="No" WidthRequest="100"  Margin="10" Padding="10" Clicked="OnCancelConfirmDialog" />
+                    <Button Text="Yes" WidthRequest="100" Margin="10" Padding="10" Clicked="OnFinishWorkoutConfirmed" />
+                </FlexLayout>
             </VerticalStackLayout>
         </Border>
 

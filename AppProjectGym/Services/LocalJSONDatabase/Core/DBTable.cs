@@ -42,11 +42,7 @@ namespace LocalJSONDatabase.Core
                 if (primaryKeyProperty.PropertyType == typeof(int))
                     primaryKeyProperty.SetValue(entity, Entities.Count != 0 ? Convert.ToInt32(primaryKeyProperty.GetValue(Entities[^1])) + 1 : 1);
                 else if (primaryKeyProperty.PropertyType == typeof(Guid))
-                {
-                    var currentPK = Convert.ToString(primaryKeyProperty.GetValue(entity));
-                    if (!Guid.TryParse(currentPK, out Guid currentPKGUID) || currentPKGUID == default)
-                        primaryKeyProperty.SetValue(entity, Guid.NewGuid());
-                }
+                    primaryKeyProperty.SetValue(entity, Guid.NewGuid());
                 else
                     throw new NotSupportedException("Unsupported type has been used as primary key.");
             }

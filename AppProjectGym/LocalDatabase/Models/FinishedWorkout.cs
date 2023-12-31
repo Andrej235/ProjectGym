@@ -5,9 +5,10 @@ namespace AppProjectGym.LocalDatabase.Models
     public class FinishedWorkout
     {
         [PrimaryKey]
-        public Guid WorkoutId { get; set; }
-        public Guid CreatorId { get; set; }
-        public IEnumerable<Guid> WorkoutSetIds { get; set; } = new List<Guid>();
+        public int Id { get; set; } 
+
+        public required Guid WorkoutId { get; set; }
+        public DateTime DateTime { get; set; }
 
         [ForeignKey]
         public IEnumerable<FinishedWorkoutSet> WorkoutSets { get; set; }

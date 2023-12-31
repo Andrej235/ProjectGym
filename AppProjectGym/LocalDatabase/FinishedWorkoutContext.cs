@@ -26,11 +26,7 @@ namespace AppProjectGym.LocalDatabase
         {
             modelBuilder.Model<FinishedSet>()
                 .HasOne(x => x.WorkoutSet)
-                .WithOne(x => x.Set);
-
-            modelBuilder.Model<FinishedWorkoutSet>()
-                .HasOne(x => x.Set)
-                .WithOne(x => x.WorkoutSet);
+                .WithMany(x => x.Sets);
 
             modelBuilder.Model<FinishedWorkoutSet>()
                 .HasOne(x => x.Workout)

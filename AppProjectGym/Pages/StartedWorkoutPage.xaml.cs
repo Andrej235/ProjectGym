@@ -12,6 +12,7 @@ namespace AppProjectGym.Pages
 {
     public partial class StartedWorkoutPage : ContentPage, IQueryAttributable
     {
+        private FinishedWorkoutContext context;
         private readonly IReadService readService;
         private readonly ICreateService createService;
         private readonly IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper;
@@ -38,6 +39,7 @@ namespace AppProjectGym.Pages
             }
         }
         private Workout workout;
+        private FinishedWorkout finishedWorkout;
 
         public StartedWorkout_SetDisplay SelectedWorkoutSet
         {
@@ -55,6 +57,7 @@ namespace AppProjectGym.Pages
             InitializeComponent();
             BindingContext = this;
 
+            context = FinishedWorkoutContext.Context;
             this.readService = readService;
             this.createService = createService;
             this.exerciseDisplayMapper = exerciseDisplayMapper;
@@ -74,8 +77,19 @@ namespace AppProjectGym.Pages
 
             RefreshSetCollection();
             SelectedWorkoutSet = null;
+
+            finishedWorkout = new()
+            {
+                WorkoutId = Workout.Id,
+                WorkoutSets = []
+            };
+            context.FinishedWorkouts.Add(finishedWorkout);
+
+            var finishedSetsJSON = context.FinishedSets.GetJSONForm();
+            var finishedWorkoutSetsJSON = context.FinishedWorkoutSets.GetJSONForm();
+            var finishedWorkoutsJSON = context.FinishedWorkouts.GetJSONForm();
         }
-        
+
         private void OnWorkoutSetDisplaySelected(object sender, SelectionChangedEventArgs e)
         {
             if (e.CurrentSelection[0] is not StartedWorkout_SetDisplay workoutSetDisplay)
@@ -108,6 +122,9 @@ namespace AppProjectGym.Pages
         {
             if (weightEditorDialogWrapper.IsVisible)
                 CloseWeighEditorDialog();
+
+            if (finishWorkoutConfirmDialog.IsVisible)
+                CloseFinishWorkoutConfirmDialog();
         }
 
 
@@ -205,7 +222,7 @@ namespace AppProjectGym.Pages
             {
                 LogDebugger.LogError(ex);
             }
-        } 
+        }
         #endregion
 
         #region Started set
@@ -350,18 +367,28 @@ namespace AppProjectGym.Pages
             CloseTimer();
             RefreshSetCollection();
 
-            FinishedSet a = new()
+            var activeFinishedWorkoutSet = finishedWorkout.WorkoutSets.FirstOrDefault(x => x.WorkoutSetId == activeWorkoutSet.WorkoutSet.Id);
+            if (activeFinishedWorkoutSet == null)
+            {
+                activeFinishedWorkoutSet = new()
+                {
+                    WorkoutSetId = activeWorkoutSet.WorkoutSet.Id,
+                    Workout = finishedWorkout,
+                    Sets = [],
+                };
+                context.FinishedWorkoutSets.Add(activeFinishedWorkoutSet);
+            }
+
+            FinishedSet finishedSet = new()
             {
                 SetId = activeWorkoutSet.WorkoutSet.Set.Set.Id,
                 Reps = activeFinishedSet.FinishedReps,
                 Time = activeFinishedSet.Time,
                 Weight = activeFinishedSet.Weight.Weight,
+                WorkoutSet = activeFinishedWorkoutSet
             };
-            FinishedWorkoutContext.Context.Add(a);
-            FinishedWorkoutContext.Context.SaveChanges();
-
-            var aa = FinishedWorkoutContext.Context.FinishedSets.GetJSONForm();
-            var aaa = FinishedWorkoutContext.Context.FinishedWorkoutSets.GetJSONForm();
+            context.FinishedSets.Add(finishedSet);
+            context.SaveChanges();
 
             SelectedWorkoutSet = null;
             SelectedWorkoutSet = activeWorkoutSet;
@@ -395,6 +422,31 @@ namespace AppProjectGym.Pages
 
         #endregion
 
+        #endregion
+
+        #region Finish Workout
+        private void OpenFinishWorkoutConfirmDialog()
+        {
+            finishWorkoutConfirmDialog.IsVisible = true;
+            whiteOverlay.IsVisible = true;
+        }
+
+        private void CloseFinishWorkoutConfirmDialog()
+        {
+            finishWorkoutConfirmDialog.IsVisible = false;
+            whiteOverlay.IsVisible = false;
+        }
+
+        private void OnFinishWorkoutClicked(object sender, EventArgs e) => OpenFinishWorkoutConfirmDialog();
+
+        private void OnCancelConfirmDialog(object sender, EventArgs e) => CloseFinishWorkoutConfirmDialog();
+
+        private void OnFinishWorkoutConfirmed(object sender, EventArgs e)
+        {
+            finishedWorkout.DateTime = DateTime.Now;
+            context.SaveChanges();
+            CloseFinishWorkoutConfirmDialog();
+        }
         #endregion
 
         private void RefreshSetCollection()
