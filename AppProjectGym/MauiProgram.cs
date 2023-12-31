@@ -57,13 +57,14 @@ namespace AppProjectGym
             builder.Services.AddTransient<IEntityDisplayMapper<WorkoutSet, StartedWorkout_SetDisplay>, StartedWorkoutSetDisplayMapper>();
 
             builder.Services.AddTransient<HttpClient>();
+
             LoadUser();
             InitializeLocalDB();
 
             return builder.Build();
         }
 
-        private async static void InitializeLocalDB() => await new FinishedWorkoutContext(new()).Initialize();
+        private static async void InitializeLocalDB() => await new FinishedWorkoutContext(new()).Initialize();
 
         private static async void LoadUser()
         {

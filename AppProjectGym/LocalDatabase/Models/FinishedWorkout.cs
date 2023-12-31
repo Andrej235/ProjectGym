@@ -8,6 +8,7 @@ namespace AppProjectGym.LocalDatabase.Models
         public int Id { get; set; } 
 
         public required Guid WorkoutId { get; set; }
+        public required string Name {  get; set; }
         public DateTime DateTime { get; set; }
 
         [ForeignKey]

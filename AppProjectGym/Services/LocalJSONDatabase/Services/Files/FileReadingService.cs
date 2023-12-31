@@ -8,7 +8,6 @@ namespace LocalJSONDatabase.Services.Files
     {
         public string FilePath { get; init; }
         private readonly FileStream file;
-        private readonly StreamReader reader;
 
         public FileReadingService(string filePath)
         {
@@ -17,7 +16,6 @@ namespace LocalJSONDatabase.Services.Files
 
             FilePath = filePath;
             file = File.Open(filePath, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite);
-            reader = new(file);
         }
 
         public string Read()

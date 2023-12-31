@@ -12,7 +12,7 @@ namespace AppProjectGym.Pages
 {
     public partial class StartedWorkoutPage : ContentPage, IQueryAttributable
     {
-        private FinishedWorkoutContext context;
+        private readonly FinishedWorkoutContext context;
         private readonly IReadService readService;
         private readonly ICreateService createService;
         private readonly IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper;
@@ -80,6 +80,7 @@ namespace AppProjectGym.Pages
 
             finishedWorkout = new()
             {
+                Name = Workout.Name,
                 WorkoutId = Workout.Id,
                 WorkoutSets = []
             };

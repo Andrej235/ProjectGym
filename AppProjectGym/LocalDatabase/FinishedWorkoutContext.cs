@@ -1,7 +1,6 @@
 ﻿using AppProjectGym.LocalDatabase.Models;
 using LocalJSONDatabase.Core;
 using LocalJSONDatabase.Services.ModelBuilder;
-using Microsoft.Maui.Controls.PlatformConfiguration;
 
 namespace AppProjectGym.LocalDatabase
 {
@@ -15,9 +14,9 @@ namespace AppProjectGym.LocalDatabase
             return base.Initialize();
         }
 
-        public DBTable<FinishedSet> FinishedSets { get; set; } = null!;
-        public DBTable<FinishedWorkoutSet> FinishedWorkoutSets { get; set; } = null!;
         public DBTable<FinishedWorkout> FinishedWorkouts { get; set; } = null!;
+        public DBTable<FinishedWorkoutSet> FinishedWorkoutSets { get; set; } = null!;
+        public DBTable<FinishedSet> FinishedSets { get; set; } = null!;
 
         private string dbDirPath;
         protected override string DBDirectoryPath => dbDirPath;

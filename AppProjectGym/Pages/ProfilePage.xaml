@@ -2,14 +2,76 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:Pages="clr-namespace:AppProjectGym.Pages"
+             xmlns:JSONModels="clr-namespace:AppProjectGym.LocalDatabase.Models"
              x:Class="AppProjectGym.Pages.ProfilePage"
              Title="My Profile"
              x:DataType="Pages:ProfilePage">
 
-    <VerticalStackLayout>
-        <Label Text="{Binding User.Name}" 
+    <Grid VerticalOptions="Fill" HorizontalOptions="Fill">
+        <VerticalStackLayout>
+            <Label Text="{Binding User.Name}" 
                FontSize="Title"
                HorizontalTextAlignment="Center"
                Margin="5"/>
-    </VerticalStackLayout>
+
+            <VerticalStackLayout HorizontalOptions="Center" Margin="10" Padding="10, 0, 10, 0">
+                <Label FontSize="Subtitle" 
+                   HorizontalTextAlignment="Center"
+                   Margin="0, 0, 0, 15">
+
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <FormattedString.Spans>
+                                <Span Text="Finished workouts: "/>
+                                <Span Text="{Binding FinishedWorkoutsCount}"/>
+                            </FormattedString.Spans>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+
+                <CollectionView ItemsSource="{Binding FinishedWorkouts}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="JSONModels:FinishedWorkout">
+                            <Border Margin="5"
+                                StrokeShape="RoundRectangle 25">
+
+                                <Grid RowDefinitions="*" Padding="20, 10, 20, 10">
+                                    <FlexLayout JustifyContent="SpaceBetween" VerticalOptions="Fill" HorizontalOptions="Fill">
+                                        <Label Text="{Binding Name}"/>
+
+                                        <Label>
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <FormattedString.Spans>
+                                                        <Span Text="{Binding DateTime.DayOfWeek}"/>
+                                                        <Span Text=" : "/>
+                                                        <Span Text="{Binding DateTime.Day}"/>
+                                                        <Span Text="."/>
+                                                        <Span Text="{Binding DateTime.Month}"/>
+                                                        <Span Text="."/>
+                                                        <Span Text="{Binding DateTime.Year}"/>
+                                                    </FormattedString.Spans>
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+                                    </FlexLayout>
+                                    <Button BackgroundColor="Transparent" HeightRequest="20" Clicked="OnOpenFinishedWorkout" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+
+        <Grid x:Name="finishedWorkoutDisplayWrapper"
+              x:DataType="JSONModels:FinishedWorkout"
+              VerticalOptions="Fill" 
+              HorizontalOptions="Fill"
+              BackgroundColor="Black"
+              IsVisible="False">
+
+            <Label Text="{Binding Name}"/>
+        </Grid>
+    </Grid>
 </ContentPage>

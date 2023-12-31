@@ -35,6 +35,15 @@ namespace LocalJSONDatabase.Core
             }
 
             await DeserializationService.LoadDatabase(this);
+
+            foreach (PropertyInfo property in tablesProperties)
+            {
+                if (property.GetValue(this) is not IEnumerable<object> table)
+                    continue;
+
+                foreach (var item in table)
+                    UpdateRelationships(item);
+            }
         }
 
         public void Add(object entity, bool asignPrimaryKey = true)
@@ -103,7 +112,9 @@ namespace LocalJSONDatabase.Core
                         //If so create a new instance so the rest of the code doesn't break
                         //If not leave it as null
                         if (referencedEntityValue is null && referencedEntityType.GetInterface(nameof(IEnumerable)) != null)
-                            referencedEntityValue = Activator.CreateInstance(referencedEntityType);
+                            referencedEntityValue = Activator.CreateInstance(typeof(List<>).MakeGenericType(referencedEntityType.GetGenericArguments()[0]));
+                        //Activator.CreateInstance(referencedEntityType);
+
 
                         if (referencedEntityValue is IEnumerable<object> values)
                         {
