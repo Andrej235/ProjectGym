@@ -2,6 +2,7 @@ using AppProjectGym.Information;
 using AppProjectGym.LocalDatabase;
 using AppProjectGym.LocalDatabase.Models;
 using AppProjectGym.Models;
+using AppProjectGym.Services;
 using AppProjectGym.Services.Create;
 using AppProjectGym.Services.Mapping;
 using AppProjectGym.Services.Read;
@@ -277,7 +278,7 @@ namespace AppProjectGym.Pages
         private async void StartTimer(float distanceFromEdge)
         {
             isResting = false;
-            timerLabel.Text = "0";
+            timerLabel.Text = "00";
             Vector2 vector = new(0, -1);
             vector.Normalize();
 
@@ -306,8 +307,37 @@ namespace AppProjectGym.Pages
         private async void UpdateTimer(float seconds)
         {
             await timerLabel.ScaleTo(1.25, 125, Easing.CubicIn);
-            timerLabel.Text = seconds.ToString("#");
+            timerLabel.Text = FormatTime((int)seconds);// seconds.ToString("#");
             await timerLabel.ScaleTo(1, 250, Easing.CubicOut);
+        }
+
+        static string FormatTime(int seconds) => seconds switch
+        {
+            < 60 => $"{seconds:D2}",
+            < 3600 => $"{seconds / 60:D2}:{seconds % 60:D2}",
+            _ => $"{seconds / 3600:D2}:{seconds % 3600 / 60:D2}:{seconds % 60:D2}",
+        };
+
+        static bool TryParseFormattedTime(string formattedTime, out int result)
+        {
+            try
+            {
+                string[] timeComponents = formattedTime.Split(':');
+                result = timeComponents.Length switch
+                {
+                    1 => int.Parse(timeComponents[0]),// Seconds only
+                    2 => int.Parse(timeComponents[0]) * 60 + int.Parse(timeComponents[1]),// MM:SS
+                    3 => int.Parse(timeComponents[0]) * 3600 + int.Parse(timeComponents[1]) * 60 + int.Parse(timeComponents[2]),// HH:MM:SS
+                    _ => throw new ArgumentException("Invalid time format"),
+                };
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogDebugger.LogError(ex);
+                result = -1;
+                return false;
+            }
         }
 
         private void EndTimer()
@@ -319,7 +349,7 @@ namespace AppProjectGym.Pages
                 return;
 
             var finishedSet = activeWorkoutSetDisplay.FinishedSets.FirstOrDefault(x => x.Time == 0);
-            if (finishedSet is null || !int.TryParse(timerLabel.Text, out int time))
+            if (finishedSet is null || !TryParseFormattedTime(timerLabel.Text, out int time))
                 return;
 
             finishedSet.Time = time;
@@ -333,18 +363,22 @@ namespace AppProjectGym.Pages
         }
 
         private bool isResting;
+        private int restTimer;
         private async void StartRestPeriod(FinishedSetDisplay finishedSetDisplay)
         {
             isResting = true;
+            restTimer = 0;
             finishedSetDisplay.RestTime = 0;
             while (isResting)
             {
-                finishedSetDisplay.RestTime++;
                 await Task.Delay(1000);
+                restTimer++;
             }
 
+            finishedSetDisplay.RestTime = restTimer;
+
             if (activeFinishedSet != null)
-                activeFinishedSet.RestTime = finishedSetDisplay.RestTime;
+                activeFinishedSet.RestTime = restTimer;
             activeFinishedSet = null;
         }
         #endregion
@@ -360,7 +394,7 @@ namespace AppProjectGym.Pages
 
         private void OnBackButtonPressed_FinishedSetDialog(object sender, EventArgs e)
         {
-            if (!int.TryParse(timerLabel.Text, out int time) || time <= 0)
+            if (!TryParseFormattedTime(timerLabel.Text, out int time) || time <= 0)
                 return;
 
             if (!int.TryParse(completedRepsEntry.Text, out int completedReps) || completedReps <= 0)
@@ -460,12 +494,16 @@ namespace AppProjectGym.Pages
 
         private void OnCancelConfirmDialog(object sender, EventArgs e) => CloseFinishWorkoutConfirmDialog();
 
-        private void OnFinishWorkoutConfirmed(object sender, EventArgs e)
+        private async void OnFinishWorkoutConfirmed(object sender, EventArgs e)
         {
             isResting = false;
+            if (activeFinishedSet != null)
+                activeFinishedSet.RestTime = restTimer;
+
             finishedWorkout.DateTime = DateTime.Now;
             context.SaveChanges();
             CloseFinishWorkoutConfirmDialog();
+            await NavigationService.GoToAsync("../..");
         }
         #endregion
 

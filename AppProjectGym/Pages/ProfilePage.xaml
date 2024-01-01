@@ -11,7 +11,7 @@
 
     <ContentPage.Resources>
         <ValueConverters:IsNotNullConverter x:Key="IsNotNull"/>
-        <ValueConverters:IsNot0Converter x:Key="IsNot0"/>
+        <ValueConverters:SecondsToFormattedTimeConverter x:Key="TimeFormatter"/>
     </ContentPage.Resources>
 
     <Grid VerticalOptions="Fill" HorizontalOptions="Fill">
@@ -134,13 +134,13 @@
                                                                 Margin="0, 10, 0, 10"
                                                                 Padding="10">
 
-                                                                <VerticalStackLayout IsVisible="{Binding Time, Converter={StaticResource IsNot0}}">
+                                                                <VerticalStackLayout>
                                                                     <Label>
                                                                         <Label.FormattedText>
                                                                             <FormattedString>
                                                                                 <FormattedString.Spans>
                                                                                     <Span Text="Time spent: "/>
-                                                                                    <Span Text="{Binding Time}"/>
+                                                                                    <Span Text="{Binding Time, Converter={StaticResource TimeFormatter}}"/>
                                                                                 </FormattedString.Spans>
                                                                             </FormattedString>
                                                                         </Label.FormattedText>
@@ -168,13 +168,12 @@
                                                                             </FormattedString>
                                                                         </Label.FormattedText>
                                                                     </Label>
-
                                                                 </VerticalStackLayout>
                                                             </Border>
 
                                                             <Grid>
                                                                 <Border StrokeShape="Line -1000, 0, 125, 0" VerticalOptions="Center" />
-                                                                <Label Text="{Binding RestTime}" HorizontalTextAlignment="Center" />
+                                                                <Label Text="{Binding RestTime, Converter={StaticResource TimeFormatter}}" HorizontalTextAlignment="Center" />
                                                                 <Border StrokeShape="Line 195, 0, 1000, 0" VerticalOptions="Center" />
                                                             </Grid>
                                                         </VerticalStackLayout>

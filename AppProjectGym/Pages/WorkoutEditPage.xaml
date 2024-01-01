@@ -11,7 +11,6 @@
     <ContentPage.Resources>
         <ValueConverters:IsNotNullConverter x:Key="IsNotNull"/>
         <ValueConverters:ExerciseDisplayNameSafeConverter x:Key="ExerciseDisplayToName"/>
-        <ValueConverters:IsSupersetNotNull x:Key="IsSupersetNotNull"/>
     </ContentPage.Resources>
 
     <Grid VerticalOptions="Fill" HorizontalOptions="Fill">
@@ -69,30 +68,6 @@
 
                                         <Grid ColumnDefinitions=".5*, .5*" Margin="5, 10, 5, 10" ColumnSpacing="15">
                                             <Border StrokeShape="RoundRectangle 15">
-                                                <Label HorizontalTextAlignment="Center" VerticalTextAlignment="Center" Padding="7">
-                                                    <Label.FormattedText>
-                                                        <FormattedString>
-                                                            <Span Text="X" />
-                                                            <Span Text=" KG" />
-                                                        </FormattedString>
-                                                    </Label.FormattedText>
-                                                </Label>
-                                            </Border>
-
-                                            <Border StrokeShape="RoundRectangle 15" Grid.Column="1">
-                                                <HorizontalStackLayout HorizontalOptions="Center">
-                                                    <Label Text="Dropset" 
-                                                           HorizontalTextAlignment="Center" 
-                                                           VerticalTextAlignment="Center"
-                                                           Padding="7" />
-
-                                                    <CheckBox IsChecked="{Binding Set.Set.DropSet}" VerticalOptions="Center" />
-                                                </HorizontalStackLayout>
-                                            </Border>
-                                        </Grid>
-
-                                        <Grid ColumnDefinitions=".5*, .5*" Margin="5, 10, 5, 10" ColumnSpacing="15">
-                                            <Border StrokeShape="RoundRectangle 15">
                                                 <Grid>
                                                     <Label HorizontalTextAlignment="Center" VerticalTextAlignment="Center" Padding="7">
                                                         <Label.FormattedText>
@@ -105,6 +80,17 @@
 
                                                     <Button BackgroundColor="Transparent" Clicked="OnNumberInput" />
                                                 </Grid>
+                                            </Border>
+
+                                            <Border StrokeShape="RoundRectangle 15" Grid.Column="1">
+                                                <HorizontalStackLayout HorizontalOptions="Center">
+                                                    <Label Text="Dropset" 
+                                                           HorizontalTextAlignment="Center" 
+                                                           VerticalTextAlignment="Center"
+                                                           Padding="7" />
+
+                                                    <CheckBox IsChecked="{Binding Set.Set.DropSet}" VerticalOptions="Center" />
+                                                </HorizontalStackLayout>
                                             </Border>
                                         </Grid>
                                     </VerticalStackLayout>

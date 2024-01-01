@@ -38,6 +38,7 @@
         <ValueConverters:IsNotNullConverter x:Key="IsNotNull"/>
         <ValueConverters:IsNot0Converter x:Key="IsNot0"/>
         <ValueConverters:Is0Converter x:Key="Is0"/>
+        <ValueConverters:SecondsToFormattedTimeConverter x:Key="TimeFormatter"/>
     </ContentPage.Resources>
 
     <Grid>
@@ -57,48 +58,37 @@
                                     Style="{x:StaticResource Key=setsStyle}">
 
                                 <VerticalStackLayout VerticalOptions="Start" WidthRequest="225">
-                                    <Border StrokeShape="RoundRectangle 15, 15, 10, 10"
-                                            StrokeThickness="0" 
-                                            IsVisible="{Binding WorkoutSet.Set.Exercise.Image.ImageURL, Converter={StaticResource IsNotNull}}">
-
-                                        <Image Source="{Binding WorkoutSet.Set.Exercise.Image.ImageURL}" 
-                                           WidthRequest="225"
-                                           VerticalOptions="Start"/>
-                                    </Border>
-
                                     <Label Text="{Binding WorkoutSet.Set.Exercise.Exercise.Name}"
                                            HorizontalTextAlignment="Center" 
                                            FontSize="Subtitle" 
                                            FontAttributes="Bold"
                                            Margin="5"/>
 
-                                    <Grid ColumnDefinitions=".5*, .5*" ColumnSpacing="10">
-                                        <HorizontalStackLayout>
-                                            <Label Text="To Failure" VerticalOptions="Center"/>
-                                            <CheckBox VerticalOptions="Center"
-                                                      IsChecked="{Binding WorkoutSet.Set.Set.ToFailure, Mode=OneWay}" 
-                                                      IsEnabled="False" />
-                                        </HorizontalStackLayout>
+                                    <FlexLayout JustifyContent="SpaceEvenly">
+                                        <Label>
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <FormattedString.Spans>
+                                                        <Span Text="Sets: "/>
+                                                        <Span Text="{Binding WorkoutSet.TargetSets}"/>
+                                                    </FormattedString.Spans>
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
 
-                                        <HorizontalStackLayout Grid.Column="1">
-                                            <Label Text="Dropset" VerticalOptions="Center"/>
-                                            <CheckBox VerticalOptions="Center"
-                                                      IsChecked="{Binding WorkoutSet.Set.Set.DropSet, Mode=OneWay}" 
-                                                      IsEnabled="False" />
-                                        </HorizontalStackLayout>
-                                    </Grid>
-
-                                    <Label>
-                                        <Label.FormattedText>
-                                            <FormattedString>
-                                                <FormattedString.Spans>
-                                                    <Span Text="Target sets: "/>
-                                                    <Span Text="{Binding WorkoutSet.TargetSets}"/>
-                                                </FormattedString.Spans>
-                                            </FormattedString>
-                                        </Label.FormattedText>
-                                    </Label>
-
+                                        <Label>
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <FormattedString.Spans>
+                                                        <Span Text="RR: "/>
+                                                        <Span Text="{Binding WorkoutSet.Set.Set.RepRange_Bottom}"/>
+                                                        <Span Text=" - "/>
+                                                        <Span Text="{Binding WorkoutSet.Set.Set.RepRange_Top}"/>
+                                                    </FormattedString.Spans>
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+                                    </FlexLayout>
                                 </VerticalStackLayout>
                             </Border>
                         </DataTemplate>
@@ -210,7 +200,7 @@
                                                             <FormattedString>
                                                                 <FormattedString.Spans>
                                                                     <Span Text="Time spent: "/>
-                                                                    <Span Text="{Binding Time}"/>
+                                                                    <Span Text="{Binding Time, Converter={StaticResource TimeFormatter}}"/>
                                                                 </FormattedString.Spans>
                                                             </FormattedString>
                                                         </Label.FormattedText>
@@ -411,11 +401,11 @@
 
                     <Button Clicked="OnTimerToggled" BackgroundColor="Transparent" CornerRadius="1000"/>
 
-                    <Label Text="0" 
-                       VerticalTextAlignment="Center"
-                       HorizontalTextAlignment="Center"
-                       FontSize="90"
-                       x:Name="timerLabel"/>
+                    <Label Text="00" 
+                           VerticalTextAlignment="Center"
+                           HorizontalTextAlignment="Center"
+                           FontSize="60"
+                           x:Name="timerLabel"/>
                 </Grid>
             </Border>
 
@@ -438,7 +428,7 @@
                             <FormattedString>
                                 <FormattedString.Spans>
                                     <Span Text="Time: "/>
-                                    <Span Text="{Binding Time}"/>
+                                    <Span Text="{Binding Time, Converter={StaticResource TimeFormatter}}"/>
                                     <Span Text="s!"/>
                                 </FormattedString.Spans>
                             </FormattedString>
