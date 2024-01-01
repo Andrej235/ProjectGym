@@ -12,7 +12,6 @@
     <ContentPage.Resources>
         <ValueConverters:IsNotNullConverter x:Key="IsNotNull"/>
         <ValueConverters:IsNot0Converter x:Key="IsNot0"/>
-        <ValueConverters:Is0Converter x:Key="Is0"/>
     </ContentPage.Resources>
 
     <Grid VerticalOptions="Fill" HorizontalOptions="Fill">
@@ -102,232 +101,106 @@
                 </Label>
 
 
-                <ScrollView>
-                    <CollectionView x:Name="finishedSetsCollection" ItemsLayout="HorizontalList">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="Models:StartedWorkout_SetDisplay">
-                                <Grid x:Name="selectedWorkoutSetWrapper" RowDefinitions="Auto, *">
+                <CollectionView x:Name="finishedSetsCollection" ItemsLayout="HorizontalList">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="Models:StartedWorkout_SetDisplay">
+                            <VerticalStackLayout>
 
-                                    <Border StrokeThickness="3"
-                                            Margin="15, 25, 15, 25" 
-                                            StrokeShape="RoundRectangle 100"
-                                            Stroke="CadetBlue"/>
+                                <Border StrokeThickness="3"
+                                        Margin="15, 25, 15, 25" 
+                                        StrokeShape="RoundRectangle 100"
+                                        Stroke="CadetBlue"/>
 
-                                    <Border Grid.Row="1"
-                                            Padding="15" 
+                                <ScrollView>
+                                    <Border Padding="15" 
                                             Margin="10, 0, 10, 10"
                                             StrokeShape="RoundRectangle 15">
 
-                                        <VerticalStackLayout>
-                                            <Grid BindingContext="{Binding WorkoutSet.Set}" WidthRequest="325">
-                                                <VerticalStackLayout x:DataType="Models:SetDisplay">
-                                                    <Image Source="{Binding Exercise.Image.ImageURL}" 
-                                                           WidthRequest="350"
-                                                           VerticalOptions="Start"/>
+                                        <VerticalStackLayout WidthRequest="325">
+                                            <Image Source="{Binding WorkoutSet.Set.Exercise.Image.ImageURL}" 
+                                                   WidthRequest="350"
+                                                   VerticalOptions="Start"/>
 
-                                                    <Label Text="{Binding Exercise.Exercise.Name}"
-                                                           HorizontalTextAlignment="Center" 
-                                                           FontSize="Subtitle" 
-                                                           Margin="5"/>
-
-                                                    <Grid ColumnDefinitions=".5*, .5*" ColumnSpacing="10">
-                                                        <Border HorizontalOptions="Fill"
-                                                            HeightRequest="47"
-                                                            StrokeShape="RoundRectangle 5, 25, 5, 25"
-                                                            Padding="20, 10, 20, 10"
-                                                            Margin="0, 10, 0, 10">
-
-                                                            <Label VerticalTextAlignment="Center" HorizontalOptions="Center">
-                                                                <Label.FormattedText>
-                                                                    <FormattedString>
-                                                                        <FormattedString.Spans>
-                                                                            <Span Text="{Binding Set.RepRange_Bottom}"/>
-                                                                            <Span Text=" - "/>
-                                                                            <Span Text="{Binding Set.RepRange_Top}"/>
-                                                                        </FormattedString.Spans>
-                                                                    </FormattedString>
-                                                                </Label.FormattedText>
-                                                            </Label>
-                                                        </Border>
-
-                                                        <Border HorizontalOptions="Fill"
-                                                                HeightRequest="47"
-                                                                StrokeShape="RoundRectangle 25, 5, 25, 5"
-                                                                Grid.Column="1"
-                                                                Padding="20, 10, 20, 10"
-                                                                Margin="0, 10, 0, 10">
-
-                                                            <Grid>
-                                                                <Label HorizontalTextAlignment="Center" VerticalTextAlignment="Center">
-                                                                    <Label.FormattedText>
-                                                                        <FormattedString>
-                                                                            <Span Text="{Binding Weight.Weight}"/>
-                                                                            <Span Text=" KG"/>
-                                                                        </FormattedString>
-                                                                    </Label.FormattedText>
-                                                                </Label>
-
-                                                                <Button BackgroundColor="Transparent"/>
-                                                            </Grid>
-                                                        </Border>
-                                                    </Grid>
-
-                                                    <Grid ColumnDefinitions=".5*, .5*" ColumnSpacing="10">
-                                                        <Border Padding="3" StrokeShape="RoundRectangle 5, 25, 5, 25" Grid.Column="0">
-                                                            <HorizontalStackLayout HorizontalOptions="Center">
-                                                                <Label Text="To Failure" VerticalOptions="Center"/>
-                                                                <CheckBox VerticalOptions="Center"
-                                                                          IsChecked="{Binding Set.ToFailure, Mode=OneWay}" 
-                                                                          IsEnabled="False" />
-                                                            </HorizontalStackLayout>
-                                                        </Border>
-
-                                                        <Border Padding="3" StrokeShape="RoundRectangle 25, 5, 25, 5" Grid.Column="1">
-                                                            <HorizontalStackLayout HorizontalOptions="Center">
-                                                                <Label Text="Dropset" VerticalOptions="Center"/>
-                                                                <CheckBox VerticalOptions="Center"
-                                                                          IsChecked="{Binding Set.DropSet, Mode=OneWay}" 
-                                                                          IsEnabled="False" />
-                                                            </HorizontalStackLayout>
-                                                        </Border>
-                                                    </Grid>
-                                                </VerticalStackLayout>
-                                            </Grid>
-
-                                            <VerticalStackLayout BindingContext="{Binding WorkoutSet.Superset}"
-                                                                 x:Name="selectedSetSupersetWrapper"
-                                                                 IsVisible="{Binding ., Converter={StaticResource IsNotNull}}">
-
-                                                <Label Text="Superset with: " FontSize="Subtitle" Margin="0, 25, 0, 5"/>
-
-                                                <VerticalStackLayout x:DataType="Models:SetDisplay">
-                                                    <Image Source="{Binding Exercise.Image.ImageURL}" 
-                                                           WidthRequest="350"
-                                                           VerticalOptions="Start"/>
-
-                                                    <Label Text="{Binding Exercise.Exercise.Name}"
-                                                           HorizontalTextAlignment="Center" 
-                                                           FontSize="Subtitle" 
-                                                           Margin="5"/>
-
-                                                    <Grid ColumnDefinitions=".5*, .5*" ColumnSpacing="10">
-                                                        <Border HorizontalOptions="Fill"
-                                                                HeightRequest="47"
-                                                                StrokeShape="RoundRectangle 5, 25, 5, 25"
-                                                                Padding="20, 10, 20, 10"
-                                                                Margin="0, 10, 0, 10">
-
-                                                            <Label VerticalTextAlignment="Center" HorizontalOptions="Center">
-                                                                <Label.FormattedText>
-                                                                    <FormattedString>
-                                                                        <FormattedString.Spans>
-                                                                            <Span Text="{Binding Set.RepRange_Bottom}"/>
-                                                                            <Span Text=" - "/>
-                                                                            <Span Text="{Binding Set.RepRange_Top}"/>
-                                                                        </FormattedString.Spans>
-                                                                    </FormattedString>
-                                                                </Label.FormattedText>
-                                                            </Label>
-                                                        </Border>
-
-                                                        <Border HorizontalOptions="Fill"
-                                                                HeightRequest="47"
-                                                                StrokeShape="RoundRectangle 25, 5, 25, 5"
-                                                                Grid.Column="1"
-                                                                Padding="20, 10, 20, 10"
-                                                                Margin="0, 10, 0, 10">
-
-                                                            <Grid>
-                                                                <Label HorizontalTextAlignment="Center" VerticalTextAlignment="Center">
-                                                                    <Label.FormattedText>
-                                                                        <FormattedString>
-                                                                            <Span Text="{Binding Weight.Weight}"/>
-                                                                            <Span Text=" KG"/>
-                                                                        </FormattedString>
-                                                                    </Label.FormattedText>
-                                                                </Label>
-
-                                                                <Button BackgroundColor="Transparent"/>
-                                                            </Grid>
-                                                        </Border>
-                                                    </Grid>
-
-                                                    <Grid ColumnDefinitions=".5*, .5*" ColumnSpacing="10">
-                                                        <Border Padding="3" StrokeShape="RoundRectangle 5, 25, 5, 25" Grid.Column="0">
-                                                            <HorizontalStackLayout HorizontalOptions="Center">
-                                                                <Label Text="To Failure" VerticalOptions="Center"/>
-                                                                <CheckBox VerticalOptions="Center"
-                                                                          IsChecked="{Binding Set.ToFailure, Mode=OneWay}" 
-                                                                          IsEnabled="False" />
-                                                            </HorizontalStackLayout>
-                                                        </Border>
-
-                                                        <Border Padding="3" StrokeShape="RoundRectangle 25, 5, 25, 5" Grid.Column="1">
-                                                            <HorizontalStackLayout HorizontalOptions="Center">
-                                                                <Label Text="Dropset" VerticalOptions="Center"/>
-                                                                <CheckBox VerticalOptions="Center"
-                                                                          IsChecked="{Binding Set.DropSet, Mode=OneWay}" 
-                                                                          IsEnabled="False" />
-                                                            </HorizontalStackLayout>
-                                                        </Border>
-                                                    </Grid>
-                                                </VerticalStackLayout>
-                                            </VerticalStackLayout>
+                                            <Label Text="{Binding WorkoutSet.Set.Exercise.Exercise.Name}"
+                                                   HorizontalTextAlignment="Center" 
+                                                   FontSize="Subtitle" 
+                                                   Margin="5"/>
 
                                             <CollectionView ItemsSource="{Binding FinishedSets}" Margin="0, 15, 0, 0">
                                                 <CollectionView.ItemTemplate>
                                                     <DataTemplate x:DataType="Models:FinishedSetDisplay">
-                                                        <Border StrokeShape="RoundRectangle 10"
+                                                        <VerticalStackLayout>
+                                                            <Border StrokeShape="RoundRectangle 10"
                                                                 Margin="0, 10, 0, 10"
-                                                                Padding="10"
-                                                                WidthRequest="325">
+                                                                Padding="10">
 
-                                                            <VerticalStackLayout IsVisible="{Binding Time, Converter={StaticResource IsNot0}}">
-                                                                <Label>
-                                                                    <Label.FormattedText>
-                                                                        <FormattedString>
-                                                                            <FormattedString.Spans>
-                                                                                <Span Text="Time spent: "/>
-                                                                                <Span Text="{Binding Time}"/>
-                                                                            </FormattedString.Spans>
-                                                                        </FormattedString>
-                                                                    </Label.FormattedText>
-                                                                </Label>
+                                                                <VerticalStackLayout IsVisible="{Binding Time, Converter={StaticResource IsNot0}}">
+                                                                    <Label>
+                                                                        <Label.FormattedText>
+                                                                            <FormattedString>
+                                                                                <FormattedString.Spans>
+                                                                                    <Span Text="Time spent: "/>
+                                                                                    <Span Text="{Binding Time}"/>
+                                                                                </FormattedString.Spans>
+                                                                            </FormattedString>
+                                                                        </Label.FormattedText>
+                                                                    </Label>
 
-                                                                <Label>
-                                                                    <Label.FormattedText>
-                                                                        <FormattedString>
-                                                                            <FormattedString.Spans>
-                                                                                <Span Text="Completed reps: "/>
-                                                                                <Span Text="{Binding FinishedReps}"/>
-                                                                            </FormattedString.Spans>
-                                                                        </FormattedString>
-                                                                    </Label.FormattedText>
-                                                                </Label>
+                                                                    <Label>
+                                                                        <Label.FormattedText>
+                                                                            <FormattedString>
+                                                                                <FormattedString.Spans>
+                                                                                    <Span Text="Completed reps: "/>
+                                                                                    <Span Text="{Binding FinishedReps}"/>
+                                                                                </FormattedString.Spans>
+                                                                            </FormattedString>
+                                                                        </Label.FormattedText>
+                                                                    </Label>
 
-                                                                <Label>
-                                                                    <Label.FormattedText>
-                                                                        <FormattedString>
-                                                                            <FormattedString.Spans>
-                                                                                <Span Text="Weight used: "/>
-                                                                                <Span Text="{Binding Weight.Weight}"/>
-                                                                                <Span Text="KG"/>
-                                                                            </FormattedString.Spans>
-                                                                        </FormattedString>
-                                                                    </Label.FormattedText>
-                                                                </Label>
-                                                            </VerticalStackLayout>
-                                                        </Border>
+                                                                    <Label>
+                                                                        <Label.FormattedText>
+                                                                            <FormattedString>
+                                                                                <FormattedString.Spans>
+                                                                                    <Span Text="Weight used: "/>
+                                                                                    <Span Text="{Binding Weight.Weight}"/>
+                                                                                    <Span Text="KG"/>
+                                                                                </FormattedString.Spans>
+                                                                            </FormattedString>
+                                                                        </Label.FormattedText>
+                                                                    </Label>
+
+                                                                </VerticalStackLayout>
+                                                            </Border>
+
+                                                            <Grid>
+                                                                <Border StrokeShape="Line -1000, 0, 125, 0" VerticalOptions="Center" />
+                                                                <Label Text="{Binding RestTime}" HorizontalTextAlignment="Center" />
+                                                                <Border StrokeShape="Line 195, 0, 1000, 0" VerticalOptions="Center" />
+                                                            </Grid>
+                                                        </VerticalStackLayout>
                                                     </DataTemplate>
                                                 </CollectionView.ItemTemplate>
                                             </CollectionView>
+
+                                            <VerticalStackLayout IsVisible="{Binding WorkoutSet.Superset, Converter={StaticResource IsNotNull}}">
+                                                <Label Text="Superset with: " FontSize="Subtitle" Margin="0, 25, 0, 5"/>
+
+                                                <Image Source="{Binding WorkoutSet.Superset.Exercise.Image.ImageURL}" 
+                                                           WidthRequest="350"
+                                                           VerticalOptions="Start"/>
+
+                                                <Label Text="{Binding WorkoutSet.Superset.Exercise.Exercise.Name}"
+                                                           HorizontalTextAlignment="Center" 
+                                                           FontSize="Subtitle" 
+                                                           Margin="5"/>
+                                            </VerticalStackLayout>
                                         </VerticalStackLayout>
                                     </Border>
-                                </Grid>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </ScrollView>
+                                </ScrollView>
+                            </VerticalStackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
             </VerticalStackLayout>
         </Grid>
     </Grid>

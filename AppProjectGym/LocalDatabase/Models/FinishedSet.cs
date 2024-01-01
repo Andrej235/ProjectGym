@@ -9,7 +9,7 @@ namespace AppProjectGym.LocalDatabase.Models
 
         public Guid SetId { get; set; }
         public int Time { get; set; }
-        //public int RestTimeAfterTheSet { get; set; }
+        public int RestTime { get; set; }
         public int Reps { get; set; }
         public float Weight { get; set; }
 

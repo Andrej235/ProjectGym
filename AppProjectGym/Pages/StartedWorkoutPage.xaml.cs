@@ -91,6 +91,14 @@ namespace AppProjectGym.Pages
             var finishedWorkoutsJSON = context.FinishedWorkouts.GetJSONForm();
         }
 
+        protected override void OnDisappearing()
+        {
+            if (finishedWorkout != null && finishedWorkout.DateTime == default)
+                context?.Delete(finishedWorkout);
+
+            base.OnDisappearing();
+        }
+
         private void OnWorkoutSetDisplaySelected(object sender, SelectionChangedEventArgs e)
         {
             if (e.CurrentSelection[0] is not StartedWorkout_SetDisplay workoutSetDisplay)
@@ -191,11 +199,11 @@ namespace AppProjectGym.Pages
                 CloseWeighEditorDialog();
                 RefreshSetCollection();
 
-                if (activeWorkoutSet is not null)
+                if (activeWorkoutSetDisplay is not null)
                 {
-                    activeFinishedSet.Weight = newWeight;
+                    activeFinishedSetDisplay.Weight = newWeight;
                     finishedSetDialogWrapper.BindingContext = null;
-                    finishedSetDialogWrapper.BindingContext = activeFinishedSet;
+                    finishedSetDialogWrapper.BindingContext = activeFinishedSetDisplay;
                 }
             };
 
@@ -227,17 +235,18 @@ namespace AppProjectGym.Pages
         #endregion
 
         #region Started set
-        StartedWorkout_SetDisplay activeWorkoutSet = null;
-        FinishedSetDisplay activeFinishedSet = null;
+        StartedWorkout_SetDisplay activeWorkoutSetDisplay = null;
+        FinishedSetDisplay activeFinishedSetDisplay = null;
+        FinishedSet activeFinishedSet = null;
 
         private void OnSetStarted(object sender, EventArgs e)
         {
             if (sender is not Button button || button.BindingContext is not StartedWorkout_SetDisplay startedWorkout_SetDisplay)
                 return;
 
-            activeWorkoutSet = startedWorkout_SetDisplay;
-            activeFinishedSet = startedWorkout_SetDisplay.FinishedSets.FirstOrDefault(x => x.Time == 0);
-            if (activeFinishedSet is null)
+            activeWorkoutSetDisplay = startedWorkout_SetDisplay;
+            activeFinishedSetDisplay = startedWorkout_SetDisplay.FinishedSets.FirstOrDefault(x => x.Time == 0);
+            if (activeFinishedSetDisplay is null)
                 return;
 
             OpenTimer(startedWorkout_SetDisplay.WorkoutSet.Set);
@@ -248,8 +257,8 @@ namespace AppProjectGym.Pages
             CloseTimer();
             innerCircle.TranslateTo(0, 0, 100);
             innerCircle.ScaleTo(2.75, 500, Easing.SpringOut);
-            activeWorkoutSet = null;
-            activeFinishedSet = null;
+            activeWorkoutSetDisplay = null;
+            activeFinishedSetDisplay = null;
         }
 
         #region Timer
@@ -277,6 +286,7 @@ namespace AppProjectGym.Pages
 
         private async void StartTimer(float distanceFromEdge)
         {
+            isResting = false;
             timerLabel.Text = "0";
             Vector2 vector = new(0, -1);
             vector.Normalize();
@@ -315,20 +325,37 @@ namespace AppProjectGym.Pages
             innerCircle.TranslateTo(0, 0, 100);
             innerCircle.ScaleTo(2.75, 500, Easing.SpringOut);
 
-            if (activeWorkoutSet is null)
+            if (activeWorkoutSetDisplay is null)
                 return;
 
-            var finishedSet = activeWorkoutSet.FinishedSets.FirstOrDefault(x => x.Time == 0);
+            var finishedSet = activeWorkoutSetDisplay.FinishedSets.FirstOrDefault(x => x.Time == 0);
             if (finishedSet is null || !int.TryParse(timerLabel.Text, out int time))
                 return;
 
             finishedSet.Time = time;
-            finishedSet.Weight = activeWorkoutSet.WorkoutSet.Set.Weight.DeepCopy();
+            finishedSet.Weight = activeWorkoutSetDisplay.WorkoutSet.Set.Weight.DeepCopy();
+            StartRestPeriod(finishedSet);
 
             finishedSetDialogWrapper.BindingContext = null;
             finishedSetDialogWrapper.BindingContext = finishedSet;
 
             OpenFinishedSetDialog();
+        }
+
+        private bool isResting;
+        private async void StartRestPeriod(FinishedSetDisplay finishedSetDisplay)
+        {
+            isResting = true;
+            finishedSetDisplay.RestTime = 0;
+            while (isResting)
+            {
+                finishedSetDisplay.RestTime++;
+                await Task.Delay(1000);
+            }
+
+            if (activeFinishedSet != null)
+                activeFinishedSet.RestTime = finishedSetDisplay.RestTime;
+            activeFinishedSet = null;
         }
         #endregion
 
@@ -362,18 +389,18 @@ namespace AppProjectGym.Pages
 
         private void SaveActiveFinishedSetChanges(int completedReps)
         {
-            activeFinishedSet.FinishedReps = completedReps;
+            activeFinishedSetDisplay.FinishedReps = completedReps;
 
             CloseFinishedSetDialog();
             CloseTimer();
             RefreshSetCollection();
 
-            var activeFinishedWorkoutSet = finishedWorkout.WorkoutSets.FirstOrDefault(x => x.WorkoutSetId == activeWorkoutSet.WorkoutSet.Id);
+            var activeFinishedWorkoutSet = finishedWorkout.WorkoutSets.FirstOrDefault(x => x.WorkoutSetId == activeWorkoutSetDisplay.WorkoutSet.Id);
             if (activeFinishedWorkoutSet == null)
             {
                 activeFinishedWorkoutSet = new()
                 {
-                    WorkoutSetId = activeWorkoutSet.WorkoutSet.Id,
+                    WorkoutSetId = activeWorkoutSetDisplay.WorkoutSet.Id,
                     Workout = finishedWorkout,
                     Sets = [],
                 };
@@ -382,20 +409,21 @@ namespace AppProjectGym.Pages
 
             FinishedSet finishedSet = new()
             {
-                SetId = activeWorkoutSet.WorkoutSet.Set.Set.Id,
-                Reps = activeFinishedSet.FinishedReps,
-                Time = activeFinishedSet.Time,
-                Weight = activeFinishedSet.Weight.Weight,
+                SetId = activeWorkoutSetDisplay.WorkoutSet.Set.Set.Id,
+                Reps = activeFinishedSetDisplay.FinishedReps,
+                Time = activeFinishedSetDisplay.Time,
+                Weight = activeFinishedSetDisplay.Weight.Weight,
                 WorkoutSet = activeFinishedWorkoutSet
             };
             context.FinishedSets.Add(finishedSet);
             context.SaveChanges();
 
             SelectedWorkoutSet = null;
-            SelectedWorkoutSet = activeWorkoutSet;
+            SelectedWorkoutSet = activeWorkoutSetDisplay;
 
-            activeWorkoutSet = null;
-            activeFinishedSet = null;
+            activeWorkoutSetDisplay = null;
+            activeFinishedSetDisplay = null;
+            activeFinishedSet = finishedSet;
         }
 
         #region Forced reps dialog
@@ -444,6 +472,7 @@ namespace AppProjectGym.Pages
 
         private void OnFinishWorkoutConfirmed(object sender, EventArgs e)
         {
+            isResting = false;
             finishedWorkout.DateTime = DateTime.Now;
             context.SaveChanges();
             CloseFinishWorkoutConfirmDialog();

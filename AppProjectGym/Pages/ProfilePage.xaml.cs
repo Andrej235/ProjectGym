@@ -85,6 +85,7 @@ public partial class ProfilePage : ContentPage
         if (sender is not Button button || button.BindingContext is not FinishedWorkout selectedWorkout)
             return;
 
+        finishedWorkoutDisplayWrapper.IsVisible = true;
         SelectedWorkout = selectedWorkout;
 
         FinishedSets =
@@ -92,20 +93,20 @@ public partial class ProfilePage : ContentPage
             .. (await Task.WhenAll(selectedWorkout.WorkoutSets.Select(async x =>
                     {
                         WorkoutSet workoutSet = await readService.Get<WorkoutSet>("all", $"workoutset/{x.WorkoutSetId}");
-                        var startedWorkoutSetDisplays = await startedWorkoutSetDisplayMapper.Map(workoutSet);
-                        startedWorkoutSetDisplays.FinishedSets = x.Sets.Select(y => new FinishedSetDisplay()
+                        StartedWorkout_SetDisplay startedWorkoutSetDisplay = await startedWorkoutSetDisplayMapper.Map(workoutSet);
+                        startedWorkoutSetDisplay.FinishedSets = x.Sets.Select(y => new FinishedSetDisplay()
                         {
                             FinishedReps = y.Reps,
                             Time = y.Time,
+                            RestTime = y.RestTime,
                             Weight = new() { Weight = y.Weight }
                         }).ToList();
 
-                        return startedWorkoutSetDisplays;
+                        return startedWorkoutSetDisplay;
                     })))
         ];
 
         finishedSetsCollection.ItemsSource = null;
         finishedSetsCollection.ItemsSource = FinishedSets;
-        finishedWorkoutDisplayWrapper.IsVisible = true;
     }
 }
