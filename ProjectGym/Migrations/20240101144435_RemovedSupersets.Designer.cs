@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectGym.Data;
 
@@ -11,9 +12,11 @@ using ProjectGym.Data;
 namespace ProjectGym.Migrations
 {
     [DbContext(typeof(ExerciseContext))]
-    partial class ExerciseContextModelSnapshot : ModelSnapshot
+    [Migration("20240101144435_RemovedSupersets")]
+    partial class RemovedSupersets
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

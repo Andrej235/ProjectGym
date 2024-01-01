@@ -7,6 +7,5 @@
 
         public Guid WorkoutId { get; set; }
         public Guid SetId { get; set; }
-        public Guid? SuperSetId { get; set; }
     }
 }

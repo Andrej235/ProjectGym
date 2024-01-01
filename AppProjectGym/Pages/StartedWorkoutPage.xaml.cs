@@ -176,23 +176,13 @@ namespace AppProjectGym.Pages
                     return;
 
                 var setsUsingWeight = WorkoutSetDisplays.Where(x => x.WorkoutSet.Set.Weight.ExerciseId == newWeight.ExerciseId).Select(x => x.WorkoutSet.Set);
-                var supersetsUsingWeight = WorkoutSetDisplays.Where(x => x.WorkoutSet.Superset?.Weight.ExerciseId == newWeight.ExerciseId).Select(x => x.WorkoutSet.Superset);
 
                 foreach (var set in setsUsingWeight)
                     set.Weight = newWeight;
 
-                foreach (var superset in supersetsUsingWeight)
-                    superset.Weight = newWeight;
-
                 if (SelectedWorkoutSet.WorkoutSet.Set.Weight.ExerciseId == newWeight.ExerciseId)
                 {
                     SelectedWorkoutSet.WorkoutSet.Set.Weight = newWeight;
-                    SelectedWorkoutSet = selectedWorkoutSet.DeepCopy();
-                }
-
-                if (SelectedWorkoutSet.WorkoutSet.Superset.Weight.ExerciseId == newWeight.ExerciseId)
-                {
-                    SelectedWorkoutSet.WorkoutSet.Superset.Weight = newWeight;
                     SelectedWorkoutSet = selectedWorkoutSet.DeepCopy();
                 }
 

@@ -10,7 +10,6 @@ namespace ProjectGym.Services.Mapping
             Id = dto.Id,
             TargetSets = dto.TargetSets,
             SetId = dto.SetId,
-            SuperSetId = dto.SuperSetId,
             WorkoutId = dto.WorkoutId,
         };
 
@@ -19,7 +18,6 @@ namespace ProjectGym.Services.Mapping
             Id = entity.Id,
             TargetSets = entity.TargetSets,
             SetId = entity.SetId,
-            SuperSetId = entity.SuperSetId,
             WorkoutId = entity.WorkoutId,
         };
     }

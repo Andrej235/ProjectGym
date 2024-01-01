@@ -573,16 +573,13 @@ namespace AppProjectGym.Pages
                 equipmentNameInput.Placeholder = "Something went wrong";
             }
         }
-        private void OpenInputDialog()
-        {
-            equipmentNameInput.Placeholder = "Enter equipment name: ";
-            nameInputDialogWrapper.IsVisible = true;
-            whiteOverlay.IsVisible = true;
-        }
+
         private void OpenInputDialog(string defaultValue)
         {
             equipmentNameInput.Text = defaultValue;
-            OpenInputDialog();
+            equipmentNameInput.Placeholder = defaultValue;
+            nameInputDialogWrapper.IsVisible = true;
+            whiteOverlay.IsVisible = true;
         }
         private void CloseInputDialog()
         {

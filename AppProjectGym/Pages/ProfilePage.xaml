@@ -181,19 +181,6 @@
                                                     </DataTemplate>
                                                 </CollectionView.ItemTemplate>
                                             </CollectionView>
-
-                                            <VerticalStackLayout IsVisible="{Binding WorkoutSet.Superset, Converter={StaticResource IsNotNull}}">
-                                                <Label Text="Superset with: " FontSize="Subtitle" Margin="0, 25, 0, 5"/>
-
-                                                <Image Source="{Binding WorkoutSet.Superset.Exercise.Image.ImageURL}" 
-                                                           WidthRequest="350"
-                                                           VerticalOptions="Start"/>
-
-                                                <Label Text="{Binding WorkoutSet.Superset.Exercise.Exercise.Name}"
-                                                           HorizontalTextAlignment="Center" 
-                                                           FontSize="Subtitle" 
-                                                           Margin="5"/>
-                                            </VerticalStackLayout>
                                         </VerticalStackLayout>
                                     </Border>
                                 </ScrollView>

@@ -16,9 +16,5 @@ namespace ProjectGym.Models
         public Set Set { get; set; } = null!;
         [ModelReference("Set")]
         public Guid SetId { get; set; }
-
-        public Set? Superset { get; set; }
-        [ModelReference("Set", IsNullable = true)]
-        public Guid? SuperSetId { get; set; }
     }
 }

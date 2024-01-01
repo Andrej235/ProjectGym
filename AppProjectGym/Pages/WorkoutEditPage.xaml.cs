@@ -200,8 +200,7 @@ namespace AppProjectGym.Pages
                     Set = new(),
                     Exercise = new()
                 },
-                Superset = null,
-                TargetSets = 0
+                TargetSets = 0,
             };
 
             WorkoutSetDisplays.Add(newWorkoutSetDisplay);
@@ -213,14 +212,8 @@ namespace AppProjectGym.Pages
             if (sender is not ImageButton imageButton || imageButton.BindingContext is not WorkoutSetDisplay workoutSetDisplay)
                 return;
 
-            if (workoutSetDisplay.Id != default)
-            {
-                if (workoutSetDisplay.Set.Set.Id != default)
-                    deleteService.Delete(workoutSetDisplay.Set.Set.Id, "set");
-
-                if (workoutSetDisplay.Superset != null && workoutSetDisplay.Superset.Set.Id != default)
-                    deleteService.Delete(workoutSetDisplay.Superset.Set.Id, "set");
-            }
+            if (workoutSetDisplay.Id != default && workoutSetDisplay.Set.Set.Id != default)
+                deleteService.Delete(workoutSetDisplay.Set.Set.Id, "set");
 
             WorkoutSetDisplays.Remove(workoutSetDisplay);
         }
@@ -263,45 +256,12 @@ namespace AppProjectGym.Pages
                         Id = workoutSet.Id,
                         TargetSets = workoutSet.TargetSets,
                         SetId = workoutSet.Set.Set.Id,
-                        SuperSetId = workoutSet.Superset?.Set.Id,
-                        WorkoutId = Workout.Id
+                        WorkoutId = Workout.Id,
                     });
-                }
-
-                if (workoutSet.Superset != null && originalWorkoutSet.Superset == null)
-                {
-                    workoutSet.Superset.Set.CreatorId = ClientInfo.User.Id;
-                    var supersetIdString = await createService.Add(workoutSet.Superset.Set);
-
-                    if (Guid.TryParse(supersetIdString.Replace("\"", ""), out Guid supersetId))
-                        updatedEntity.Add(new WorkoutSet()
-                        {
-                            Id = workoutSet.Id,
-                            TargetSets = workoutSet.TargetSets,
-                            SetId = workoutSet.Set.Set.Id,
-                            SuperSetId = supersetId,
-                            WorkoutId = Workout.Id
-                        });
-                }
-
-                if (workoutSet.Superset == null && originalWorkoutSet.Superset != null)
-                {
-                    updatedEntity.Add(new WorkoutSet()
-                    {
-                        Id = workoutSet.Id,
-                        TargetSets = workoutSet.TargetSets,
-                        SetId = workoutSet.Set.Set.Id,
-                        SuperSetId = null,
-                        WorkoutId = Workout.Id
-                    });
-                    await deleteService.Delete(originalWorkoutSet.Superset.Set);
                 }
 
                 if (!ShallowEqual(workoutSet.Set.Set, originalWorkoutSet.Set.Set))
                     updatedEntity.Add(workoutSet.Set.Set);
-
-                if (workoutSet.Superset != null && originalWorkoutSet.Superset != null && !ShallowEqual(workoutSet.Superset?.Set, originalWorkoutSet.Superset?.Set))
-                    updatedEntity.Add(workoutSet.Superset.Set);
             }
 
             foreach (var entity in updatedEntity)
@@ -319,7 +279,6 @@ namespace AppProjectGym.Pages
                 var workoutSet = new WorkoutSet()
                 {
                     SetId = setId,
-                    SuperSetId = workoutSetDisplay.Superset?.Set.Id,
                     TargetSets = workoutSetDisplay.TargetSets,
                     WorkoutId = Workout.Id
                 };
@@ -351,18 +310,6 @@ namespace AppProjectGym.Pages
                 }
             }
             return true;
-        }
-
-        private void OnToggleSuperset(object sender, EventArgs e)
-        {
-            if (sender is not Button button || button.BindingContext is not WorkoutSetDisplay workoutSetDisplay)
-                return;
-
-            workoutSetDisplay.Superset = workoutSetDisplay.Superset is null ? new()
-            {
-                Set = new()
-            } : null;
-            RefreshSetCollection();
         }
     }
 }

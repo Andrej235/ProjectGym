@@ -54,7 +54,7 @@ public partial class WorkoutCreationPage : ContentPage
 
     private void OpenInputDialog()
     {
-        workoutNameInput.Placeholder = "Enter equipment name: ";
+        workoutNameInput.Placeholder = "Enter workout name: ";
         nameInputDialogWrapper.IsVisible = true;
         whiteOverlay.IsVisible = true;
     }

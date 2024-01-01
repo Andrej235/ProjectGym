@@ -19,14 +19,6 @@ namespace AppProjectGym.Services.Mapping
                 Set = setDisplay,
             };
 
-            if (entity.SuperSetId != null)
-            {
-                var supersetDisplay = new SetDisplay { Set = await readService.Get<Set>("none", $"set/{entity.SuperSetId}") };
-                supersetDisplay.Exercise = await exerciseDisplayMapper.Map(await readService.Get<Exercise>("images", $"exercise/{supersetDisplay.Set.ExerciseId}"));
-                supersetDisplay.Weight = await readService.Get<PersonalExerciseWeight>("none", ReadService.TranslateEndPoint("weight", 0, 1), $"exercise={supersetDisplay.Exercise.Exercise.Id}", $"user={ClientInfo.User.Id}", "current=true") ?? new();
-                workoutSetDisplay.Superset = supersetDisplay;
-            }
-
             return workoutSetDisplay;
         }
     }

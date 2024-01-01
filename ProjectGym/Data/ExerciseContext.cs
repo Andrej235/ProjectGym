@@ -173,12 +173,6 @@ namespace ProjectGym.Data
                 .HasForeignKey(ws => ws.SetId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<WorkoutSet>()
-                .HasOne(ws => ws.Superset)
-                .WithMany()
-                .HasForeignKey(ws => ws.SuperSetId)
-                .OnDelete(DeleteBehavior.NoAction);
-
             modelBuilder.Entity<Set>()
                 .HasOne(s => s.Creator)
                 .WithMany(u => u.CreatedExerciseSets)
