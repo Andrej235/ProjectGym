@@ -49,6 +49,30 @@ public partial class ProfilePage : ContentPage
     public int FinishedWorkoutsCount => FinishedWorkouts is null ? 0 : FinishedWorkouts.Count;
 
 
+
+    public FinishedWorkout SelectedWorkout
+    {
+        get => selectedWorkout;
+        set
+        {
+            selectedWorkout = value;
+            OnPropertyChanged();
+        }
+    }
+    private FinishedWorkout selectedWorkout;
+
+    public List<StartedWorkout_SetDisplay> FinishedSets
+    {
+        get => finishedSets;
+        set
+        {
+            finishedSets = value;
+            OnPropertyChanged();
+        }
+    }
+    private List<StartedWorkout_SetDisplay> finishedSets;
+
+
     protected override void OnAppearing()
     {
         FinishedWorkouts = [.. context.FinishedWorkouts];
@@ -61,34 +85,27 @@ public partial class ProfilePage : ContentPage
         if (sender is not Button button || button.BindingContext is not FinishedWorkout selectedWorkout)
             return;
 
-        //This way is just straight up confusing, none the less it is missing a lot of info on completed individual sets so it needs some more work
-        var a = await Task.WhenAll(selectedWorkout.WorkoutSets.Select(async x =>
-        {
-            WorkoutSet workoutSet = await readService.Get<WorkoutSet>("all", $"workoutset/{x.WorkoutSetId}");
-            return await startedWorkoutSetDisplayMapper.Map(workoutSet);
-            /*            return new StartedWorkout_SetDisplay()
+        SelectedWorkout = selectedWorkout;
+
+        FinishedSets =
+        [
+            .. (await Task.WhenAll(selectedWorkout.WorkoutSets.Select(async x =>
+                    {
+                        WorkoutSet workoutSet = await readService.Get<WorkoutSet>("all", $"workoutset/{x.WorkoutSetId}");
+                        var startedWorkoutSetDisplays = await startedWorkoutSetDisplayMapper.Map(workoutSet);
+                        startedWorkoutSetDisplays.FinishedSets = x.Sets.Select(y => new FinishedSetDisplay()
                         {
+                            FinishedReps = y.Reps,
+                            Time = y.Time,
+                            Weight = new() { Weight = y.Weight }
+                        }).ToList();
 
-                            FinishedSets = x.Sets.Select(y => new FinishedSetDisplay()
-                            {
-                                FinishedReps = y.Reps,
-                                Time = y.Time,
-                                Weight = new() { Weight = y.Weight } //Idk if this will work, if I only display the XKG then yea it will
-                            }).ToList(),
+                        return startedWorkoutSetDisplays;
+                    })))
+        ];
 
-                            WorkoutSet = new()
-                            {
-                                Id = x.WorkoutSetId,
-                                Set = new()
-                                {
-
-                                }
-                            }
-                        };
-            */
-        }));
-
-        //finishedWorkoutDisplayWrapper.BindingContext = selectedWorkout;
+        finishedSetsCollection.ItemsSource = null;
+        finishedSetsCollection.ItemsSource = FinishedSets;
         finishedWorkoutDisplayWrapper.IsVisible = true;
     }
 }
