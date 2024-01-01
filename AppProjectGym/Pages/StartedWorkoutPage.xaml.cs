@@ -236,9 +236,12 @@ namespace AppProjectGym.Pages
                 return;
 
             activeWorkoutSetDisplay = startedWorkout_SetDisplay;
-            activeFinishedSetDisplay = startedWorkout_SetDisplay.FinishedSets.FirstOrDefault(x => x.Time == 0);
+            activeFinishedSetDisplay = activeWorkoutSetDisplay.FinishedSets.FirstOrDefault(x => x.Time == 0);
             if (activeFinishedSetDisplay is null)
-                return;
+            {
+                activeFinishedSetDisplay = new();
+                activeWorkoutSetDisplay.FinishedSets.Add(activeFinishedSetDisplay);
+            }
 
             OpenTimer(startedWorkout_SetDisplay.WorkoutSet.Set);
         }
@@ -311,6 +314,30 @@ namespace AppProjectGym.Pages
             await timerLabel.ScaleTo(1, 250, Easing.CubicOut);
         }
 
+        private void EndTimer()
+        {
+            innerCircle.TranslateTo(0, 0, 100);
+            innerCircle.ScaleTo(2.75, 500, Easing.SpringOut);
+
+            if (activeWorkoutSetDisplay is null)
+                return;
+
+            var finishedSet = activeWorkoutSetDisplay.FinishedSets.FirstOrDefault(x => x.Time == 0);
+            if (finishedSet is null || !TryParseFormattedTime(timerLabel.Text, out int time))
+                return;
+
+            finishedSet.Time = time;
+            finishedSet.Weight = activeWorkoutSetDisplay.WorkoutSet.Set.Weight.DeepCopy();
+            StartRestPeriod(finishedSet);
+
+            finishedSetDialogWrapper.BindingContext = null;
+            finishedSetDialogWrapper.BindingContext = finishedSet;
+
+            OpenFinishedSetDialog();
+        }
+
+
+
         static string FormatTime(int seconds) => seconds switch
         {
             < 60 => $"{seconds:D2}",
@@ -340,28 +367,6 @@ namespace AppProjectGym.Pages
             }
         }
 
-        private void EndTimer()
-        {
-            innerCircle.TranslateTo(0, 0, 100);
-            innerCircle.ScaleTo(2.75, 500, Easing.SpringOut);
-
-            if (activeWorkoutSetDisplay is null)
-                return;
-
-            var finishedSet = activeWorkoutSetDisplay.FinishedSets.FirstOrDefault(x => x.Time == 0);
-            if (finishedSet is null || !TryParseFormattedTime(timerLabel.Text, out int time))
-                return;
-
-            finishedSet.Time = time;
-            finishedSet.Weight = activeWorkoutSetDisplay.WorkoutSet.Set.Weight.DeepCopy();
-            StartRestPeriod(finishedSet);
-
-            finishedSetDialogWrapper.BindingContext = null;
-            finishedSetDialogWrapper.BindingContext = finishedSet;
-
-            OpenFinishedSetDialog();
-        }
-
         private bool isResting;
         private int restTimer;
         private async void StartRestPeriod(FinishedSetDisplay finishedSetDisplay)
@@ -384,6 +389,9 @@ namespace AppProjectGym.Pages
         #endregion
 
         #region Finished set
+        private delegate void RepsInputHanlder(int reps);
+        private RepsInputHanlder repsInputHanlder;
+
         private void OpenFinishedSetDialog()
         {
             completedRepsEntry.Text = "";
@@ -397,26 +405,55 @@ namespace AppProjectGym.Pages
             if (!TryParseFormattedTime(timerLabel.Text, out int time) || time <= 0)
                 return;
 
+            repsInputHanlder = reps =>
+            {
+                SaveActiveFinishedSetChanges(reps);
+                activeWorkoutSetDisplay = null;
+                activeFinishedSetDisplay = null;
+                CloseFinishedSetDialog();
+                CloseTimer();
+            };
+
             if (!int.TryParse(completedRepsEntry.Text, out int completedReps) || completedReps <= 0)
             {
                 OpenRepsForcedInputDialog();
                 return;
             }
 
-            SaveActiveFinishedSetChanges(completedReps);
+            repsInputHanlder(completedReps);
         }
 
         private void OnStartNextSetButtonPressed(object sender, EventArgs e)
         {
+            if (!TryParseFormattedTime(timerLabel.Text, out int time) || time <= 0)
+                return;
 
+            repsInputHanlder = reps =>
+            {
+                SaveActiveFinishedSetChanges(reps);
+                //WIP
+                activeFinishedSetDisplay = activeWorkoutSetDisplay.FinishedSets.FirstOrDefault(x => x.Time == 0);
+                if (activeFinishedSetDisplay is null)
+                {
+                    activeFinishedSetDisplay = new();
+                    activeWorkoutSetDisplay.FinishedSets.Add(activeFinishedSetDisplay);
+                }
+
+                timerWrapper.BindingContext = activeWorkoutSetDisplay.WorkoutSet.Set;
+                CloseFinishedSetDialog();
+            };
+
+            if (!int.TryParse(completedRepsEntry.Text, out int completedReps) || completedReps <= 0)
+            {
+                OpenRepsForcedInputDialog();
+                return;
+            }
+            repsInputHanlder(completedReps);
         }
 
         private void SaveActiveFinishedSetChanges(int completedReps)
         {
             activeFinishedSetDisplay.FinishedReps = completedReps;
-
-            CloseFinishedSetDialog();
-            CloseTimer();
             RefreshSetCollection();
 
             var activeFinishedWorkoutSet = finishedWorkout.WorkoutSets.FirstOrDefault(x => x.WorkoutSetId == activeWorkoutSetDisplay.WorkoutSet.Id);
@@ -445,8 +482,6 @@ namespace AppProjectGym.Pages
             SelectedWorkoutSet = null;
             SelectedWorkoutSet = activeWorkoutSetDisplay;
 
-            activeWorkoutSetDisplay = null;
-            activeFinishedSetDisplay = null;
             activeFinishedSet = finishedSet;
         }
 
@@ -468,7 +503,7 @@ namespace AppProjectGym.Pages
             if (!int.TryParse(completedRepsForcedInputDialogEntry.Text, out int reps))
                 return;
 
-            SaveActiveFinishedSetChanges(reps);
+            repsInputHanlder(reps);
             CloseRepsForcedInputDialog();
         }
         #endregion

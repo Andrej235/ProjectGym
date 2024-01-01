@@ -196,5 +196,12 @@ namespace AppProjectGym.Pages
             }
         }
         #endregion
+
+        private async void OnOpenWeightHistory(object sender, EventArgs e)
+        {
+            weightHistoryWrapper.IsVisible = true;
+            var weights = await readService.Get<List<PersonalExerciseWeight>>("none", "weight", $"exercise={Exercise.Id}");
+
+        }
     }
 }

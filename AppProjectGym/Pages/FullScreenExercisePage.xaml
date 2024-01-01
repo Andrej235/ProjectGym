@@ -58,7 +58,7 @@
 
     <Grid HorizontalOptions="Fill" VerticalOptions="Fill">
         <ScrollView>
-            <FlexLayout Direction="Column" Margin="10, 0, 10, 5">
+            <VerticalStackLayout Margin="10, 0, 10, 5">
                 <Border HorizontalOptions="FillAndExpand" StrokeThickness="3" Margin="10">
                     <SwipeView  Margin="5" Padding="0">
                         <Label Text="{Binding ExerciseDisplay.Exercise.Name}" HorizontalTextAlignment="Center" Margin="0, 10, 0, 10" FontSize="Medium"/>
@@ -194,7 +194,8 @@
                     </CollectionView>
                 </Grid>
 
-            </FlexLayout>
+                <Button Text="Show weight history" Margin="50" Clicked="OnOpenWeightHistory"/>
+            </VerticalStackLayout>
         </ScrollView>
 
         <VerticalStackLayout x:Name="confirmDialogWrapper"
@@ -245,5 +246,14 @@
                 </Button.Background>
             </Button>
         </Border>
+
+        <Grid x:Name="weightHistoryWrapper"
+              HorizontalOptions="Fill" 
+              VerticalOptions="Fill" 
+              BackgroundColor="Black"
+              Opacity="0.5" 
+              IsVisible="false">
+            
+        </Grid>
     </Grid>
 </ContentPage>

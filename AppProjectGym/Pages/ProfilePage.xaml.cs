@@ -2,6 +2,7 @@ using AppProjectGym.Information;
 using AppProjectGym.LocalDatabase;
 using AppProjectGym.LocalDatabase.Models;
 using AppProjectGym.Models;
+using AppProjectGym.Services;
 using AppProjectGym.Services.Mapping;
 using AppProjectGym.Services.Read;
 
@@ -9,7 +10,6 @@ namespace AppProjectGym.Pages;
 
 public partial class ProfilePage : ContentPage
 {
-    private User user;
     private readonly FinishedWorkoutContext context;
     private readonly IReadService readService;
     private readonly IEntityDisplayMapper<WorkoutSet, StartedWorkout_SetDisplay> startedWorkoutSetDisplayMapper;
@@ -20,20 +20,11 @@ public partial class ProfilePage : ContentPage
 
         context = FinishedWorkoutContext.Context;
         BindingContext = this;
-        User = ClientInfo.User;
         this.readService = readService;
         this.startedWorkoutSetDisplayMapper = startedWorkoutSetDisplayMapper;
     }
 
-    public User User
-    {
-        get => user;
-        private set
-        {
-            user = value;
-            OnPropertyChanged();
-        }
-    }
+    public User User => ClientInfo.User;
 
     public List<FinishedWorkout> FinishedWorkouts
     {
@@ -72,19 +63,44 @@ public partial class ProfilePage : ContentPage
     }
     private List<StartedWorkout_SetDisplay> finishedSets;
 
+    private bool isLoadingData;
 
     protected override void OnAppearing()
     {
-        FinishedWorkouts = [.. context.FinishedWorkouts];
+        FinishedWorkouts = [.. context.FinishedWorkouts.Where(x => x.DateTime != default).OrderByDescending(x => x.DateTime)];
 
         base.OnAppearing();
     }
+
+    protected override bool OnBackButtonPressed()
+    {
+        BackCommand.Execute(null);
+        return true;
+    }
+
+    public Command BackCommand => new(() =>
+    {
+        if (finishedWorkoutDisplayWrapper.IsVisible)
+        {
+            if (isLoadingData)
+                return;
+
+            finishedWorkoutDisplayWrapper.IsVisible = false;
+            FinishedSets = null;
+            finishedSetsCollection.ItemsSource = null;
+        }
+        else
+            GoBack();
+    });
+
+    private static async void GoBack() => await NavigationService.GoToAsync("..");
 
     private async void OnOpenFinishedWorkout(object sender, EventArgs e)
     {
         if (sender is not Button button || button.BindingContext is not FinishedWorkout selectedWorkout)
             return;
 
+        isLoadingData = true;
         finishedWorkoutDisplayWrapper.IsVisible = true;
         SelectedWorkout = selectedWorkout;
 
@@ -108,5 +124,6 @@ public partial class ProfilePage : ContentPage
 
         finishedSetsCollection.ItemsSource = null;
         finishedSetsCollection.ItemsSource = FinishedSets;
+        isLoadingData = false;
     }
 }

@@ -9,6 +9,10 @@
              Title="My Profile"
              x:DataType="Pages:ProfilePage">
 
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior Command="{Binding BackCommand}"/>
+    </Shell.BackButtonBehavior>
+    
     <ContentPage.Resources>
         <ValueConverters:IsNotNullConverter x:Key="IsNotNull"/>
         <ValueConverters:SecondsToFormattedTimeConverter x:Key="TimeFormatter"/>
