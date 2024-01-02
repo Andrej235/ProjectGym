@@ -40,51 +40,5 @@ namespace ProjectGym.Services.Read
 
             return query.Include(lambda);
         }
-
-       /* protected override Expression<Func<T, bool>> TranslateKeyValueToExpression(string key, string value)
-        {
-            try
-            {
-                var properties = typeof(T).GetProperties();
-                if (key.Contains("id"))
-                {
-                    key = key.Replace("id", "");
-                    if (int.TryParse(value, out int id))
-                    {
-                        var keyProperty = properties.SingleOrDefault(x => x.Name.ToLower().Contains(key)) ?? throw new NotSupportedException($"Invalid key in search query. Entered key: {key}");
-
-                        if (keyProperty.PropertyType.IsGenericType && keyProperty.PropertyType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-                        {
-                            var innerPropertyType = keyProperty.PropertyType.GetGenericArguments()[0]; //Muscle
-
-                            var parameter = Expression.Parameter(innerPropertyType, "x"); //Muscle x
-                            var propertyAccess = Expression.Property(parameter, "Id"); //Muscle x.Id
-
-                            var enumerable = Expression.Convert(keyProperty, typeof(IEnumerable<object>));
-
-                            // Call Any method on the IEnumerable<MyObject>
-                            MethodInfo anyMethod = typeof(Enumerable).GetMethods()
-                                .First(m => m.Name == "Any" && m.GetParameters().Length == 2)
-                                .MakeGenericMethod(typeof(T));
-
-                        }
-
-
-
-                        //return Expression.Lambda<Func<T, bool>>(comparison, parameter);
-                    }
-                    else if (Guid.TryParse(value, out Guid guid))
-                    {
-                        throw new NotSupportedException($"Invalid key in search query. Entered key: {key}");
-                    }
-                }
-                throw new NotSupportedException($"Invalid search query value. Entered value: {value}");
-            }
-            catch (Exception ex)
-            {
-                LogDebugger.LogError(ex);
-                throw;
-            }
-        }*/
     }
 }

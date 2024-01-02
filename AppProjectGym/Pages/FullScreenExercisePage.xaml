@@ -4,7 +4,7 @@
              xmlns:Models="clr-namespace:AppProjectGym.Models"
              xmlns:Pages="clr-namespace:AppProjectGym.Pages"
              xmlns:ValueConverters="clr-namespace:AppProjectGym.ValueConverters"
-             xmlns:Charts="clr-namespace:AppProjectGym.Charts.LineChart"
+             xmlns:Charts="clr-namespace:AppProjectGym.Charts"
              x:Class="AppProjectGym.Pages.FullScreenExercisePage"
              x:DataType="Pages:FullScreenExercisePage"
              Title="{Binding ExerciseDisplay.Exercise.Name}">
@@ -248,6 +248,15 @@
             </Button>
         </Border>
 
+        <Button x:Name="blackOverlay"
+                HorizontalOptions="Fill" 
+                VerticalOptions="Fill" 
+                BackgroundColor="Black"
+                Opacity="1" 
+                IsVisible="false"
+                ZIndex="99"
+                Clicked="OnWhiteOverlayClicked" />
+
         <Grid x:Name="weightHistoryWrapper"
               HorizontalOptions="Fill" 
               VerticalOptions="Fill" 
@@ -256,10 +265,7 @@
               IsVisible="false"
               ZIndex="100">
 
-            <Charts:LineChartView x:Name="chart" 
-                                  Background="White"
-                                  Points="{Binding Points}" 
-                                  Margin="30"/>
+            <Charts:LineChartView x:Name="chart" Margin="30"/>
         </Grid>
     </Grid>
 </ContentPage>

@@ -57,10 +57,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <MauiXaml Update="Charts\LineChart\LineChartView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </MauiXaml>
-    <MauiXaml Update="Charts\PieChart\PieChartView.xaml">
+    <MauiXaml Update="Charts\LineChartView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
     <MauiXaml Update="Pages\EquipmentCreationPage.xaml">

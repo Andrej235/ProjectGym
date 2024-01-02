@@ -1,3 +1,4 @@
+using AppProjectGym.Charts;
 using AppProjectGym.Models;
 using AppProjectGym.Services;
 using AppProjectGym.Services.Delete;
@@ -16,8 +17,6 @@ namespace AppProjectGym.Pages
         private readonly IDeleteService deleteService;
         private readonly IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper;
 
-        public Dictionary<string, float> Points { get; }
-
         public FullScreenExercisePage(IReadService readService, IDeleteService deleteService, IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper)
         {
             InitializeComponent();
@@ -25,23 +24,6 @@ namespace AppProjectGym.Pages
             this.readService = readService;
             this.deleteService = deleteService;
             this.exerciseDisplayMapper = exerciseDisplayMapper;
-
-            Points = new Dictionary<string, float>()
-            {
-                {"Apples",25},
-                {"Bananas",13},
-                {"Strawberries",25},
-                {"Blueberries", 53},
-                {"Oranges", 14},
-                {"Grapes", 52},
-                {"Watermelons", 15},
-                {"Pears",34 },
-                {"Cantalopes", 67},
-                {"Citrus",53 },
-                {"Starfruit", 43},
-                {"Papaya", 22},
-                {"Papassya", 22},
-            };
         }
 
         public bool IsInSelectionMode
@@ -219,12 +201,13 @@ namespace AppProjectGym.Pages
         private async void OnOpenWeightHistory(object sender, EventArgs e)
         {
             chart.Points = null;
-            chart.Points = Points;
+            var weights = await readService.Get<List<PersonalExerciseWeight>>("none", ReadService.TranslateEndPoint("weight", 0, 30), $"exercise={Exercise.Id}");
 
-            //var weights = await readService.Get<List<PersonalExerciseWeight>>("none", "weight", $"exercise={Exercise.Id}");
-            //chart.Points = weights.Select(x => new KeyValuePair<string, float>(x.DateOfAchieving?.Date.ToString(), x.Weight)).ToDictionary();
+            static string FormatDateTime(DateTime? dateTime) => dateTime is null ? "" : $"{dateTime?.Day:D2}.{dateTime?.Month:D2}";
+            chart.Points = weights.Select(x => new ValuePoint(FormatDateTime(x.DateOfAchieving), x.Weight));
 
             weightHistoryWrapper.IsVisible = true;
+            blackOverlay.IsVisible = true;
         }
     }
 }

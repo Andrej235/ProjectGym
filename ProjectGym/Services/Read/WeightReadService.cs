@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ProjectGym.Data;
+﻿using ProjectGym.Data;
 using ProjectGym.Models;
 using System.Linq.Expressions;
 
@@ -7,6 +6,13 @@ namespace ProjectGym.Services.Read
 {
     public class WeightReadService(ExerciseContext context) : ReadService<PersonalExerciseWeight>(context)
     {
+        protected override List<PersonalExerciseWeight> ApplyOffsetAndLimit(IQueryable<PersonalExerciseWeight> queryable, int? offset = 0, int? limit = -1)
+        {
+            var baseRes = base.ApplyOffsetAndLimit(queryable.Reverse().AsQueryable(), offset, limit);
+            baseRes.Reverse();
+            return baseRes;
+        }
+
         protected override Expression<Func<PersonalExerciseWeight, bool>> TranslateKeyValueToExpression(string key, string value)
         {
             if (key == "exercise" && int.TryParse(value, out var exerciseId))

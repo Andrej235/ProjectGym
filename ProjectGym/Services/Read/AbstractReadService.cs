@@ -140,7 +140,7 @@ namespace ProjectGym.Services.Read
             .AsQueryable();
         }
 
-        protected List<T> ApplyOffsetAndLimit(IQueryable<T> queryable, int? offset = 0, int? limit = -1)
+        protected virtual List<T> ApplyOffsetAndLimit(IQueryable<T> queryable, int? offset = 0, int? limit = -1)
         {
             queryable = queryable.Skip(offset ?? 0);
 

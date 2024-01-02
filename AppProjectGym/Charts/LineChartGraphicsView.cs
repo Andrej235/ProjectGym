@@ -1,4 +1,4 @@
-﻿namespace AppProjectGym.Charts.LineChart
+﻿namespace AppProjectGym.Charts
 {
     internal class LineChartGraphicsView : GraphicsView
     {
@@ -26,13 +26,13 @@
             {
                 var chartView = ((LineChartGraphicsView)bindable);
 
-                chartView.LineChartDrawable.Max = chartView.Points?.Select(x => x.Value).Max() * 1.1f ?? 0.0f;
-                chartView.LineChartDrawable.Points = (Dictionary<string, float>)newValue;
+                chartView.LineChartDrawable.Max = chartView.Points?.Select(x => x.Value).Max() ?? 0;
+                chartView.LineChartDrawable.Points = (IEnumerable<ValuePoint>)newValue;
             });
 
-        public Dictionary<string, float> Points
+        public IEnumerable<ValuePoint> Points
         {
-            get => (Dictionary<string, float>)GetValue(PointsProperty);
+            get => (IEnumerable<ValuePoint>)GetValue(PointsProperty);
             set => SetValue(PointsProperty, value);
         }
 

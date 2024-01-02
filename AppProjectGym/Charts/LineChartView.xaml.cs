@@ -1,23 +1,27 @@
-namespace AppProjectGym.Charts.LineChart;
+namespace AppProjectGym.Charts;
 
 public partial class LineChartView : StackLayout
 {
     public static readonly BindableProperty PointsProperty = BindableProperty.Create(nameof(Points),
-            typeof(Dictionary<string, float>),
+            typeof(IEnumerable<ValuePoint>),
             typeof(LineChartView),
-            new Dictionary<string, float>(),
+            new List<ValuePoint>(),
             propertyChanged: (bindable, oldValue, newValue) =>
             {
                 var chartView = ((LineChartView)bindable);
                 //Give the heighest bar a little head room for aesthetics
                 chartView.Chart.LineChartDrawable.Max = chartView.Points?.Select(x => x.Value).Max() * 1.1f ?? 0.0f;
                 //Set the points from XAML to component
-                chartView.Chart.LineChartDrawable.Points = (Dictionary<string, float>)newValue;
+                chartView.Chart.LineChartDrawable.Points = (IEnumerable<ValuePoint>)newValue;
             });
-    public Dictionary<string, float> Points
+
+    public IEnumerable<ValuePoint> Points
     {
-        get => (Dictionary<string, float>)GetValue(PointsProperty);
+        get => (IEnumerable<ValuePoint>)GetValue(PointsProperty);
         set => SetValue(PointsProperty, value);
     }
-    public LineChartView() => InitializeComponent();
+    public LineChartView()
+    {
+        InitializeComponent();
+    }
 }
