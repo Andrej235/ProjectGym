@@ -44,11 +44,12 @@
     <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Maui" Version="6.0.0" />
-    <PackageReference Include="CommunityToolkit.Maui.Core" Version="6.0.0" />
+    <PackageReference Include="CommunityToolkit.Maui" Version="7.0.1" />
+    <PackageReference Include="CommunityToolkit.Maui.Core" Version="7.0.1" />
     <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.3" />
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.3" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Maui.Graphics" Version="8.0.3" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Pages\FullScreenExercisePage.xaml.cs">
@@ -56,6 +57,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <MauiXaml Update="Charts\LineChart\LineChartView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
+    <MauiXaml Update="Charts\PieChart\PieChartView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
     <MauiXaml Update="Pages\EquipmentCreationPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>

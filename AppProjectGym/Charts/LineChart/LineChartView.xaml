@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<StackLayout xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:charts="clr-namespace:AppProjectGym.Charts.LineChart"
+             x:DataType="charts:LineChartView"
+             x:Class="AppProjectGym.Charts.LineChart.LineChartView">
+
+    <Grid HorizontalOptions="Fill" VerticalOptions="Fill" x:Name="wrapper">
+        <charts:LineChartGraphicsView x:Name="Chart"
+                                      Points="{Binding Points}"
+                                      TranslationY="400"
+                                      TranslationX="-150"
+                                      HeightRequest="500"
+                                      Rotation="90"/>
+        <Slider Minimum="0"
+                Maximum="1"
+                AnchorY="-500"
+                HorizontalOptions="Fill" 
+                VerticalOptions="Start"
+                HeightRequest="75"
+                BackgroundColor="Black"
+                ThumbColor="White"
+                MinimumTrackColor="White"
+                MaximumTrackColor="CadetBlue"
+                Value="{Binding Source={x:Reference Chart}, Path=XAxisScale}"/>
+    </Grid>
+</StackLayout>

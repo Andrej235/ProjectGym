@@ -4,6 +4,7 @@
              xmlns:Models="clr-namespace:AppProjectGym.Models"
              xmlns:Pages="clr-namespace:AppProjectGym.Pages"
              xmlns:ValueConverters="clr-namespace:AppProjectGym.ValueConverters"
+             xmlns:Charts="clr-namespace:AppProjectGym.Charts.LineChart"
              x:Class="AppProjectGym.Pages.FullScreenExercisePage"
              x:DataType="Pages:FullScreenExercisePage"
              Title="{Binding ExerciseDisplay.Exercise.Name}">
@@ -251,9 +252,14 @@
               HorizontalOptions="Fill" 
               VerticalOptions="Fill" 
               BackgroundColor="Black"
-              Opacity="0.5" 
-              IsVisible="false">
-            
+              Opacity="1" 
+              IsVisible="false"
+              ZIndex="100">
+
+            <Charts:LineChartView x:Name="chart" 
+                                  Background="White"
+                                  Points="{Binding Points}" 
+                                  Margin="30"/>
         </Grid>
     </Grid>
 </ContentPage>
