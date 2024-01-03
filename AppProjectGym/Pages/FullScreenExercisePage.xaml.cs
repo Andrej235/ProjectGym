@@ -207,9 +207,13 @@ namespace AppProjectGym.Pages
             if (sender is not Button button || button.Text == "Not yet attempted")
                 return;
 
+            isLoadingData = true;
             var weights = await readService.Get<List<PersonalExerciseWeight>>("none", ReadService.TranslateEndPoint("weight", 0, 20), $"exercise={Exercise.Id}", $"user={ClientInfo.User.Id}");
             if (weights.Count == 0)
+            {
+                isLoadingData = false;
                 return;
+            }
 
             if (weights.Count < 5)
             {
@@ -232,6 +236,27 @@ namespace AppProjectGym.Pages
             var maxWeight = weights.MaxBy(x => x.Weight);
             weightHistoryMaxWeightLabel.Text = $"Maximum weight: {maxWeight.Weight}KG";
             weightHistoryMaxWeightDateLabel.Text = $"Achieved: {maxWeight.DateOfAchieving?.ToString("dd.MM.yyyy.")}";
+            isLoadingData = false;
         }
+
+        #region Custom back button logic
+        protected override bool OnBackButtonPressed()
+        {
+            BackCommand.Execute(null);
+            return true;
+        }
+        private bool isLoadingData;
+        public Command BackCommand => new(() =>
+        {
+            if (isLoadingData)
+                return;
+
+            if (weightHistoryWrapper.IsVisible)
+                weightHistoryWrapper.IsVisible = false;
+            else
+                GoBack();
+        });
+        private static async void GoBack() => await NavigationService.GoToAsync("..");
+        #endregion
     }
 }

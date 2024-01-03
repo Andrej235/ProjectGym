@@ -72,6 +72,7 @@ public partial class ProfilePage : ContentPage
         base.OnAppearing();
     }
 
+    #region Custom back button logic
     protected override bool OnBackButtonPressed()
     {
         BackCommand.Execute(null);
@@ -80,11 +81,11 @@ public partial class ProfilePage : ContentPage
 
     public Command BackCommand => new(() =>
     {
+        if (isLoadingData)
+            return;
+
         if (finishedWorkoutDisplayWrapper.IsVisible)
         {
-            if (isLoadingData)
-                return;
-
             finishedWorkoutDisplayWrapper.IsVisible = false;
             FinishedSets = null;
             finishedSetsCollection.ItemsSource = null;
@@ -94,6 +95,7 @@ public partial class ProfilePage : ContentPage
     });
 
     private static async void GoBack() => await NavigationService.GoToAsync("..");
+    #endregion
 
     private async void OnOpenFinishedWorkout(object sender, EventArgs e)
     {

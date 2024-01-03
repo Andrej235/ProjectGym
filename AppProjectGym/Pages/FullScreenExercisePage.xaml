@@ -9,6 +9,10 @@
              x:DataType="Pages:FullScreenExercisePage"
              Title="{Binding ExerciseDisplay.Exercise.Name}">
 
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior Command="{Binding BackCommand}"/>
+    </Shell.BackButtonBehavior>
+
     <ContentPage.Resources>
         <Style TargetType="Border">
             <Setter Property="VisualStateManager.VisualStateGroups">
@@ -95,7 +99,7 @@
                 <Border StrokeShape="Line -100, 0, 1000, 0"
                         Stroke="#fff"
                         StrokeThickness="1"/>
-                
+
                 <Button x:Name="weightHistoryBtn"
                         Text="Show weight history" 
                         BackgroundColor="Transparent" 
@@ -254,7 +258,7 @@
             </Button>
         </Border>
 
-            
+
 
         <Grid x:Name="weightHistoryWrapper"
               HorizontalOptions="Fill" 
@@ -271,21 +275,29 @@
                 <Label x:Name="weightHistoryMaxWeightLabel" Text="Maximum weight: 0KG" HorizontalTextAlignment="Center" FontSize="Subtitle" Margin="0, 15, 0, 3" />
                 <Label x:Name="weightHistoryMaxWeightDateLabel" Text="Achieved: DD.MM.YYYY." HorizontalTextAlignment="Center" FontSize="Caption" />
 
-                <Border Padding="10" StrokeShape="RoundRectangle 20">
-                    <Grid>
-                        <Charts:LineChartView x:Name="weightHistoryLineChart"
-                                      FillColor="Blue"
+                <Charts:LineChartView x:Name="weightHistoryLineChart"
                                       LineColor="LightBlue"
                                       TextColor="White"
-                                      FontSize="25"/>
-                    </Grid>
-                </Border>
+                                      FontSize="25">
+                    <Charts:LineChartView.FillColor>
+                        <LinearGradientBrush EndPoint=".5, 1">
+                            <LinearGradientBrush.GradientStops>
+                                <GradientStop Offset="0" Color="Blue"/>
+                                <GradientStop Offset="0.33" Color="White"/>
+                            </LinearGradientBrush.GradientStops>
+                        </LinearGradientBrush>
+                    </Charts:LineChartView.FillColor>
+                </Charts:LineChartView>
+
+                <Border Padding="10" StrokeShape="RoundRectangle 20">
+                    <Grid>
                         <Label Text="History not available - not enough data to create a chart"
                                HorizontalTextAlignment="Center"
                                Margin="25, 0, 25, 0"
                                FontSize="Caption"
                                IsVisible="{Binding Source={x:Reference weightHistoryLineChart}, Path=IsVisible, Converter={StaticResource InverseBool}}"/>
-
+                    </Grid>
+                </Border>
             </VerticalStackLayout>
         </Grid>
     </Grid>

@@ -20,15 +20,15 @@ public partial class LineChartView : StackLayout
 
 
 
-    public Color FillColor
+    public GradientBrush FillColor
     {
-        get => (Color)GetValue(FillColorProperty);
+        get => (GradientBrush)GetValue(FillColorProperty);
         set => SetValue(FillColorProperty, value);
     }
     public static readonly BindableProperty FillColorProperty = BindableProperty.Create(nameof(FillColor),
-        typeof(Color),
+        typeof(GradientBrush),
         typeof(LineChartView),
-        new Color(),
+        new LinearGradientBrush(),
         propertyChanged: (bindable, oldValue, newValue) =>
         {
             var chartView = ((LineChartView)bindable);

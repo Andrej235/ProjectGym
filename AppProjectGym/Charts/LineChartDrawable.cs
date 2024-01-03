@@ -34,7 +34,7 @@ namespace AppProjectGym.Charts
         }
         private double xAxisScale;
 
-        public Color FillColor
+        public GradientBrush FillColor
         {
             get => fillColor;
             set
@@ -43,7 +43,7 @@ namespace AppProjectGym.Charts
                 OnPropertyChanged();
             }
         }
-        private Color fillColor;
+        private GradientBrush fillColor;
 
         public Color LineColor
         {
@@ -78,9 +78,9 @@ namespace AppProjectGym.Charts
         }
         private float fontSize;
 
-
-
         public LineChartDrawable() => VerticalOptions = LayoutOptions.Fill;
+
+
 
         public void Draw(ICanvas canvas, RectangleF dirtyRect)
         {
@@ -135,17 +135,6 @@ namespace AppProjectGym.Charts
                 currentPointXAxis += POINT_DISTANCE;
             }
 
-            var linearGradientPaint = new LinearGradientPaint
-            {
-                StartPoint = new Point(0, 0),
-                EndPoint = new Point(0, 1),
-                GradientStops = [
-                    (new PaintGradientStop(1f, FillColor)),
-                    (new PaintGradientStop(.5f, new(FillColor.Red, FillColor.Green, FillColor.Blue, 1)))
-                    ]
-            };
-            canvas.SetFillPaint(linearGradientPaint, new RectangleF(0, dirtyRect.Height, lastPointXAxis, dirtyRect.Height));
-
             //Connect bottom of the line chart to the top
             mainLinePath.LineTo(new PointF(lastPointXAxis, dirtyRect.Height));
             mainLinePath.LineTo(new PointF(firstPointXAxis, dirtyRect.Height));
@@ -155,6 +144,7 @@ namespace AppProjectGym.Charts
             mainLinePath.Close();
 
             //Fill chart with gradient
+            canvas.SetFillPaint(fillColor, new RectangleF(0, dirtyRect.Height, lastPointXAxis, dirtyRect.Height));
             canvas.FillPath(mainLinePath);
 
             //Remember selected x axis
