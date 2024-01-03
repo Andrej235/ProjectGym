@@ -201,7 +201,7 @@ namespace AppProjectGym.Pages
         private async void OnOpenWeightHistory(object sender, EventArgs e)
         {
             chart.Points = null;
-            var weights = await readService.Get<List<PersonalExerciseWeight>>("none", ReadService.TranslateEndPoint("weight", 0, 30), $"exercise={Exercise.Id}");
+            var weights = await readService.Get<List<PersonalExerciseWeight>>("none", ReadService.TranslateEndPoint("weight", 0, 20), $"exercise={Exercise.Id}");
 
             static string FormatDateTime(DateTime? dateTime) => dateTime is null ? "" : $"{dateTime?.Day:D2}.{dateTime?.Month:D2}";
             chart.Points = weights.Select(x => new ValuePoint(FormatDateTime(x.DateOfAchieving), x.Weight));

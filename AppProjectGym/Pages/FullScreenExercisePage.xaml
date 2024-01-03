@@ -265,7 +265,12 @@
               IsVisible="false"
               ZIndex="100">
 
-            <Charts:LineChartView x:Name="chart" Margin="30"/>
+            <Charts:LineChartView x:Name="chart"
+                                  Margin="30" 
+                                  FillColor="Blue"
+                                  LineColor="LightBlue"
+                                  TextColor="White"
+                                  FontSize="25"/>
         </Grid>
     </Grid>
 </ContentPage>

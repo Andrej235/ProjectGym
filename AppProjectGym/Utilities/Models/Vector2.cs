@@ -48,5 +48,11 @@
         public float Magnitude => (float)Math.Sqrt(X * X + Y * Y);
 
         public override string ToString() => $"({X}, {Y})";
+
+
+
+        public static implicit operator Vector2(PointF value) => new(value.X, value.Y);
+        public static implicit operator PointF(Vector2 value) => new(value.X, value.Y);
+        public static Vector2 operator +(Vector2 left, Vector2 right) => new(left.X + right.X, left.Y + right.Y);
     }
 }

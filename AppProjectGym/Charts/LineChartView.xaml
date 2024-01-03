@@ -7,7 +7,6 @@
 
     <Grid HorizontalOptions="Fill" VerticalOptions="Fill" x:Name="wrapper">
         <charts:LineChartGraphicsView x:Name="Chart"
-                                      Points="{Binding Points}"
                                       TranslationY="400"
                                       TranslationX="-150"
                                       HeightRequest="500"
