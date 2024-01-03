@@ -14,16 +14,13 @@ namespace ProjectGym.Services.Mapping
             UserId = dto.UserId,
         };
 
-        public PersonalExerciseWeightDTO Map(PersonalExerciseWeight entity)
+        public PersonalExerciseWeightDTO Map(PersonalExerciseWeight entity) => new()
         {
-            return new()
-            {
-                Weight = entity.Weight,
-                DateOfAchieving = entity.DateOfAchieving,
-                IsCurrent = entity.IsCurrent,
-                ExerciseId = entity.ExerciseId,
-                UserId = entity.UserId,
-            };
-        }
+            Weight = entity.Weight,
+            DateOfAchieving = entity.DateOfAchieving,
+            IsCurrent = entity.IsCurrent,
+            ExerciseId = entity.ExerciseId,
+            UserId = entity.UserId,
+        };
     }
 }

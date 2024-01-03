@@ -4,9 +4,10 @@ using AppInfo = AppProjectGym.Information.AppInfo;
 
 namespace AppProjectGym.Services.Read
 {
+#nullable enable
     public class ReadService(HttpClient client) : IReadService
     {
-        public async Task<T> Get<T>(string include = "none", string endPoint = "", params string[] query) where T : class
+        public async Task<T?> Get<T>(string include = "none", string endPoint = "", params string[] query) where T : class
         {
             try
             {
@@ -28,7 +29,7 @@ namespace AppProjectGym.Services.Read
                 response.EnsureSuccessStatusCode();
 
                 string content = await response.Content.ReadAsStringAsync();
-                T result = default;
+                T? result = default;
                 try
                 {
                     result = JsonSerializer.Deserialize<T>(content, AppInfo.DeserializationOptions);
@@ -38,7 +39,7 @@ namespace AppProjectGym.Services.Read
                     try
                     {
                         if (!typeof(T).IsGenericType || typeof(T).GetGenericTypeDefinition() != typeof(IEnumerable<>))
-                            result = JsonSerializer.Deserialize<IEnumerable<T>>(content, AppInfo.DeserializationOptions).First();
+                            result = JsonSerializer.Deserialize<IEnumerable<T>>(content, AppInfo.DeserializationOptions)?.FirstOrDefault();
                     }
                     catch (Exception)
                     {

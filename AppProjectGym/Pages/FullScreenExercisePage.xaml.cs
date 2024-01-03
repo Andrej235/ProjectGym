@@ -1,4 +1,5 @@
 using AppProjectGym.Charts;
+using AppProjectGym.Information;
 using AppProjectGym.Models;
 using AppProjectGym.Services;
 using AppProjectGym.Services.Delete;
@@ -103,8 +104,11 @@ namespace AppProjectGym.Pages
             int id = Convert.ToInt32(query["id"]);
             IsInSelectionMode = query.TryGetValue("selectionMode", out object selectionModeObj) && selectionModeObj is bool selectionMode && selectionMode;
 
-            Exercise = await readService.Get<Exercise>("none", $"exercise/{id}");
+            Exercise = await readService.Get<Exercise>("images", $"exercise/{id}");
             ExerciseDisplay = await exerciseDisplayMapper.Map(Exercise);
+
+            var currentWeight = await readService.Get<PersonalExerciseWeight>("none", "weight", $"user={ClientInfo.User.Id}", $"exercise={id}", "current=true");
+            weightHistoryBtn.Text = currentWeight is null ? "Not yet attempted" : $"Weight you used last time: {currentWeight.Weight}KG";
 
             var primaryMuscleGroups = await readService.Get<List<MuscleGroup>>("none", "musclegroup", $"primary={Exercise.Id}");
             var primaryMuscles = await readService.Get<List<Muscle>>("none", "muscle", $"primary={Exercise.Id}");
@@ -201,7 +205,7 @@ namespace AppProjectGym.Pages
         private async void OnOpenWeightHistory(object sender, EventArgs e)
         {
             chart.Points = null;
-            var weights = await readService.Get<List<PersonalExerciseWeight>>("none", ReadService.TranslateEndPoint("weight", 0, 20), $"exercise={Exercise.Id}");
+            var weights = await readService.Get<List<PersonalExerciseWeight>>("none", ReadService.TranslateEndPoint("weight", 0, 20), $"exercise={Exercise.Id}", $"user={ClientInfo.User.Id}");
 
             static string FormatDateTime(DateTime? dateTime) => dateTime is null ? "" : $"{dateTime?.Day:D2}.{dateTime?.Month:D2}";
             chart.Points = weights.Select(x => new ValuePoint(FormatDateTime(x.DateOfAchieving), x.Weight));

@@ -6,9 +6,17 @@ namespace ProjectGym.Services.Read
 {
     public class WeightReadService(ExerciseContext context) : ReadService<PersonalExerciseWeight>(context)
     {
+        protected override IQueryable<PersonalExerciseWeight> ApplyNonStrictCriterias(IQueryable<PersonalExerciseWeight> entitiesQueryable, IEnumerable<Expression<Func<PersonalExerciseWeight, bool>>> criterias)
+        {
+            foreach (var criteria in criterias)
+                entitiesQueryable = entitiesQueryable.Where(criteria);
+
+            return entitiesQueryable;
+        }
+
         protected override List<PersonalExerciseWeight> ApplyOffsetAndLimit(IQueryable<PersonalExerciseWeight> queryable, int? offset = 0, int? limit = -1)
         {
-            var baseRes = base.ApplyOffsetAndLimit(queryable.Reverse().AsQueryable(), offset, limit);
+            var baseRes = base.ApplyOffsetAndLimit(queryable.AsEnumerable().Reverse().AsQueryable(), offset, limit);
             baseRes.Reverse();
             return baseRes;
         }

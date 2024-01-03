@@ -60,7 +60,7 @@
     <Grid HorizontalOptions="Fill" VerticalOptions="Fill">
         <ScrollView>
             <VerticalStackLayout Margin="10, 0, 10, 5">
-                <Border HorizontalOptions="FillAndExpand" StrokeThickness="3" Margin="10">
+                <Border HorizontalOptions="Fill" StrokeThickness="3" Margin="10, 10, 10, 5">
                     <SwipeView  Margin="5" Padding="0">
                         <Label Text="{Binding ExerciseDisplay.Exercise.Name}" HorizontalTextAlignment="Center" Margin="0, 10, 0, 10" FontSize="Medium"/>
 
@@ -88,11 +88,18 @@
 
                 <Image Source="{Binding ExerciseDisplay.Image.ImageURL}"
                        BackgroundColor="#fff"
+                       Margin="15, 0, 15, 10"
                        MaximumHeightRequest="500"/>
 
                 <Border StrokeShape="Line -100, 0, 1000, 0"
-                    Stroke="#fff"
-                    StrokeThickness="1"/>
+                        Stroke="#fff"
+                        StrokeThickness="1"/>
+                
+                <Button x:Name="weightHistoryBtn"
+                        Text="Show weight history" 
+                        BackgroundColor="Transparent" 
+                        TextColor="White"
+                        Clicked="OnOpenWeightHistory"/>
 
                 <Grid RowDefinitions="Auto" RowSpacing="5" Margin="7, 10, 7, 10">
                     <Label Text="{Binding ExerciseDisplay.Exercise.Description}" FontSize="Caption"/>
@@ -194,8 +201,6 @@
                         </CollectionView.ItemTemplate>
                     </CollectionView>
                 </Grid>
-
-                <Button Text="Show weight history" Margin="50" Clicked="OnOpenWeightHistory"/>
             </VerticalStackLayout>
         </ScrollView>
 
@@ -266,7 +271,6 @@
               ZIndex="100">
 
             <Charts:LineChartView x:Name="chart"
-                                  Margin="30" 
                                   FillColor="Blue"
                                   LineColor="LightBlue"
                                   TextColor="White"

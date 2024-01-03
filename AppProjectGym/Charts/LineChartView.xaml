@@ -7,7 +7,7 @@
 
     <Grid HorizontalOptions="Fill" VerticalOptions="Fill" x:Name="wrapper">
         <charts:LineChartGraphicsView x:Name="Chart"
-                                      TranslationY="400"
+                                      TranslationY="300"
                                       TranslationX="-150"
                                       HeightRequest="500"
                                       Rotation="90"/>

@@ -20,9 +20,14 @@ namespace ProjectGym.Services.Create
                 await userReadService.Get(x => x.Id == toAdd.UserId, "none");
                 await exerciseReadService.Get(x => x.Id == toAdd.ExerciseId, "none");
 
-                if (toAdd.IsCurrent)
+                var userCurrentWeights = await weightReadService.Get(x => x.UserId == toAdd.UserId && x.ExerciseId == toAdd.ExerciseId && x.IsCurrent, 0, -1, "none");
+                var current = userCurrentWeights.LastOrDefault(x => x.IsCurrent);
+                if (current != null)
                 {
-                    (await weightReadService.Get(x => x.UserId == toAdd.UserId && x.ExerciseId == toAdd.ExerciseId && x.IsCurrent, 0, -1, "none")).ForEach(x =>
+                    if (current.Weight == toAdd.Weight)
+                        return current.Id;
+
+                    userCurrentWeights.ForEach(x =>
                     {
                         x.IsCurrent = false;
                         weightUpdateService.Update(x);

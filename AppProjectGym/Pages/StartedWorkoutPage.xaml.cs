@@ -144,14 +144,22 @@ namespace AppProjectGym.Pages
             if (sender is not Button button)
                 return;
 
-            PersonalExerciseWeight selectedWeight = null;
-            selectedWeight = button.BindingContext as PersonalExerciseWeight;
-            if (selectedWeight is null)
-            {
-                if (button.BindingContext is not SetDisplay setDisplay)
-                    return;
+            SetDisplay setDisplay = button.BindingContext as SetDisplay;
+            PersonalExerciseWeight selectedWeight;
 
+            if (setDisplay is not null)
+            {
                 selectedWeight = setDisplay.Weight;
+
+                if (selectedWeight.ExerciseId == 0)
+                    selectedWeight.ExerciseId = setDisplay.Exercise.Exercise.Id;
+            }
+            else
+            {
+                selectedWeight = button.BindingContext as PersonalExerciseWeight;
+
+                if (selectedWeight is null)
+                    return;
             }
 
             editWeightHandler = weightDif =>
@@ -242,6 +250,9 @@ namespace AppProjectGym.Pages
                 activeFinishedSetDisplay = new();
                 activeWorkoutSetDisplay.FinishedSets.Add(activeFinishedSetDisplay);
             }
+
+            if (activeWorkoutSetDisplay.WorkoutSet.Set.Weight is null || activeWorkoutSetDisplay.WorkoutSet.Set.Weight.Weight <= 0)
+                return;
 
             OpenTimer(startedWorkout_SetDisplay.WorkoutSet.Set);
         }
