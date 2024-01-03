@@ -204,14 +204,34 @@ namespace AppProjectGym.Pages
 
         private async void OnOpenWeightHistory(object sender, EventArgs e)
         {
-            chart.Points = null;
-            var weights = await readService.Get<List<PersonalExerciseWeight>>("none", ReadService.TranslateEndPoint("weight", 0, 20), $"exercise={Exercise.Id}", $"user={ClientInfo.User.Id}");
+            if (sender is not Button button || button.Text == "Not yet attempted")
+                return;
 
-            static string FormatDateTime(DateTime? dateTime) => dateTime is null ? "" : $"{dateTime?.Day:D2}.{dateTime?.Month:D2}";
-            chart.Points = weights.Select(x => new ValuePoint(FormatDateTime(x.DateOfAchieving), x.Weight));
+            var weights = await readService.Get<List<PersonalExerciseWeight>>("none", ReadService.TranslateEndPoint("weight", 0, 20), $"exercise={Exercise.Id}", $"user={ClientInfo.User.Id}");
+            if (weights.Count == 0)
+                return;
+
+            if (weights.Count < 5)
+            {
+                weightHistoryLineChart.IsVisible = false;
+            }
+            else
+            {
+                weightHistoryLineChart.IsVisible = true;
+                weightHistoryLineChart.Points = null;
+                weightHistoryLineChart.Points = weights.Select(x => new ValuePoint(FormatDateTime(x.DateOfAchieving), x.Weight));
+                static string FormatDateTime(DateTime? dateTime) => dateTime is null ? "" : $"{dateTime?.Day:D2}.{dateTime?.Month:D2}";
+            }
 
             weightHistoryWrapper.IsVisible = true;
-            blackOverlay.IsVisible = true;
+
+            var currentWeight = weights.LastOrDefault(x => x.IsCurrent);
+            weightHistoryCurrentWeightLabel.Text = $"Current weight: {currentWeight.Weight}KG";
+            weightHistoryCurrentWeightDateLabel.Text = $"Achieved: {currentWeight.DateOfAchieving?.ToString("dd.MM.yyyy.")}";
+
+            var maxWeight = weights.MaxBy(x => x.Weight);
+            weightHistoryMaxWeightLabel.Text = $"Maximum weight: {maxWeight.Weight}KG";
+            weightHistoryMaxWeightDateLabel.Text = $"Achieved: {maxWeight.DateOfAchieving?.ToString("dd.MM.yyyy.")}";
         }
     }
 }

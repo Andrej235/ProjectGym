@@ -55,6 +55,7 @@
         </Style>
 
         <ValueConverters:IsCollectionNotEmptyConverter x:Key="IsCollectionNotEmpty"/>
+        <ValueConverters:InverseBoolConverter x:Key="InverseBool"/>
     </ContentPage.Resources>
 
     <Grid HorizontalOptions="Fill" VerticalOptions="Fill">
@@ -253,14 +254,7 @@
             </Button>
         </Border>
 
-        <Button x:Name="blackOverlay"
-                HorizontalOptions="Fill" 
-                VerticalOptions="Fill" 
-                BackgroundColor="Black"
-                Opacity="1" 
-                IsVisible="false"
-                ZIndex="99"
-                Clicked="OnWhiteOverlayClicked" />
+            
 
         <Grid x:Name="weightHistoryWrapper"
               HorizontalOptions="Fill" 
@@ -270,11 +264,29 @@
               IsVisible="false"
               ZIndex="100">
 
-            <Charts:LineChartView x:Name="chart"
-                                  FillColor="Blue"
-                                  LineColor="LightBlue"
-                                  TextColor="White"
-                                  FontSize="25"/>
+            <VerticalStackLayout BackgroundColor="Black">
+                <Label x:Name="weightHistoryCurrentWeightLabel" Text="Current weight: 0KG" HorizontalTextAlignment="Center" FontSize="Subtitle" Margin="0, 15, 0, 3" />
+                <Label x:Name="weightHistoryCurrentWeightDateLabel" Text="Achieved: DD.MM.YYYY." HorizontalTextAlignment="Center" FontSize="Caption" />
+
+                <Label x:Name="weightHistoryMaxWeightLabel" Text="Maximum weight: 0KG" HorizontalTextAlignment="Center" FontSize="Subtitle" Margin="0, 15, 0, 3" />
+                <Label x:Name="weightHistoryMaxWeightDateLabel" Text="Achieved: DD.MM.YYYY." HorizontalTextAlignment="Center" FontSize="Caption" />
+
+                <Border Padding="10" StrokeShape="RoundRectangle 20">
+                    <Grid>
+                        <Charts:LineChartView x:Name="weightHistoryLineChart"
+                                      FillColor="Blue"
+                                      LineColor="LightBlue"
+                                      TextColor="White"
+                                      FontSize="25"/>
+                    </Grid>
+                </Border>
+                        <Label Text="History not available - not enough data to create a chart"
+                               HorizontalTextAlignment="Center"
+                               Margin="25, 0, 25, 0"
+                               FontSize="Caption"
+                               IsVisible="{Binding Source={x:Reference weightHistoryLineChart}, Path=IsVisible, Converter={StaticResource InverseBool}}"/>
+
+            </VerticalStackLayout>
         </Grid>
     </Grid>
 </ContentPage>

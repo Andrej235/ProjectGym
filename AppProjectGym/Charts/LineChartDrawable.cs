@@ -18,12 +18,10 @@ namespace AppProjectGym.Charts
             set
             {
                 points = value;
-                randomizedRelativeTextPositions = points is null ? [] : points.Select(x => new Vector2(Random.Shared.Next(-15, 15), 0)).ToList();
                 OnPropertyChanged();
             }
         }
         private IEnumerable<ValuePoint> points;
-        private List<Vector2> randomizedRelativeTextPositions;
 
         public double XAxisScale
         {
@@ -114,41 +112,39 @@ namespace AppProjectGym.Charts
 
 
                 //Draw text
-                var offSet = new Vector2(0, -currentPointYAxis + 75);//randomizedRelativeTextPositions[i];
+                var offSet = new Vector2(0, -currentPointYAxis + 75);
                 if (i % 2 == 1)
                     offSet += new Vector2(0, -75);
-            //else
-            //offSet += new Vector2(0, -100);
 
-            var textPos = new PointF(currentPointXAxis, currentPointYAxis) + offSet;
+                var textPos = new PointF(currentPointXAxis, currentPointYAxis) + offSet;
 
-            PathF textPath = new();
-            textPath.MoveTo(new PointF(currentPointXAxis, currentPointYAxis - 5));
-            textPath.LineTo(textPos);
-            canvas.DrawPath(textPath);
+                PathF textPath = new();
+                textPath.MoveTo(new PointF(currentPointXAxis, currentPointYAxis - 5));
+                textPath.LineTo(textPos);
+                canvas.DrawPath(textPath);
 
-            var pointText = $"{currentPoint.Name}: {currentPoint.Value:F2}";
-            canvas.DrawString(pointText, textPos.X + 3, textPos.Y - 3, HorizontalAlignment.Center);
+                var pointText = $"{currentPoint.Name}: {currentPoint.Value:F2}";
+                canvas.DrawString(pointText, textPos.X + 3, textPos.Y - 3, HorizontalAlignment.Center);
 
-            //Remember last point x axis
-            if (i == numberOfPoints - 1)
-                lastPointXAxis = currentPointXAxis;
+                //Remember last point x axis
+                if (i == numberOfPoints - 1)
+                    lastPointXAxis = currentPointXAxis;
 
-            //Move x axis to next point
-            const int POINT_SEGMENT_DISTANCE = 110;
-            currentPointXAxis += POINT_SEGMENT_DISTANCE;
-        }
+                //Move x axis to next point
+                const int POINT_DISTANCE = 110;
+                currentPointXAxis += POINT_DISTANCE;
+            }
 
-        var linearGradientPaint = new LinearGradientPaint
-        {
-            StartPoint = new Point(0, 0),
-            EndPoint = new Point(0, 1),
-            GradientStops = [
-                (new PaintGradientStop(1f, FillColor)),
-                (new PaintGradientStop(.5f, new(FillColor.Red, FillColor.Green, FillColor.Blue, 1)))
-                ]
-        };
-        canvas.SetFillPaint(linearGradientPaint, new RectangleF(0, dirtyRect.Height - 100, lastPointXAxis, dirtyRect.Height - 100));
+            var linearGradientPaint = new LinearGradientPaint
+            {
+                StartPoint = new Point(0, 0),
+                EndPoint = new Point(0, 1),
+                GradientStops = [
+                    (new PaintGradientStop(1f, FillColor)),
+                    (new PaintGradientStop(.5f, new(FillColor.Red, FillColor.Green, FillColor.Blue, 1)))
+                    ]
+            };
+            canvas.SetFillPaint(linearGradientPaint, new RectangleF(0, dirtyRect.Height, lastPointXAxis, dirtyRect.Height));
 
             //Connect bottom of the line chart to the top
             mainLinePath.LineTo(new PointF(lastPointXAxis, dirtyRect.Height));
@@ -164,5 +160,5 @@ namespace AppProjectGym.Charts
             //Remember selected x axis
             xAxisScaleOrigin = XAxisScale;
         }
-}
+    }
 }

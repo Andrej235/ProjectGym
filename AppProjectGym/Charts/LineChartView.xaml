@@ -5,22 +5,19 @@
              x:DataType="charts:LineChartView"
              x:Class="AppProjectGym.Charts.LineChartView">
 
-    <Grid HorizontalOptions="Fill" VerticalOptions="Fill" x:Name="wrapper">
-        <charts:LineChartGraphicsView x:Name="Chart"
-                                      TranslationY="300"
-                                      TranslationX="-150"
-                                      HeightRequest="500"
-                                      Rotation="90"/>
-        <Slider Minimum="0"
+    <VerticalStackLayout HorizontalOptions="Fill" x:Name="wrapper">
+        <Slider Minimum="-0.15"
                 Maximum="1"
-                AnchorY="-500"
-                HorizontalOptions="Fill" 
-                VerticalOptions="Start"
-                HeightRequest="75"
-                BackgroundColor="Black"
+                Margin="25, 10, 25, 35"
+                HorizontalOptions="Fill"
                 ThumbColor="White"
                 MinimumTrackColor="White"
                 MaximumTrackColor="CadetBlue"
                 Value="{Binding Source={x:Reference Chart}, Path=XAxisScale}"/>
-    </Grid>
+
+        <charts:LineChartGraphicsView x:Name="Chart"
+                                      Margin="35, 0, 35, 0"
+                                      TranslationX="75"
+                                      HeightRequest="750"/>
+    </VerticalStackLayout>
 </StackLayout>
