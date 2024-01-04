@@ -12,136 +12,207 @@
     <Shell.BackButtonBehavior>
         <BackButtonBehavior Command="{Binding BackCommand}"/>
     </Shell.BackButtonBehavior>
-    
+
     <ContentPage.Resources>
+        <Style TargetType="Border" x:Key="exerciseDisplayBorderStyle">
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal" >
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="Black" />
+                                <Setter Property="StrokeThickness" Value="1"/>
+                                <Setter Property="Stroke" Value="#aaa"/>
+                            </VisualState.Setters>
+                        </VisualState>
+
+                        <VisualState x:Name="Selected">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="CadetBlue" />
+                                <Setter Property="StrokeThickness" Value="1"/>
+                                <Setter Property="Stroke" Value="#fff"/>
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+
         <ValueConverters:IsNotNullConverter x:Key="IsNotNull"/>
         <ValueConverters:SecondsToFormattedTimeConverter x:Key="TimeFormatter"/>
     </ContentPage.Resources>
 
     <Grid VerticalOptions="Fill" HorizontalOptions="Fill">
-        <VerticalStackLayout>
-            <Label Text="{Binding User.Name}" 
-                   FontSize="Title"
-                   HorizontalTextAlignment="Center"
-                   Margin="5"/>
-            
-            <Border  Margin="75, 20, 75, 20" Padding="0, 15, 0, 15" StrokeShape="RoundRectangle 10">
-                <FlexLayout JustifyContent="SpaceEvenly">
+        <ScrollView>
+            <VerticalStackLayout>
+                <Label Text="{Binding User.Name}" 
+                       FontSize="Title"
+                       HorizontalTextAlignment="Center"
+                       Margin="5"/>
 
-                    <Border Stroke="Transparent"
+                <Border  Margin="75, 20, 75, 20" Padding="0, 15, 0, 15" StrokeShape="RoundRectangle 10" >
+                    <FlexLayout JustifyContent="SpaceEvenly">
+
+                        <Border Stroke="Transparent"
                             WidthRequest="65"
                             HeightRequest="65"
                             Padding="7"
                             StrokeShape="RoundRectangle 15">
 
-                        <Border.BackgroundColor>
-                            <Binding Source="{x:Reference finishedWorkoutsWrapper}" Path="IsVisible">
-                                <Binding.Converter>
-                                    <ValueConverters:BoolToObjectConverter TrueObject="CadetBlue" FalseObject="Transparent"/>
-                                </Binding.Converter>
-                            </Binding>
-                        </Border.BackgroundColor>
-                        
-                        <ImageButton Source="workout.png" Clicked="OnSelectFinishedWorkouts" />
-                    </Border>
+                            <Border.BackgroundColor>
+                                <Binding Source="{x:Reference finishedWorkoutsWrapper}" Path="IsVisible">
+                                    <Binding.Converter>
+                                        <ValueConverters:BoolToObjectConverter TrueObject="CadetBlue" FalseObject="Transparent"/>
+                                    </Binding.Converter>
+                                </Binding>
+                            </Border.BackgroundColor>
 
-                    <Border Stroke="Transparent"
+                            <ImageButton Source="workout.png" Clicked="OnSelectFinishedWorkouts" />
+                        </Border>
+
+                        <Border Stroke="Transparent"
                             WidthRequest="65"
                             HeightRequest="65"
                             Padding="7"
                             StrokeShape="RoundRectangle 15">
 
-                        <Border.BackgroundColor>
-                            <Binding Source="{x:Reference bookmarksWrapper}" Path="IsVisible">
-                                <Binding.Converter>
-                                    <ValueConverters:BoolToObjectConverter TrueObject="CadetBlue" FalseObject="Transparent"/>
-                                </Binding.Converter>
-                            </Binding>
-                        </Border.BackgroundColor>
+                            <Border.BackgroundColor>
+                                <Binding Source="{x:Reference bookmarksWrapper}" Path="IsVisible">
+                                    <Binding.Converter>
+                                        <ValueConverters:BoolToObjectConverter TrueObject="CadetBlue" FalseObject="Transparent"/>
+                                    </Binding.Converter>
+                                </Binding>
+                            </Border.BackgroundColor>
 
-                        <ImageButton Source="bookmark.png" Clicked="OnSelectBookmarks" />
-                    </Border>
+                            <ImageButton Source="bookmark.png" Clicked="OnSelectBookmarks" />
+                        </Border>
 
-                </FlexLayout>
-            </Border>
+                    </FlexLayout>
+                </Border>
 
-            <VerticalStackLayout HorizontalOptions="Center" 
-                                 Margin="10" 
-                                 Padding="10, 0, 10, 0"
-                                 x:Name="finishedWorkoutsWrapper">
-                
-                <Label FontSize="Subtitle" 
+                <VerticalStackLayout HorizontalOptions="Center" 
+                                     Margin="10" 
+                                     Padding="10, 0, 10, 0"
+                                     x:Name="finishedWorkoutsWrapper">
+
+                    <Label FontSize="Subtitle" 
                        HorizontalTextAlignment="Center"
                        Margin="0, 0, 0, 15">
 
-                    <Label.FormattedText>
-                        <FormattedString>
-                            <FormattedString.Spans>
-                                <Span Text="Finished workouts: "/>
-                                <Span Text="{Binding FinishedWorkoutsCount}"/>
-                            </FormattedString.Spans>
-                        </FormattedString>
-                    </Label.FormattedText>
-                </Label>
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <FormattedString.Spans>
+                                    <Span Text="Finished workouts: "/>
+                                    <Span Text="{Binding FinishedWorkoutsCount}"/>
+                                </FormattedString.Spans>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
 
-                <CollectionView ItemsSource="{Binding FinishedWorkouts}">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="JSONModels:FinishedWorkout">
-                            <Border Margin="5"
+                    <CollectionView ItemsSource="{Binding FinishedWorkouts}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="JSONModels:FinishedWorkout">
+                                <Border Margin="5"
                                 StrokeShape="RoundRectangle 25">
 
-                                <Grid RowDefinitions="*" Padding="20, 10, 20, 10">
-                                    <FlexLayout JustifyContent="SpaceBetween" VerticalOptions="Fill" HorizontalOptions="Fill">
-                                        <Label Text="{Binding Name}"/>
+                                    <Grid RowDefinitions="*" Padding="20, 10, 20, 10">
+                                        <FlexLayout JustifyContent="SpaceBetween" VerticalOptions="Fill" HorizontalOptions="Fill">
+                                            <Label Text="{Binding Name}"/>
 
-                                        <Label>
-                                            <Label.FormattedText>
-                                                <FormattedString>
-                                                    <FormattedString.Spans>
-                                                        <Span Text="{Binding DateTime.DayOfWeek}"/>
-                                                        <Span Text=" : "/>
-                                                        <Span Text="{Binding DateTime.Day}"/>
-                                                        <Span Text="."/>
-                                                        <Span Text="{Binding DateTime.Month}"/>
-                                                        <Span Text="."/>
-                                                        <Span Text="{Binding DateTime.Year}"/>
-                                                    </FormattedString.Spans>
-                                                </FormattedString>
-                                            </Label.FormattedText>
-                                        </Label>
-                                    </FlexLayout>
-                                    <Button BackgroundColor="Transparent" HeightRequest="20" Clicked="OnOpenFinishedWorkout" />
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </VerticalStackLayout>
+                                            <Label>
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <FormattedString.Spans>
+                                                            <Span Text="{Binding DateTime.DayOfWeek}"/>
+                                                            <Span Text=" : "/>
+                                                            <Span Text="{Binding DateTime.Day}"/>
+                                                            <Span Text="."/>
+                                                            <Span Text="{Binding DateTime.Month}"/>
+                                                            <Span Text="."/>
+                                                            <Span Text="{Binding DateTime.Year}"/>
+                                                        </FormattedString.Spans>
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                        </FlexLayout>
+                                        <Button BackgroundColor="Transparent" HeightRequest="20" Clicked="OnOpenFinishedWorkout" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
 
 
 
-            <VerticalStackLayout HorizontalOptions="Center" 
+                <VerticalStackLayout HorizontalOptions="Center" 
                                  Margin="10" 
                                  Padding="10, 0, 10, 0"
+                                 IsVisible="false"
                                  x:Name="bookmarksWrapper">
 
-                <Label FontSize="Subtitle" 
+                    <Label FontSize="Subtitle" 
                        HorizontalTextAlignment="Center"
                        Margin="0, 0, 0, 15">
 
-                    <Label.FormattedText>
-                        <FormattedString>
-                            <FormattedString.Spans>
-                                <Span Text="Saved exercises: "/>
-                                <Span Text="{Binding FinishedWorkoutsCount}"/>
-                            </FormattedString.Spans>
-                        </FormattedString>
-                    </Label.FormattedText>
-                </Label>
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <FormattedString.Spans>
+                                    <Span Text="Saved exercises: "/>
+                                    <Span Text="{Binding BookmarkedExercisesCount}"/>
+                                </FormattedString.Spans>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
 
+                    <CollectionView x:Name="exerciseCollectionView" 
+                                    SelectionMode="Single"
+                                    SelectionChanged="OnExerciseSelect"
+                                    ItemsSource="{Binding BookmarkedExercises}">
+
+                        <CollectionView.ItemsLayout>
+                            <GridItemsLayout Orientation="Vertical" Span="1" />
+                        </CollectionView.ItemsLayout>
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="Models:ExerciseDisplay">
+                                <Border Stroke="#aaa"
+                                        Style="{StaticResource Key=exerciseDisplayBorderStyle}"
+                                        StrokeThickness="7"
+                                        Margin="25">
+
+                                    <Grid RowDefinitions="*, 125">
+                                        <Image Source="{Binding Image.ImageURL}"
+                                               Aspect="AspectFit"
+                                               BackgroundColor="#fff"/>
+
+                                        <Label x:Name="exercises"
+                                                Text="{Binding Exercise.Name}" 
+                                                TextColor="#3d3d3d"
+                                                FontSize="Title"
+                                                HorizontalTextAlignment="Center"
+                                                VerticalTextAlignment="Center"
+                                                Grid.Row="1">
+
+                                            <Label.Background>
+                                                <LinearGradientBrush EndPoint="0, 1">
+                                                    <GradientStop Color="#fff"
+                                                                  Offset="0"/>
+
+                                                    <GradientStop Color="#aaa"
+                                                                  Offset="1"/>
+                                                </LinearGradientBrush>
+                                            </Label.Background>
+                                        </Label>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
             </VerticalStackLayout>
-        </VerticalStackLayout>
-
+        </ScrollView>
+        
         <Grid x:Name="finishedWorkoutDisplayWrapper"
               VerticalOptions="Fill" 
               HorizontalOptions="Fill"

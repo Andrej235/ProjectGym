@@ -31,6 +31,9 @@ namespace ProjectGym.Services.Read
                     };
                 }
 
+                if (key == "bookmarkedby" && Guid.TryParse(value, out Guid userId))
+                    return x => x.Bookmarks.Any(x => x.Id == userId);
+
                 if (value.Contains(','))
                 {
                     var values = value.Replace(" ", "").Split(',');

@@ -16,5 +16,7 @@
 
         public IEnumerable<Note> Notes { get; set; } = new List<Note>();
         public IEnumerable<Alias> Aliases { get; set; } = new List<Alias>();
+
+        public IEnumerable<User> Bookmarks { get; set; } = new List<User>();
     }
 }

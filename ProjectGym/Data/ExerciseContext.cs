@@ -180,7 +180,7 @@ namespace ProjectGym.Data
             #region Bookmarks
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Bookmarks)
-                .WithMany()
+                .WithMany(e => e.Bookmarks)
                 .UsingEntity<ExerciseBookmark>(
                     j => j.HasOne<Exercise>().WithMany().HasForeignKey(e => e.ExerciseId).OnDelete(DeleteBehavior.Cascade),
                     j => j.HasOne<User>().WithMany().HasForeignKey(u => u.UserId).OnDelete(DeleteBehavior.Cascade),

@@ -110,8 +110,7 @@ namespace AppProjectGym.Pages
             Exercise = await readService.Get<Exercise>("images", $"exercise/{id}");
             ExerciseDisplay = await exerciseDisplayMapper.Map(Exercise);
 
-            var a = await readService.Get<Bookmark>("none", $"bookmark?exerciseid={Exercise.Id}&userid={ClientInfo.User.Id}");
-            IsBookmarked = a != null;
+            IsBookmarked = ClientInfo.User.BookmarkIds.Contains(Exercise.Id);
 
             var currentWeight = await readService.Get<PersonalExerciseWeight>("none", "weight", $"user={ClientInfo.User.Id}", $"exercise={id}", "current=true");
             weightHistoryBtn.Text = currentWeight is null ? "Not yet attempted" : $"Weight you used last time: {currentWeight.Weight}KG";
@@ -289,7 +288,14 @@ namespace AppProjectGym.Pages
             };
             var res = await createService.Add(newBookmark, "bookmark/toggle");
             if (bool.TryParse(res, out bool resIsBookmarked))
+            {
+                if (resIsBookmarked)
+                    ClientInfo.User.BookmarkIds.Add(Exercise.Id);
+                else
+                    ClientInfo.User.BookmarkIds.Remove(Exercise.Id);
+
                 IsBookmarked = resIsBookmarked;
+            }
         }
         #endregion
     }

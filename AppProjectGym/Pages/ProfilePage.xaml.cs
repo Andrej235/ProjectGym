@@ -5,6 +5,7 @@ using AppProjectGym.Models;
 using AppProjectGym.Services;
 using AppProjectGym.Services.Mapping;
 using AppProjectGym.Services.Read;
+using System.Diagnostics;
 
 namespace AppProjectGym.Pages;
 
@@ -12,9 +13,10 @@ public partial class ProfilePage : ContentPage
 {
     private readonly FinishedWorkoutContext context;
     private readonly IReadService readService;
+    private readonly IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper;
     private readonly IEntityDisplayMapper<WorkoutSet, StartedWorkout_SetDisplay> startedWorkoutSetDisplayMapper;
 
-    public ProfilePage(IReadService readService, IEntityDisplayMapper<WorkoutSet, StartedWorkout_SetDisplay> startedWorkoutSetDisplayMapper)
+    public ProfilePage(IReadService readService, IEntityDisplayMapper<WorkoutSet, StartedWorkout_SetDisplay> startedWorkoutSetDisplayMapper, IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper)
     {
         InitializeComponent();
 
@@ -22,9 +24,23 @@ public partial class ProfilePage : ContentPage
         BindingContext = this;
         this.readService = readService;
         this.startedWorkoutSetDisplayMapper = startedWorkoutSetDisplayMapper;
+        this.exerciseDisplayMapper = exerciseDisplayMapper;
     }
 
     public User User => ClientInfo.User;
+
+    public List<ExerciseDisplay> BookmarkedExercises
+    {
+        get => bookmarkedExercises;
+        set
+        {
+            bookmarkedExercises = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(BookmarkedExercisesCount));
+        }
+    }
+    private List<ExerciseDisplay> bookmarkedExercises;
+    public int BookmarkedExercisesCount => BookmarkedExercises is null ? 0 : BookmarkedExercises.Count;
 
     public List<FinishedWorkout> FinishedWorkouts
     {
@@ -63,11 +79,17 @@ public partial class ProfilePage : ContentPage
     }
     private List<StartedWorkout_SetDisplay> finishedSets;
 
+
+
     private bool isLoadingData;
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         FinishedWorkouts = [.. context.FinishedWorkouts.Where(x => x.DateTime != default).OrderByDescending(x => x.DateTime)];
+
+        var exercises = await readService.Get<IEnumerable<Exercise>>("images", "exercise", $"bookmarkedby={ClientInfo.User.Id}");
+        var exerciseDisplays = await Task.WhenAll(exercises.Select(exerciseDisplayMapper.Map));
+        BookmarkedExercises = [.. exerciseDisplays];
 
         base.OnAppearing();
     }
@@ -139,5 +161,16 @@ public partial class ProfilePage : ContentPage
     {
         finishedWorkoutsWrapper.IsVisible = false;
         bookmarksWrapper.IsVisible = true;
+    }
+
+    private async void OnExerciseSelect(object sender, SelectionChangedEventArgs e)
+    {
+        if (e.CurrentSelection is null || !e.CurrentSelection.Any())
+            return;
+
+        var exerciseDisplay = e.CurrentSelection[0] as ExerciseDisplay;
+        Debug.WriteLine($"---> Selected {exerciseDisplay.Exercise.Name}");
+
+        await NavigationService.GoToAsync(nameof(FullScreenExercisePage), new KeyValuePair<string, object>("id", exerciseDisplay.Exercise.Id));
     }
 }

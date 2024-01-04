@@ -222,9 +222,9 @@
             </VerticalStackLayout>
 
             <ScrollView Grid.Row="1"
-                    Grid.RowSpan="2"
-                    VerticalScrollBarVisibility="Always"
-                    x:Name="exerciseCollectionScrollView">
+                        Grid.RowSpan="2"
+                        VerticalScrollBarVisibility="Always"
+                        x:Name="exerciseCollectionScrollView">
 
                 <Grid RowDefinitions="*, Auto">
                     <CollectionView x:Name="exerciseCollectionView" 

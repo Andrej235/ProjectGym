@@ -15,6 +15,6 @@ namespace AppProjectGym.Models
         public IEnumerable<int> CommentIds { get; set; } = new List<int>();
         public IEnumerable<int> CommentUpvoteIds { get; set; } = new List<int>();
         public IEnumerable<int> CommentDownvoteIds { get; set; } = new List<int>();
-        public IEnumerable<int> BookmarkIds { get; set; } = new List<int>();
+        public List<int> BookmarkIds { get; set; } = new List<int>();
     }
 }

@@ -68,7 +68,11 @@
                 <Border HorizontalOptions="Fill" StrokeThickness="3" Margin="10, 10, 10, 5">
                     <SwipeView  Margin="5" Padding="0">
                         <Grid HorizontalOptions="Fill">
-                            <Label Text="{Binding ExerciseDisplay.Exercise.Name}" HorizontalTextAlignment="Center" Margin="0, 10, 0, 10" FontSize="Medium"/>
+                            <Label Text="{Binding ExerciseDisplay.Exercise.Name}"
+                                   HorizontalTextAlignment="Center" 
+                                   Margin="40, 10, 40, 10" 
+                                   FontSize="Medium"
+                                   LineBreakMode="WordWrap" />
 
                             <ImageButton WidthRequest="50" 
                                          HeightRequest="50"
