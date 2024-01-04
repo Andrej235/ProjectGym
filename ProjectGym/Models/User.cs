@@ -15,9 +15,6 @@ namespace ProjectGym.Models
         public IEnumerable<Workout> CreatedWorkouts { get; set; } = new List<Workout>();
         public IEnumerable<Set> CreatedExerciseSets { get; set; } = new List<Set>();
 
-        public IEnumerable<Comment> Comments { get; set; } = new List<Comment>();
-        public IEnumerable<Comment> CommentUpvotes { get; set; } = new List<Comment>();
-        public IEnumerable<Comment> CommentDownvotes { get; set; } = new List<Comment>();
         public IEnumerable<Exercise> Bookmarks { get; set; } = new List<Exercise>();
     }
 }

@@ -14,7 +14,6 @@
 
         public IEnumerable<Image> Images { get; set; } = new List<Image>();
 
-        public IEnumerable<Comment> Comments { get; set; } = new List<Comment>();
         public IEnumerable<Note> Notes { get; set; } = new List<Note>();
         public IEnumerable<Alias> Aliases { get; set; } = new List<Alias>();
     }

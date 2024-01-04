@@ -12,8 +12,8 @@ using ProjectGym.Data;
 namespace ProjectGym.Migrations
 {
     [DbContext(typeof(ExerciseContext))]
-    [Migration("20231129185038_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20240104115916_FullDB")]
+    partial class FullDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,79 +61,6 @@ namespace ProjectGym.Migrations
                     b.HasIndex("UserGUID");
 
                     b.ToTable("Clients");
-                });
-
-            modelBuilder.Entity("ProjectGym.Models.Comment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CommentText")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("ExerciseId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatorId");
-
-                    b.HasIndex("ExerciseId");
-
-                    b.ToTable("Comments");
-                });
-
-            modelBuilder.Entity("ProjectGym.Models.CommentDownvote", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CommentId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CommentId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("CommentDownvotes");
-                });
-
-            modelBuilder.Entity("ProjectGym.Models.CommentUpvote", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CommentId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CommentId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("CommentUpvotes");
                 });
 
             modelBuilder.Entity("ProjectGym.Models.Equipment", b =>
@@ -521,9 +448,6 @@ namespace ProjectGym.Migrations
                     b.Property<Guid>("SetId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("SuperSetId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("TargetSets")
                         .HasColumnType("int");
 
@@ -533,8 +457,6 @@ namespace ProjectGym.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("SetId");
-
-                    b.HasIndex("SuperSetId");
 
                     b.HasIndex("WorkoutId");
 
@@ -560,55 +482,6 @@ namespace ProjectGym.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ProjectGym.Models.Comment", b =>
-                {
-                    b.HasOne("ProjectGym.Models.User", "Creator")
-                        .WithMany("Comments")
-                        .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ProjectGym.Models.Exercise", "Exercise")
-                        .WithMany("Comments")
-                        .HasForeignKey("ExerciseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Creator");
-
-                    b.Navigation("Exercise");
-                });
-
-            modelBuilder.Entity("ProjectGym.Models.CommentDownvote", b =>
-                {
-                    b.HasOne("ProjectGym.Models.Comment", null)
-                        .WithMany()
-                        .HasForeignKey("CommentId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("ProjectGym.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ProjectGym.Models.CommentUpvote", b =>
-                {
-                    b.HasOne("ProjectGym.Models.Comment", null)
-                        .WithMany()
-                        .HasForeignKey("CommentId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("ProjectGym.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("ProjectGym.Models.EquipmentUsage", b =>
@@ -791,11 +664,6 @@ namespace ProjectGym.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ProjectGym.Models.Set", "Superset")
-                        .WithMany()
-                        .HasForeignKey("SuperSetId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.HasOne("ProjectGym.Models.Workout", "Workout")
                         .WithMany("WorkoutSets")
                         .HasForeignKey("WorkoutId")
@@ -804,16 +672,12 @@ namespace ProjectGym.Migrations
 
                     b.Navigation("Set");
 
-                    b.Navigation("Superset");
-
                     b.Navigation("Workout");
                 });
 
             modelBuilder.Entity("ProjectGym.Models.Exercise", b =>
                 {
                     b.Navigation("Aliases");
-
-                    b.Navigation("Comments");
 
                     b.Navigation("Images");
 
@@ -827,8 +691,6 @@ namespace ProjectGym.Migrations
 
             modelBuilder.Entity("ProjectGym.Models.User", b =>
                 {
-                    b.Navigation("Comments");
-
                     b.Navigation("CreatedExerciseSets");
 
                     b.Navigation("CreatedWorkouts");

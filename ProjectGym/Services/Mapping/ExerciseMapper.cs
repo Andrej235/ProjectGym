@@ -21,7 +21,6 @@ namespace ProjectGym.Services.Mapping
             SecondaryMuscleGroupIds = entity.SecondaryMuscleGroups.Select(x => x.Id),
             PrimaryMuscleIds = entity.PrimaryMuscles.Select(x => x.Id),
             SecondaryMuscleIds = entity.SecondaryMuscles.Select(x => x.Id),
-            CommentIds = entity.Comments.Select(x => x.Id),
         };
 
         public async Task<Exercise> MapAsync(ExerciseDTO dto) => new()

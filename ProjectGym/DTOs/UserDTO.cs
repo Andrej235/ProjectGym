@@ -10,9 +10,6 @@
         public IEnumerable<Guid> CreatedWorkoutIds { get; set; } = new List<Guid>();
         public IEnumerable<Guid> CreatedExerciseSetIds { get; set; } = new List<Guid>();
 
-        public IEnumerable<int> CommentIds { get; set; } = new List<int>();
-        public IEnumerable<int> CommentUpvoteIds { get; set; } = new List<int>();
-        public IEnumerable<int> CommentDownvoteIds { get; set; } = new List<int>();
         public IEnumerable<int> BookmarkIds { get; set; } = new List<int>();
     }
 }

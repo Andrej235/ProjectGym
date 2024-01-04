@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ProjectGym.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class FullDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -243,33 +243,6 @@ namespace ProjectGym.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Comments",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CommentText = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ExerciseId = table.Column<int>(type: "int", nullable: false),
-                    CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Comments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Comments_Exercises_ExerciseId",
-                        column: x => x.ExerciseId,
-                        principalTable: "Exercises",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Comments_Users_CreatorId",
-                        column: x => x.CreatorId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ExerciseBookmarks",
                 columns: table => new
                 {
@@ -425,62 +398,13 @@ namespace ProjectGym.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CommentDownvotes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CommentId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CommentDownvotes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_CommentDownvotes_Comments_CommentId",
-                        column: x => x.CommentId,
-                        principalTable: "Comments",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_CommentDownvotes_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CommentUpvotes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CommentId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CommentUpvotes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_CommentUpvotes_Comments_CommentId",
-                        column: x => x.CommentId,
-                        principalTable: "Comments",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_CommentUpvotes_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "WorkoutSets",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TargetSets = table.Column<int>(type: "int", nullable: false),
                     WorkoutId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    SetId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    SuperSetId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    SetId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -491,11 +415,6 @@ namespace ProjectGym.Migrations
                         principalTable: "Sets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_WorkoutSets_Sets_SuperSetId",
-                        column: x => x.SuperSetId,
-                        principalTable: "Sets",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_WorkoutSets_Workouts_WorkoutId",
                         column: x => x.WorkoutId,
@@ -512,36 +431,6 @@ namespace ProjectGym.Migrations
                 name: "IX_Clients_UserGUID",
                 table: "Clients",
                 column: "UserGUID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CommentDownvotes_CommentId",
-                table: "CommentDownvotes",
-                column: "CommentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CommentDownvotes_UserId",
-                table: "CommentDownvotes",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Comments_CreatorId",
-                table: "Comments",
-                column: "CreatorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Comments_ExerciseId",
-                table: "Comments",
-                column: "ExerciseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CommentUpvotes_CommentId",
-                table: "CommentUpvotes",
-                column: "CommentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CommentUpvotes_UserId",
-                table: "CommentUpvotes",
-                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EquipmentUsages_EquipmentId",
@@ -649,11 +538,6 @@ namespace ProjectGym.Migrations
                 column: "SetId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WorkoutSets_SuperSetId",
-                table: "WorkoutSets",
-                column: "SuperSetId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_WorkoutSets_WorkoutId",
                 table: "WorkoutSets",
                 column: "WorkoutId");
@@ -667,12 +551,6 @@ namespace ProjectGym.Migrations
 
             migrationBuilder.DropTable(
                 name: "Clients");
-
-            migrationBuilder.DropTable(
-                name: "CommentDownvotes");
-
-            migrationBuilder.DropTable(
-                name: "CommentUpvotes");
 
             migrationBuilder.DropTable(
                 name: "EquipmentUsages");
@@ -703,9 +581,6 @@ namespace ProjectGym.Migrations
 
             migrationBuilder.DropTable(
                 name: "WorkoutSets");
-
-            migrationBuilder.DropTable(
-                name: "Comments");
 
             migrationBuilder.DropTable(
                 name: "Equipment");

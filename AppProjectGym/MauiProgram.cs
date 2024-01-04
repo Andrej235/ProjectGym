@@ -12,7 +12,6 @@ using AppProjectGym.Services.Mapping;
 using AppProjectGym.Information;
 using System.Diagnostics;
 using AppProjectGym.LocalDatabase;
-using AppProjectGym.LocalDatabase.Models;
 
 namespace AppProjectGym
 {

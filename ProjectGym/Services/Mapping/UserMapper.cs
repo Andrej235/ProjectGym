@@ -13,9 +13,6 @@ namespace ProjectGym.Services.Mapping
             WeightIds = entity.Weights.Select(x => x.Id),
             CreatedWorkoutIds = entity.CreatedWorkouts.Select(x => x.Id),
             CreatedExerciseSetIds = entity.CreatedExerciseSets.Select(x => x.Id),
-            CommentIds = entity.Comments.Select(x => x.Id),
-            CommentUpvoteIds = entity.CommentUpvotes.Select(x => x.Id),
-            CommentDownvoteIds = entity.CommentDownvotes.Select(x => x.Id),
             BookmarkIds = entity.Bookmarks.Select(x => x.Id),
         };
 
@@ -24,7 +21,6 @@ namespace ProjectGym.Services.Mapping
             Id = dto.Id,
             Name = dto.Name,
             Email = dto.Email,
-            //TODO?: Maybe add hashing here?
         };
     }
 }

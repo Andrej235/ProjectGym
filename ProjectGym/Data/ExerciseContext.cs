@@ -9,7 +9,6 @@ namespace ProjectGym.Data
         public DbSet<MuscleGroup> MuscleGroups { get; set; }
         public DbSet<Muscle> Muscles { get; set; }
         public DbSet<Equipment> Equipment { get; set; }
-        public DbSet<Comment> Comments { get; set; }
         public DbSet<Image> Images { get; set; }
         public DbSet<Note> Notes { get; set; }
         public DbSet<Alias> Aliases { get; set; }
@@ -21,8 +20,6 @@ namespace ProjectGym.Data
 
         public DbSet<User> Users { get; set; }
         public DbSet<Client> Clients { get; set; }
-        public DbSet<CommentUpvote> CommentUpvotes { get; set; }
-        public DbSet<CommentDownvote> CommentDownvotes { get; set; }
         public DbSet<ExerciseBookmark> ExerciseBookmarks { get; set; }
         public DbSet<Set> Sets { get; set; }
         public DbSet<PersonalExerciseWeight> Weights { get; set; }
@@ -114,12 +111,6 @@ namespace ProjectGym.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Exercise>()
-                .HasMany(e => e.Comments)
-                .WithOne(c => c.Exercise)
-                .HasForeignKey(c => c.ExerciseId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<Exercise>()
                 .HasMany(e => e.Notes)
                 .WithOne(n => n.Exercise)
                 .HasForeignKey(n => n.ExerciseId)
@@ -186,39 +177,7 @@ namespace ProjectGym.Data
                 .OnDelete(DeleteBehavior.Cascade);
             #endregion
 
-            #region Comments and bookmarks
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.Comments)
-                .WithOne(c => c.Creator)
-                .HasForeignKey(c => c.CreatorId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.CommentUpvotes)
-                .WithMany(c => c.Upvotes)
-                .UsingEntity<CommentUpvote>(
-                    j => j.HasOne<Comment>().WithMany().HasForeignKey(c => c.CommentId).OnDelete(DeleteBehavior.NoAction),
-                    j => j.HasOne<User>().WithMany().HasForeignKey(u => u.UserId).OnDelete(DeleteBehavior.NoAction),
-                    j =>
-                    {
-                        j.Property(j => j.Id).ValueGeneratedOnAdd();
-                        j.HasKey(j => j.Id);
-                    }
-                );
-
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.CommentDownvotes)
-                .WithMany(c => c.Downvotes)
-                .UsingEntity<CommentDownvote>(
-                    j => j.HasOne<Comment>().WithMany().HasForeignKey(c => c.CommentId).OnDelete(DeleteBehavior.NoAction),
-                    j => j.HasOne<User>().WithMany().HasForeignKey(u => u.UserId).OnDelete(DeleteBehavior.NoAction),
-                    j =>
-                    {
-                        j.Property(x => x.Id).ValueGeneratedOnAdd();
-                        j.HasKey(x => x.Id);
-                    }
-                );
-
+            #region Bookmarks
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Bookmarks)
                 .WithMany()

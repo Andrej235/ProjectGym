@@ -60,79 +60,6 @@ namespace ProjectGym.Migrations
                     b.ToTable("Clients");
                 });
 
-            modelBuilder.Entity("ProjectGym.Models.Comment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CommentText")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("ExerciseId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatorId");
-
-                    b.HasIndex("ExerciseId");
-
-                    b.ToTable("Comments");
-                });
-
-            modelBuilder.Entity("ProjectGym.Models.CommentDownvote", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CommentId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CommentId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("CommentDownvotes");
-                });
-
-            modelBuilder.Entity("ProjectGym.Models.CommentUpvote", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CommentId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CommentId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("CommentUpvotes");
-                });
-
             modelBuilder.Entity("ProjectGym.Models.Equipment", b =>
                 {
                     b.Property<int>("Id")
@@ -554,55 +481,6 @@ namespace ProjectGym.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ProjectGym.Models.Comment", b =>
-                {
-                    b.HasOne("ProjectGym.Models.User", "Creator")
-                        .WithMany("Comments")
-                        .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ProjectGym.Models.Exercise", "Exercise")
-                        .WithMany("Comments")
-                        .HasForeignKey("ExerciseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Creator");
-
-                    b.Navigation("Exercise");
-                });
-
-            modelBuilder.Entity("ProjectGym.Models.CommentDownvote", b =>
-                {
-                    b.HasOne("ProjectGym.Models.Comment", null)
-                        .WithMany()
-                        .HasForeignKey("CommentId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("ProjectGym.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ProjectGym.Models.CommentUpvote", b =>
-                {
-                    b.HasOne("ProjectGym.Models.Comment", null)
-                        .WithMany()
-                        .HasForeignKey("CommentId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("ProjectGym.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("ProjectGym.Models.EquipmentUsage", b =>
                 {
                     b.HasOne("ProjectGym.Models.Equipment", null)
@@ -798,8 +676,6 @@ namespace ProjectGym.Migrations
                 {
                     b.Navigation("Aliases");
 
-                    b.Navigation("Comments");
-
                     b.Navigation("Images");
 
                     b.Navigation("Notes");
@@ -812,8 +688,6 @@ namespace ProjectGym.Migrations
 
             modelBuilder.Entity("ProjectGym.Models.User", b =>
                 {
-                    b.Navigation("Comments");
-
                     b.Navigation("CreatedExerciseSets");
 
                     b.Navigation("CreatedWorkouts");
