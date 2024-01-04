@@ -21,14 +21,58 @@
     <Grid VerticalOptions="Fill" HorizontalOptions="Fill">
         <VerticalStackLayout>
             <Label Text="{Binding User.Name}" 
-               FontSize="Title"
-               HorizontalTextAlignment="Center"
-               Margin="5"/>
-
-            <VerticalStackLayout HorizontalOptions="Center" Margin="10" Padding="10, 0, 10, 0">
-                <Label FontSize="Subtitle" 
+                   FontSize="Title"
                    HorizontalTextAlignment="Center"
-                   Margin="0, 0, 0, 15">
+                   Margin="5"/>
+            
+            <Border  Margin="75, 20, 75, 20" Padding="0, 15, 0, 15" StrokeShape="RoundRectangle 10">
+                <FlexLayout JustifyContent="SpaceEvenly">
+
+                    <Border Stroke="Transparent"
+                            WidthRequest="65"
+                            HeightRequest="65"
+                            Padding="7"
+                            StrokeShape="RoundRectangle 15">
+
+                        <Border.BackgroundColor>
+                            <Binding Source="{x:Reference finishedWorkoutsWrapper}" Path="IsVisible">
+                                <Binding.Converter>
+                                    <ValueConverters:BoolToObjectConverter TrueObject="CadetBlue" FalseObject="Transparent"/>
+                                </Binding.Converter>
+                            </Binding>
+                        </Border.BackgroundColor>
+                        
+                        <ImageButton Source="workout.png" Clicked="OnSelectFinishedWorkouts" />
+                    </Border>
+
+                    <Border Stroke="Transparent"
+                            WidthRequest="65"
+                            HeightRequest="65"
+                            Padding="7"
+                            StrokeShape="RoundRectangle 15">
+
+                        <Border.BackgroundColor>
+                            <Binding Source="{x:Reference bookmarksWrapper}" Path="IsVisible">
+                                <Binding.Converter>
+                                    <ValueConverters:BoolToObjectConverter TrueObject="CadetBlue" FalseObject="Transparent"/>
+                                </Binding.Converter>
+                            </Binding>
+                        </Border.BackgroundColor>
+
+                        <ImageButton Source="bookmark.png" Clicked="OnSelectBookmarks" />
+                    </Border>
+
+                </FlexLayout>
+            </Border>
+
+            <VerticalStackLayout HorizontalOptions="Center" 
+                                 Margin="10" 
+                                 Padding="10, 0, 10, 0"
+                                 x:Name="finishedWorkoutsWrapper">
+                
+                <Label FontSize="Subtitle" 
+                       HorizontalTextAlignment="Center"
+                       Margin="0, 0, 0, 15">
 
                     <Label.FormattedText>
                         <FormattedString>
@@ -72,6 +116,29 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+            </VerticalStackLayout>
+
+
+
+            <VerticalStackLayout HorizontalOptions="Center" 
+                                 Margin="10" 
+                                 Padding="10, 0, 10, 0"
+                                 x:Name="bookmarksWrapper">
+
+                <Label FontSize="Subtitle" 
+                       HorizontalTextAlignment="Center"
+                       Margin="0, 0, 0, 15">
+
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <FormattedString.Spans>
+                                <Span Text="Saved exercises: "/>
+                                <Span Text="{Binding FinishedWorkoutsCount}"/>
+                            </FormattedString.Spans>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+
             </VerticalStackLayout>
         </VerticalStackLayout>
 

@@ -63,16 +63,7 @@ namespace AppProjectGym
             return builder.Build();
         }
 
-        private static async void InitializeLocalDB()
-        {
-            await new FinishedWorkoutContext(new()).Initialize();
-
-            List<string> a = ["/data/user/0/com.companyname.appprojectgym/files/AppProjectGym.LocalDatabase.Models.FinishedSet.json",
-                "/data/user/0/com.companyname.appprojectgym/files/AppProjectGym.LocalDatabase.Models.FinishedWorkoutSet.json",
-                "/data/user/0/com.companyname.appprojectgym/files/AppProjectGym.LocalDatabase.Models.FinishedWorkout.json"];
-            foreach (string b in a)
-                File.WriteAllText(b, "");
-        }
+        private static async void InitializeLocalDB() => await new FinishedWorkoutContext(new()).Initialize();
 
         private static async void LoadUser()
         {

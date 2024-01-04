@@ -1,14 +1,6 @@
 ﻿using AppProjectGym.Models;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
-using Microsoft.Maui.Storage;
 using AppProjectGym.Utilities;
 
 namespace AppProjectGym.Information
@@ -40,8 +32,11 @@ namespace AppProjectGym.Information
             }
         }
 
+        public static bool IsLoadingData { get; private set; }
+
         public static async Task<bool> Login(string email, string password)
         {
+            IsLoadingData = true;
             var client = new HttpClient();
             var loginInfo = JsonSerializer.Serialize(new LoginDTO()
             {
@@ -70,11 +65,13 @@ namespace AppProjectGym.Information
                 var userClient = JsonSerializer.Deserialize<LoggedInDTO>(content, AppInfo.DeserializationOptions);
                 ClientGuid = userClient.ClientGuid;
                 User = userClient.User;
+                IsLoadingData = false;
                 return User != null;
             }
             catch (Exception ex)
             {
                 LogDebugger.LogError(ex);
+                IsLoadingData = false;
                 return false;
             }
         }
@@ -84,6 +81,7 @@ namespace AppProjectGym.Information
             if (ClientGuid is null)
                 return false;
 
+            IsLoadingData = true;
             try
             {
                 var client = new HttpClient();
@@ -93,11 +91,13 @@ namespace AppProjectGym.Information
                 User user = JsonSerializer.Deserialize<User>(content, AppInfo.DeserializationOptions);
 
                 User = user;
+                IsLoadingData = false;
                 return User != null;
             }
             catch (Exception ex)
             {
                 LogDebugger.LogError(ex);
+                IsLoadingData = false;
                 return false;
             }
         }

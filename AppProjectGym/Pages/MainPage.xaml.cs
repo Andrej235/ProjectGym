@@ -4,6 +4,7 @@ using AppProjectGym.Models;
 using AppProjectGym.Services;
 using AppProjectGym.Services.Read;
 using AppProjectGym.Services.Mapping;
+using AppProjectGym.Information;
 
 namespace AppProjectGym
 {
@@ -226,10 +227,17 @@ namespace AppProjectGym
             equipmentFilter.SelectedItems = null;
         }
 
-        private async void OnOpenProfilePage(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(ProfilePage));
-        private async void OnOpenUserWorkoutsPage(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(UserWorkoutsPage));
+        private async void OnOpenProfilePage(object sender, EventArgs e)
+        {
+            if (!ClientInfo.IsLoadingData)
+                await NavigationService.GoToAsync(nameof(ProfilePage));
+        }
 
-
+        private async void OnOpenUserWorkoutsPage(object sender, EventArgs e)
+        {
+            if (!ClientInfo.IsLoadingData)
+                await NavigationService.GoToAsync(nameof(UserWorkoutsPage));
+        }
 
         private void LoadPreviousPage(object sender, EventArgs e)
         {

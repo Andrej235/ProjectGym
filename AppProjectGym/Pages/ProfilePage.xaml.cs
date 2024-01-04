@@ -128,4 +128,16 @@ public partial class ProfilePage : ContentPage
         finishedSetsCollection.ItemsSource = FinishedSets;
         isLoadingData = false;
     }
+
+    private void OnSelectFinishedWorkouts(object sender, EventArgs e)
+    {
+        bookmarksWrapper.IsVisible = false;
+        finishedWorkoutsWrapper.IsVisible = true;
+    }
+
+    private void OnSelectBookmarks(object sender, EventArgs e)
+    {
+        finishedWorkoutsWrapper.IsVisible = false;
+        bookmarksWrapper.IsVisible = true;
+    }
 }

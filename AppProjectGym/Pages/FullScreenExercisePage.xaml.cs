@@ -258,5 +258,26 @@ namespace AppProjectGym.Pages
         });
         private static async void GoBack() => await NavigationService.GoToAsync("..");
         #endregion
+
+        #region Bookmarks
+        public bool IsBookmarked
+        {
+            get => isBookmarked;
+            set
+            {
+                isBookmarked = value;
+                bookmarkBtn.Source = isBookmarked ? "bookmarkselected.png" : "bookmark.png";
+                OnPropertyChanged();
+            }
+        }
+        private bool isBookmarked;
+
+        private void OnBookmarkBtnClicked(object sender, EventArgs e)
+        {
+            //TODO: Make an endpoint on backend to see if an exercise is bookmarked and call it on appearing
+            //Maybe add an endpoint for toggling bookmarks so the code on the frontend is simpler?
+            IsBookmarked = !IsBookmarked;
+        }
+        #endregion
     }
 }
