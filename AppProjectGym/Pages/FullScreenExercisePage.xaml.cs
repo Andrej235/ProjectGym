@@ -2,6 +2,7 @@ using AppProjectGym.Charts;
 using AppProjectGym.Information;
 using AppProjectGym.Models;
 using AppProjectGym.Services;
+using AppProjectGym.Services.Create;
 using AppProjectGym.Services.Delete;
 using AppProjectGym.Services.Mapping;
 using AppProjectGym.Services.Read;
@@ -15,16 +16,18 @@ namespace AppProjectGym.Pages
         private ConfirmHandler confirmHandler;
 
         private readonly IReadService readService;
+        private readonly ICreateService createService;
         private readonly IDeleteService deleteService;
         private readonly IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper;
 
-        public FullScreenExercisePage(IReadService readService, IDeleteService deleteService, IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper)
+        public FullScreenExercisePage(IReadService readService, IDeleteService deleteService, IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper, ICreateService createService)
         {
             InitializeComponent();
             BindingContext = this;
             this.readService = readService;
             this.deleteService = deleteService;
             this.exerciseDisplayMapper = exerciseDisplayMapper;
+            this.createService = createService;
         }
 
         public bool IsInSelectionMode
@@ -106,6 +109,9 @@ namespace AppProjectGym.Pages
 
             Exercise = await readService.Get<Exercise>("images", $"exercise/{id}");
             ExerciseDisplay = await exerciseDisplayMapper.Map(Exercise);
+
+            var a = await readService.Get<Bookmark>("none", $"bookmark?exerciseid={Exercise.Id}&userid={ClientInfo.User.Id}");
+            IsBookmarked = a != null;
 
             var currentWeight = await readService.Get<PersonalExerciseWeight>("none", "weight", $"user={ClientInfo.User.Id}", $"exercise={id}", "current=true");
             weightHistoryBtn.Text = currentWeight is null ? "Not yet attempted" : $"Weight you used last time: {currentWeight.Weight}KG";
@@ -272,11 +278,18 @@ namespace AppProjectGym.Pages
         }
         private bool isBookmarked;
 
-        private void OnBookmarkBtnClicked(object sender, EventArgs e)
+        private async void OnBookmarkBtnClicked(object sender, EventArgs e)
         {
             //TODO: Make an endpoint on backend to see if an exercise is bookmarked and call it on appearing
             //Maybe add an endpoint for toggling bookmarks so the code on the frontend is simpler?
-            IsBookmarked = !IsBookmarked;
+            var newBookmark = new Bookmark()
+            {
+                UserId = ClientInfo.User.Id,
+                ExerciseId = Exercise.Id
+            };
+            var res = await createService.Add(newBookmark, "bookmark/toggle");
+            if (bool.TryParse(res, out bool resIsBookmarked))
+                IsBookmarked = resIsBookmarked;
         }
         #endregion
     }

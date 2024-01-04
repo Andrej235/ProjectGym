@@ -146,6 +146,12 @@ namespace ProjectGym
             builder.Services.AddTransient<IDeleteService<SecondaryMuscleInExercise>, DeleteService<SecondaryMuscleInExercise>>();
             #endregion
 
+            #region Bookmarks
+            builder.Services.AddTransient<ICreateService<ExerciseBookmark>, BookmarkCreateService>();
+            builder.Services.AddTransient<IReadService<ExerciseBookmark>, BookmarkReadService>();
+            builder.Services.AddTransient<IDeleteService<ExerciseBookmark>, DeleteService<ExerciseBookmark>>();
+            #endregion
+
             builder.Services.AddControllers();
 
             var app = builder.Build();

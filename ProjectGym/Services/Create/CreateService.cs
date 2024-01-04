@@ -12,10 +12,7 @@ namespace ProjectGym.Services.Create
             {
                 var validationError = await IsEntityValid(toAdd);
                 if (validationError != null)
-                {
-                    LogDebugger.LogError(validationError);
                     throw validationError;
-                }
 
                 await context.Set<T>().AddAsync(toAdd);
                 await context.SaveChangesAsync();
