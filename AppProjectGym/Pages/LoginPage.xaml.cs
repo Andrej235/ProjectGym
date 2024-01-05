@@ -19,4 +19,6 @@ public partial class LoginPage : ContentPage
         else
             Debug.WriteLine("---> Invalid login info");
     }
+
+    //TODO: Override the back button so if you are not logged in you can't go back
 }

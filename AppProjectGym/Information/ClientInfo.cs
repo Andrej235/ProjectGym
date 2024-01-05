@@ -76,6 +76,34 @@ namespace AppProjectGym.Information
             }
         }
 
+        public static async Task<bool> Logout()
+        {
+            IsLoadingData = true;
+            var client = new HttpClient();
+            var url = $"{AppInfo.BaseApiURL}/user/logout/{ClientGuid}";
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Put,
+                RequestUri = new Uri(url),
+            };
+
+            try
+            {
+                var response = await client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+
+                IsLoadingData = false;
+                User = null;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogDebugger.LogError(ex);
+                IsLoadingData = false;
+                return false;
+            }
+        }
+
         public static async Task<bool> SetUser()
         {
             if (ClientGuid is null)

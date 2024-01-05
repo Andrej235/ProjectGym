@@ -108,7 +108,7 @@ namespace ProjectGym.Controllers
                 try
                 {
                     var client = await ClientReadService.Get(clientGuid, "user");
-                    client.User = user;
+                    client.UserGUID = user.Id;
                     await ClientUpdateService.Update(client);
                     res = (Guid)clientGuid;
                 }
@@ -126,7 +126,7 @@ namespace ProjectGym.Controllers
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"---> Error occurred: {ex.Message} \n{ex.InnerException?.Message}");
+                    LogDebugger.LogError(ex);
                     throw;
                 }
             }
@@ -143,6 +143,18 @@ namespace ProjectGym.Controllers
                 res = newClient.Id;
             }
             return res;
+        }
+
+
+
+        [HttpPut("logout/{clientId}")]
+        public async Task<IActionResult> Logout(Guid clientId)
+        {
+            var client = await ClientReadService.Get(clientId);
+            client.UserGUID = null;
+
+            await ClientUpdateService.Update(client);
+            return Ok();
         }
 
         public class RegisterDTO

@@ -331,5 +331,42 @@
                 </CollectionView>
             </VerticalStackLayout>
         </Grid>
+
+        <ImageButton Source="logout.png" 
+                     WidthRequest="30"
+                     HeightRequest="30"
+                     VerticalOptions="Start"
+                     HorizontalOptions="End"
+                     Margin="10"
+                     Clicked="OnLogOutButtonClicked"/>
+
+        <Border x:Name="logoutConfirmDialogWrapper"
+                HorizontalOptions="Center" 
+                VerticalOptions="Center" 
+                BackgroundColor="Black" 
+                Padding="25"
+                StrokeShape="RoundRectangle 10"
+                StrokeThickness="10"
+                Stroke="White"
+                ZIndex="10"
+                IsVisible="false">
+
+            <VerticalStackLayout>
+                <Label Text="Are you sure you want to logout?" Margin="0, 0, 0, 10" />
+
+                <FlexLayout JustifyContent="Center" HeightRequest="100">
+                    <Button Text="Cancel" WidthRequest="100"  Margin="10" Padding="10" Clicked="OnCancelLogout" />
+                    <Button Text="Yes" WidthRequest="100" Margin="10" Padding="10" Clicked="OnLogout" />
+                </FlexLayout>
+            </VerticalStackLayout>
+        </Border>
+
+        <Button x:Name="whiteOverlay"
+                HorizontalOptions="Fill" 
+                VerticalOptions="Fill" 
+                BackgroundColor="White"
+                Opacity="0.5" 
+                IsVisible="false"
+                Clicked="OnCancelLogout" />
     </Grid>
 </ContentPage>

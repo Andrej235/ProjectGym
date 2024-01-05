@@ -16,6 +16,10 @@ public partial class ProfilePage : ContentPage
     private readonly IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper;
     private readonly IEntityDisplayMapper<WorkoutSet, StartedWorkout_SetDisplay> startedWorkoutSetDisplayMapper;
 
+    public User User => ClientInfo.User;
+    private bool isLoadingData;
+
+    #region On Load
     public ProfilePage(IReadService readService, IEntityDisplayMapper<WorkoutSet, StartedWorkout_SetDisplay> startedWorkoutSetDisplayMapper, IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper)
     {
         InitializeComponent();
@@ -27,62 +31,6 @@ public partial class ProfilePage : ContentPage
         this.exerciseDisplayMapper = exerciseDisplayMapper;
     }
 
-    public User User => ClientInfo.User;
-
-    public List<ExerciseDisplay> BookmarkedExercises
-    {
-        get => bookmarkedExercises;
-        set
-        {
-            bookmarkedExercises = value;
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(BookmarkedExercisesCount));
-        }
-    }
-    private List<ExerciseDisplay> bookmarkedExercises;
-    public int BookmarkedExercisesCount => BookmarkedExercises is null ? 0 : BookmarkedExercises.Count;
-
-    public List<FinishedWorkout> FinishedWorkouts
-    {
-        get => finishedWorkouts;
-        set
-        {
-            finishedWorkouts = value;
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(FinishedWorkoutsCount));
-        }
-    }
-    private List<FinishedWorkout> finishedWorkouts;
-    public int FinishedWorkoutsCount => FinishedWorkouts is null ? 0 : FinishedWorkouts.Count;
-
-
-
-    public FinishedWorkout SelectedWorkout
-    {
-        get => selectedWorkout;
-        set
-        {
-            selectedWorkout = value;
-            OnPropertyChanged();
-        }
-    }
-    private FinishedWorkout selectedWorkout;
-
-    public List<StartedWorkout_SetDisplay> FinishedSets
-    {
-        get => finishedSets;
-        set
-        {
-            finishedSets = value;
-            OnPropertyChanged();
-        }
-    }
-    private List<StartedWorkout_SetDisplay> finishedSets;
-
-
-
-    private bool isLoadingData;
-
     protected override async void OnAppearing()
     {
         FinishedWorkouts = [.. context.FinishedWorkouts.Where(x => x.DateTime != default).OrderByDescending(x => x.DateTime)];
@@ -92,7 +40,8 @@ public partial class ProfilePage : ContentPage
         BookmarkedExercises = [.. exerciseDisplays];
 
         base.OnAppearing();
-    }
+    } 
+    #endregion
 
     #region Custom back button logic
     protected override bool OnBackButtonPressed()
@@ -118,6 +67,50 @@ public partial class ProfilePage : ContentPage
 
     private static async void GoBack() => await NavigationService.GoToAsync("..");
     #endregion
+
+    #region Finished Workouts
+    #region Properties
+    public List<FinishedWorkout> FinishedWorkouts
+    {
+        get => finishedWorkouts;
+        set
+        {
+            finishedWorkouts = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(FinishedWorkoutsCount));
+        }
+    }
+    private List<FinishedWorkout> finishedWorkouts;
+    public int FinishedWorkoutsCount => FinishedWorkouts is null ? 0 : FinishedWorkouts.Count;
+
+    public FinishedWorkout SelectedWorkout
+    {
+        get => selectedWorkout;
+        set
+        {
+            selectedWorkout = value;
+            OnPropertyChanged();
+        }
+    }
+    private FinishedWorkout selectedWorkout;
+
+    public List<StartedWorkout_SetDisplay> FinishedSets
+    {
+        get => finishedSets;
+        set
+        {
+            finishedSets = value;
+            OnPropertyChanged();
+        }
+    }
+    private List<StartedWorkout_SetDisplay> finishedSets; 
+    #endregion
+
+    private void OnSelectFinishedWorkouts(object sender, EventArgs e)
+    {
+        bookmarksWrapper.IsVisible = false;
+        finishedWorkoutsWrapper.IsVisible = true;
+    }
 
     private async void OnOpenFinishedWorkout(object sender, EventArgs e)
     {
@@ -150,12 +143,21 @@ public partial class ProfilePage : ContentPage
         finishedSetsCollection.ItemsSource = FinishedSets;
         isLoadingData = false;
     }
+    #endregion
 
-    private void OnSelectFinishedWorkouts(object sender, EventArgs e)
+    #region Bookmarked Exercises
+    public List<ExerciseDisplay> BookmarkedExercises
     {
-        bookmarksWrapper.IsVisible = false;
-        finishedWorkoutsWrapper.IsVisible = true;
+        get => bookmarkedExercises;
+        set
+        {
+            bookmarkedExercises = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(BookmarkedExercisesCount));
+        }
     }
+    private List<ExerciseDisplay> bookmarkedExercises;
+    public int BookmarkedExercisesCount => BookmarkedExercises is null ? 0 : BookmarkedExercises.Count;
 
     private void OnSelectBookmarks(object sender, EventArgs e)
     {
@@ -173,4 +175,28 @@ public partial class ProfilePage : ContentPage
 
         await NavigationService.GoToAsync(nameof(FullScreenExercisePage), new KeyValuePair<string, object>("id", exerciseDisplay.Exercise.Id));
     }
+    #endregion
+
+    #region Logout
+    private void OnLogOutButtonClicked(object sender, EventArgs e)
+    {
+        whiteOverlay.IsVisible = true;
+        logoutConfirmDialogWrapper.IsVisible = true;
+    }
+
+    private void OnCancelLogout(object sender, EventArgs e)
+    {
+        whiteOverlay.IsVisible = false;
+        logoutConfirmDialogWrapper.IsVisible = false;
+    }
+
+    private async void OnLogout(object sender, EventArgs e)
+    {
+        whiteOverlay.IsVisible = false;
+        logoutConfirmDialogWrapper.IsVisible = false;
+        var success = await ClientInfo.Logout();
+        if (success)
+            await NavigationService.GoToAsync($"../{nameof(LoginPage)}");
+    }
+    #endregion
 }
