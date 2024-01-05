@@ -12,6 +12,7 @@ namespace AppProjectGym
     {
         private readonly IReadService readService;
         private readonly IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper;
+        private readonly int exercisesPerPage;
 
         public int PageNumber
         {
@@ -24,9 +25,92 @@ namespace AppProjectGym
             }
         }
         private int pageNumber;
-        private readonly int exercisesPerPage;
         private bool isWaitingForExerciseData;
 
+        private List<ExerciseDisplay> exerciseDisplays;
+
+
+
+        #region On Load
+        public MainPage(IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper, IReadService readService)
+        {
+            InitializeComponent();
+
+            BindingContext = this;
+            this.readService = readService;
+            this.exerciseDisplayMapper = exerciseDisplayMapper;
+
+            PageNumber = 1;
+            exercisesPerPage = 15;
+
+            OnLoad();
+        }
+
+        private async void OnLoad()
+        {
+            Equipment = await readService.Get<List<Equipment>>();
+            var muscles = await readService.Get<List<Muscle>>();
+            var muscleGroups = await readService.Get<List<MuscleGroup>>();
+            muscleGroupDisplays = muscleGroups.Select(x => new MuscleGroupDisplay()
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Muscles = muscles.Where(y => y.MuscleGroupId == x.Id),
+            }).ToList();
+
+            PrimaryMuscleGroupRepresentations = muscleGroupDisplays.Select(x => new MuscleGroupRepresentation()
+            {
+                MuscleGroupDisplay = x,
+                SelectedMuscles = []
+            }).ToList();
+
+            SecondaryMuscleGroupRepresentations = muscleGroupDisplays.Select(x => new MuscleGroupRepresentation()
+            {
+                MuscleGroupDisplay = x,
+                SelectedMuscles = []
+            }).ToList();
+
+            primaryMuscleFilter.ItemsSource = null;
+            primaryMuscleFilter.ItemsSource = PrimaryMuscleGroupRepresentations;
+            secondaryMuscleFilter.ItemsSource = null;
+            secondaryMuscleFilter.ItemsSource = SecondaryMuscleGroupRepresentations;
+        }
+
+        private async void LoadExercises()
+        {
+            if (isWaitingForExerciseData)
+                return;
+
+            isWaitingForExerciseData = true;
+            var loadedExercises = await readService.Get<List<Exercise>>("images", ReadService.TranslateEndPoint("exercise", (pageNumber - 1) * exercisesPerPage, exercisesPerPage));
+            if (loadedExercises is null || loadedExercises.Count == 0)
+            {
+                PageNumber--; //If the page number is 1 the previous button can't even be pressed / won't invoke this method
+                isWaitingForExerciseData = false;
+                return;
+            }
+
+            exerciseDisplays = [.. ((await Task.WhenAll(loadedExercises.Select(async e => await exerciseDisplayMapper.Map(e)))).OrderByDescending(x => x.Image.ImageURL != ""))];
+
+            exerciseCollectionView.ItemsSource = null;
+            exerciseCollectionView.ItemsSource = exerciseDisplays;
+            exerciseCollectionView.SelectedItem = null;
+
+            await exerciseCollectionScrollView.ScrollToAsync(0, 0, true);
+            isWaitingForExerciseData = false;
+        }
+
+        protected override void OnAppearing()
+        {
+            if (areCreateOptionsOpen)
+                ToggleCreateOptions();
+
+            LoadExercises();
+            base.OnAppearing();
+        }
+        #endregion
+
+        #region Filters / Search
         public List<MuscleGroupRepresentation> PrimaryMuscleGroupRepresentations
         {
             get => primaryMuscleGroupRepresentations;
@@ -62,102 +146,7 @@ namespace AppProjectGym
         }
         private List<Equipment> equipment;
 
-        private List<ExerciseDisplay> exerciseDisplays;
 
-        public MainPage(
-            IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper,
-            IReadService readService)
-        {
-            InitializeComponent();
-
-            BindingContext = this;
-            this.readService = readService;
-            this.exerciseDisplayMapper = exerciseDisplayMapper;
-
-            PageNumber = 1;
-            exercisesPerPage = 15;
-
-            OnLoad();
-        }
-
-        private async void OnLoad()
-        {
-            //TODO: Add a isLoadingData field for this initial stuff so user can't navigate to other pages at least until they are verified
-            Equipment = await readService.Get<List<Equipment>>();
-            var muscles = await readService.Get<List<Muscle>>();
-            var muscleGroups = await readService.Get<List<MuscleGroup>>();
-            muscleGroupDisplays = muscleGroups.Select(x => new MuscleGroupDisplay()
-            {
-                Id = x.Id,
-                Name = x.Name,
-                Muscles = muscles.Where(y => y.MuscleGroupId == x.Id),
-            }).ToList();
-
-            PrimaryMuscleGroupRepresentations = muscleGroupDisplays.Select(x => new MuscleGroupRepresentation()
-            {
-                MuscleGroupDisplay = x,
-                SelectedMuscles = []
-            }).ToList();
-
-            SecondaryMuscleGroupRepresentations = muscleGroupDisplays.Select(x => new MuscleGroupRepresentation()
-            {
-                MuscleGroupDisplay = x,
-                SelectedMuscles = []
-            }).ToList();
-
-            primaryMuscleFilter.ItemsSource = null;
-            primaryMuscleFilter.ItemsSource = PrimaryMuscleGroupRepresentations;
-            secondaryMuscleFilter.ItemsSource = null;
-            secondaryMuscleFilter.ItemsSource = SecondaryMuscleGroupRepresentations;
-        }
-
-
-        private bool areFiltersOpen = false;
-        private bool isPlayingFilterAnimation = false;
-
-        private async void LoadExercises()
-        {
-            if (isWaitingForExerciseData)
-                return;
-
-            isWaitingForExerciseData = true;
-            var loadedExercises = await readService.Get<List<Exercise>>("images", ReadService.TranslateEndPoint("exercise", (pageNumber - 1) * exercisesPerPage, exercisesPerPage));
-            if (loadedExercises is null || loadedExercises.Count == 0)
-            {
-                PageNumber--; //If the page number is 1 the previous button can't even be pressed / won't invoke this method
-                isWaitingForExerciseData = false;
-                return;
-            }
-
-            exerciseDisplays = [.. ((await Task.WhenAll(loadedExercises.Select(async e => await exerciseDisplayMapper.Map(e)))).OrderByDescending(x => x.Image.ImageURL != ""))];
-
-            exerciseCollectionView.ItemsSource = null;
-            exerciseCollectionView.ItemsSource = exerciseDisplays;
-            exerciseCollectionView.SelectedItem = null;
-
-            await exerciseCollectionScrollView.ScrollToAsync(0, 0, true);
-            isWaitingForExerciseData = false;
-        }
-
-        protected override void OnAppearing()
-        {
-            if (areCreateOptionsOpen)
-                ToggleCreateOptions();
-
-            LoadExercises();
-            base.OnAppearing();
-        }
-
-        private async void OnExerciseSelect(object sender, SelectionChangedEventArgs e)
-        {
-            if (e.CurrentSelection is null || !e.CurrentSelection.Any())
-                return;
-
-            var exerciseDisplay = e.CurrentSelection[0] as ExerciseDisplay;
-            Debug.WriteLine($"---> Selected {exerciseDisplay.Exercise.Name}");
-
-            await NavigationService.GoToAsync(nameof(FullScreenExercisePage), new KeyValuePair<string, object>("id", exerciseDisplay.Exercise.Id));
-        }
 
         private async void OnSearch(object sender, EventArgs e)
         {
@@ -180,33 +169,17 @@ namespace AppProjectGym
                 $"secondarymuscle={string.Join(',', secondaryMuscleIds)}",
                 "strict=false"
                 ];
+
             queryPairs = queryPairs.Where(x => x.Contains('=') && x.Split('=').Where(y => y.Length > 0).Count() == 2).ToList();
+
+            if (bookmarksCheckBoxFilter.IsChecked)
+                queryPairs.Add($"bookmarked");
 
             searchBar.Text = "";
             await NavigationService.SearchAsync([.. queryPairs]);
         }
 
-        private async void FiltersButtonClicked(object sender, EventArgs e)
-        {
-            if (isPlayingFilterAnimation)
-                return;
-
-            isPlayingFilterAnimation = true;
-
-            if (areFiltersOpen)
-            {
-                await filtersWrapper.ScaleYTo(0);
-                filtersWrapper.IsVisible = false;
-            }
-            else
-            {
-                filtersWrapper.IsVisible = true;
-                await filtersWrapper.ScaleYTo(1);
-            }
-
-            areFiltersOpen = !areFiltersOpen;
-            isPlayingFilterAnimation = false;
-        }
+        private void FiltersButtonClicked(object sender, EventArgs e) => filtersWrapper.IsVisible = !filtersWrapper.IsVisible;
 
         private void OnClearFilters(object sender, EventArgs e)
         {
@@ -225,62 +198,12 @@ namespace AppProjectGym
             secondaryMuscleFilter.ItemsSource = SecondaryMuscleGroupRepresentations;
 
             equipmentFilter.SelectedItems = null;
-        }
 
-        private async void OnOpenProfilePage(object sender, EventArgs e)
-        {
-            if (!ClientInfo.IsLoadingData)
-                await NavigationService.GoToAsync(nameof(ProfilePage));
-        }
+            bookmarksCheckBoxFilter.IsChecked = false;
 
-        private async void OnOpenUserWorkoutsPage(object sender, EventArgs e)
-        {
-            if (!ClientInfo.IsLoadingData)
-                await NavigationService.GoToAsync(nameof(UserWorkoutsPage));
-        }
-
-        private void LoadPreviousPage(object sender, EventArgs e)
-        {
-            if (PageNumber > 1 && !isWaitingForExerciseData)
-            {
-                PageNumber--;
-                LoadExercises();
-            }
-        }
-
-        private void LoadNextPage(object sender, EventArgs e)
-        {
-            if (!isWaitingForExerciseData)
-            {
-                PageNumber++;
-                LoadExercises();
-            }
-        }
-
-        private bool areCreateOptionsOpen = false;
-        private bool isPlayingCreateOptionsAnimation = false;
-        private void OnAddButtonPressed(object sender, EventArgs e) => ToggleCreateOptions();
-
-        private void ToggleCreateOptions()
-        {
-            if (isPlayingCreateOptionsAnimation)
-                return;
-
-            isPlayingCreateOptionsAnimation = true;
-
-            if (areCreateOptionsOpen)
-            {
-                createOptionsWrapper.ScaleY = 0;
-                createOptionsWrapper.IsVisible = false;
-            }
-            else
-            {
-                createOptionsWrapper.IsVisible = true;
-                createOptionsWrapper.ScaleY = 1;
-            }
-
-            areCreateOptionsOpen = !areCreateOptionsOpen;
-            isPlayingCreateOptionsAnimation = false;
+            equipmentFilterExpander.IsExpanded = false;
+            primaryMuscleFilterExpander.IsExpanded = false;
+            secondaryMuscleFilterExpander.IsExpanded = false;
         }
 
         private void OnMuscleFilterSelect(object sender, SelectionChangedEventArgs e)
@@ -335,6 +258,50 @@ namespace AppProjectGym
             }
         }
 
+        private void OnBookmarkFilterButtonClicked(object sender, EventArgs e) => bookmarksCheckBoxFilter.IsChecked = !bookmarksCheckBoxFilter.IsChecked;
+        #endregion
+
+        #region Navigation bar (bottom 3 buttons)
+        private async void OnOpenProfilePage(object sender, EventArgs e)
+        {
+            if (!ClientInfo.IsLoadingData)
+                await NavigationService.GoToAsync(nameof(ProfilePage));
+        }
+
+        private async void OnOpenUserWorkoutsPage(object sender, EventArgs e)
+        {
+            if (!ClientInfo.IsLoadingData)
+                await NavigationService.GoToAsync(nameof(UserWorkoutsPage));
+        }
+
+        #region Create options
+        private bool areCreateOptionsOpen = false;
+        private bool isPlayingCreateOptionsAnimation = false;
+        private void OnAddButtonPressed(object sender, EventArgs e) => ToggleCreateOptions();
+
+        private void ToggleCreateOptions()
+        {
+            if (isPlayingCreateOptionsAnimation)
+                return;
+
+            isPlayingCreateOptionsAnimation = true;
+
+            if (areCreateOptionsOpen)
+            {
+                createOptionsWrapper.ScaleY = 0;
+                createOptionsWrapper.IsVisible = false;
+            }
+            else
+            {
+                createOptionsWrapper.IsVisible = true;
+                createOptionsWrapper.ScaleY = 1;
+            }
+
+            areCreateOptionsOpen = !areCreateOptionsOpen;
+            isPlayingCreateOptionsAnimation = false;
+        }
+
+
         private async void OnExerciseCreateClicked(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(ExerciseCreationPage));
 
         private async void OnMuscleCreateClicked(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(MuscleCreationPage));
@@ -342,5 +309,39 @@ namespace AppProjectGym
         private async void OnEquipmentCreateClicked(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(EquipmentCreationPage));
 
         private async void OnWorkoutCreateClicked(object sender, EventArgs e) => await NavigationService.GoToAsync(nameof(WorkoutCreationPage));
+        #endregion
+
+        #endregion
+
+        #region Exercise selection / lazy loading
+        private void LoadPreviousPage(object sender, EventArgs e)
+        {
+            if (PageNumber > 1 && !isWaitingForExerciseData)
+            {
+                PageNumber--;
+                LoadExercises();
+            }
+        }
+
+        private void LoadNextPage(object sender, EventArgs e)
+        {
+            if (!isWaitingForExerciseData)
+            {
+                PageNumber++;
+                LoadExercises();
+            }
+        }
+
+        private async void OnExerciseSelect(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.CurrentSelection is null || !e.CurrentSelection.Any())
+                return;
+
+            var exerciseDisplay = e.CurrentSelection[0] as ExerciseDisplay;
+            Debug.WriteLine($"---> Selected {exerciseDisplay.Exercise.Name}");
+
+            await NavigationService.GoToAsync(nameof(FullScreenExercisePage), new KeyValuePair<string, object>("id", exerciseDisplay.Exercise.Id));
+        }
+        #endregion
     }
 }

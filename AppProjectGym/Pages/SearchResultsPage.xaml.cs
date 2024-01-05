@@ -1,3 +1,4 @@
+using AppProjectGym.Information;
 using AppProjectGym.Models;
 using AppProjectGym.Services;
 using AppProjectGym.Services.Mapping;
@@ -8,14 +9,6 @@ namespace AppProjectGym.Pages;
 
 public partial class SearchResultsPage : ContentPage, IQueryAttributable
 {
-    public SearchResultsPage(IReadService readService, IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper)
-    {
-        InitializeComponent();
-        BindingContext = this;
-
-        this.readService = readService;
-        this.exerciseDisplayMapper = exerciseDisplayMapper;
-    }
     private readonly IReadService readService;
     private readonly IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper;
 
@@ -31,20 +24,6 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
     private List<Exercise> exercises;
     private List<ExerciseDisplay> exerciseDisplays;
 
-    private bool isInSelectionMode;
-
-    private async void SetExerciseDisplays()
-    {
-        List<ExerciseDisplay> newExerciseDisplays = [];
-        foreach (var e in exercises)
-            newExerciseDisplays.Add(await exerciseDisplayMapper.Map(e));
-
-        exerciseDisplays = [.. newExerciseDisplays.OrderBy(x => x.Image.ImageURL == "")];
-        exercisesCollection.ItemsSource = null;
-        exercisesCollection.ItemsSource = exerciseDisplays;
-        isWaitingForData = false;
-    }
-
     public int PageNumber
     {
         get => pageNumber;
@@ -58,16 +37,45 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
     private int pageNumber;
     private int exercisesPerPage;
     private string searchQuery;
+    private bool bookmarkedExercisesOnly;
     private bool isWaitingForData;
+
+    private bool isInSelectionMode;
+
+    #region On Load
+    public SearchResultsPage(IReadService readService, IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper)
+    {
+        InitializeComponent();
+        BindingContext = this;
+
+        this.readService = readService;
+        this.exerciseDisplayMapper = exerciseDisplayMapper;
+    }
+
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
         PageNumber = 1;
         exercisesPerPage = 10;
         searchQuery = query["q"] as string;
+
+        bookmarkedExercisesOnly = searchQuery.Contains("bookmarked");
+
         LoadExercises();
         LoadFilters();
 
         isInSelectionMode = query.TryGetValue("selectionMode", out object selectionModeObj) && selectionModeObj is bool selectionMode && selectionMode;
+    }
+
+    private async void SetExerciseDisplays()
+    {
+        List<ExerciseDisplay> newExerciseDisplays = [];
+        foreach (var e in exercises)
+            newExerciseDisplays.Add(await exerciseDisplayMapper.Map(e));
+
+        exerciseDisplays = [.. newExerciseDisplays.OrderBy(x => x.Image.ImageURL == "")];
+        exercisesCollection.ItemsSource = null;
+        exercisesCollection.ItemsSource = exerciseDisplays;
+        isWaitingForData = false;
     }
 
     public async void LoadExercises()
@@ -87,77 +95,10 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
             return;
         }
 
-        Exercises = exercisesToLoad;
+        Exercises = !bookmarkedExercisesOnly ? exercisesToLoad : exercisesToLoad.Where(x => ClientInfo.User.BookmarkIds.Contains(x.Id)).ToList();
         await scrollView.ScrollToAsync(0, 0, true);
         isWaitingForData = false;
     }
-
-    private void LoadPreviousPage(object sender, EventArgs e)
-    {
-        if (PageNumber > 1 && !isWaitingForData)
-        {
-            PageNumber--;
-            LoadExercises();
-        }
-    }
-
-    private void LoadNextPage(object sender, EventArgs e)
-    {
-        if (!isWaitingForData)
-        {
-            PageNumber++;
-            LoadExercises();
-        }
-    }
-
-    private async void OnExerciseSelect(object sender, SelectionChangedEventArgs e)
-    {
-        if (e.CurrentSelection is null || !e.CurrentSelection.Any())
-            return;
-
-        var selectedExerciseDisplay = e.CurrentSelection[0] as ExerciseDisplay;
-        Debug.WriteLine($"---> Selected {selectedExerciseDisplay.Exercise.Name}");
-
-        await NavigationService.GoToAsync(nameof(FullScreenExercisePage), new KeyValuePair<string, object>("id", selectedExerciseDisplay.Exercise.Id), new KeyValuePair<string, object>("selectionMode", isInSelectionMode));
-    }
-
-    #region Filters
-    public List<MuscleGroupRepresentation> PrimaryMuscleGroupRepresentations
-    {
-        get => primaryMuscleGroupRepresentations;
-        set
-        {
-            primaryMuscleGroupRepresentations = value;
-            OnPropertyChanged();
-        }
-    }
-    private List<MuscleGroupRepresentation> primaryMuscleGroupRepresentations;
-
-    public List<MuscleGroupRepresentation> SecondaryMuscleGroupRepresentations
-    {
-        get => secondaryMuscleGroupRepresentations;
-        set
-        {
-            secondaryMuscleGroupRepresentations = value;
-            OnPropertyChanged();
-        }
-    }
-    private List<MuscleGroupRepresentation> secondaryMuscleGroupRepresentations;
-
-    public List<Equipment> Equipment
-    {
-        get => equipment;
-        set
-        {
-            equipment = value;
-            OnPropertyChanged();
-        }
-    }
-    private List<Equipment> equipment;
-
-    private List<MuscleGroupDisplay> muscleGroupDisplays;
-    private bool areFiltersOpen = false;
-    private bool isPlayingFilterAnimation = false;
 
     private async void LoadFilters()
     {
@@ -183,8 +124,78 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
             SelectedMuscles = []
         }).ToList();
     }
+    #endregion
 
-    private void OnSearch(object sender, EventArgs e)
+    #region Exercise selection / lazy loading
+    private async void OnExerciseSelect(object sender, SelectionChangedEventArgs e)
+    {
+        if (e.CurrentSelection is null || !e.CurrentSelection.Any())
+            return;
+
+        var selectedExerciseDisplay = e.CurrentSelection[0] as ExerciseDisplay;
+        Debug.WriteLine($"---> Selected {selectedExerciseDisplay.Exercise.Name}");
+
+        await NavigationService.GoToAsync(nameof(FullScreenExercisePage), new KeyValuePair<string, object>("id", selectedExerciseDisplay.Exercise.Id), new KeyValuePair<string, object>("selectionMode", isInSelectionMode));
+    }
+
+    private void LoadPreviousPage(object sender, EventArgs e)
+    {
+        if (PageNumber > 1 && !isWaitingForData)
+        {
+            PageNumber--;
+            LoadExercises();
+        }
+    }
+
+    private void LoadNextPage(object sender, EventArgs e)
+    {
+        if (!isWaitingForData)
+        {
+            PageNumber++;
+            LoadExercises();
+        }
+    }
+    #endregion
+
+    #region Filters / Search
+    public List<MuscleGroupRepresentation> PrimaryMuscleGroupRepresentations
+    {
+        get => primaryMuscleGroupRepresentations;
+        set
+        {
+            primaryMuscleGroupRepresentations = value;
+            OnPropertyChanged();
+        }
+    }
+    private List<MuscleGroupRepresentation> primaryMuscleGroupRepresentations;
+
+    public List<MuscleGroupRepresentation> SecondaryMuscleGroupRepresentations
+    {
+        get => secondaryMuscleGroupRepresentations;
+        set
+        {
+            secondaryMuscleGroupRepresentations = value;
+            OnPropertyChanged();
+        }
+    }
+    private List<MuscleGroupRepresentation> secondaryMuscleGroupRepresentations;
+
+    private List<MuscleGroupDisplay> muscleGroupDisplays;
+
+    public List<Equipment> Equipment
+    {
+        get => equipment;
+        set
+        {
+            equipment = value;
+            OnPropertyChanged();
+        }
+    }
+    private List<Equipment> equipment;
+
+
+
+    private async void OnSearch(object sender, EventArgs e)
     {
         string searchText = searchBar.Text;
 
@@ -193,10 +204,8 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
         IEnumerable<int> primaryMuscleGroupIds = primaryMuscleFilter.SelectedItems.Cast<MuscleGroupRepresentation>().Select(x => x.MuscleGroupDisplay.Id);
         IEnumerable<int> primaryMuscleIds = PrimaryMuscleGroupRepresentations.SelectMany(x => x.SelectedMuscles).Select(x => x.Id);
 
-        IEnumerable<int> secondaryMuscleGroupIds = secondaryMuscleFilter.SelectedItems.Cast<MuscleGroupRepresentation>().Select(x => x.MuscleGroupDisplay.Id);
+        IEnumerable<int> secondaryMuscleGroupIds = SecondaryMuscleGroupRepresentations.Where(x => x.SelectedMuscles.Count > 0).Select(x => x.MuscleGroupDisplay.Id);
         IEnumerable<int> secondaryMuscleIds = SecondaryMuscleGroupRepresentations.SelectMany(x => x.SelectedMuscles).Select(x => x.Id);
-
-        searchBar.Text = "";
 
         List<string> queryPairs = [
             $"name={searchText}",
@@ -207,39 +216,17 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
             $"secondarymuscle={string.Join(',', secondaryMuscleIds)}",
             "strict=false"
             ];
+
         queryPairs = queryPairs.Where(x => x.Contains('=') && x.Split('=').Where(y => y.Length > 0).Count() == 2).ToList();
 
-        PageNumber = 1;
-        exercisesPerPage = 10;
-        searchQuery = queryPairs.Count > 1 ? string.Join(';', queryPairs) : "";
-        LoadExercises();
-        if (areFiltersOpen)
-            ToggleFilterWrapper();
+        if (bookmarksCheckBoxFilter.IsChecked)
+            queryPairs.Add($"bookmarked");
+
+        searchBar.Text = "";
+        await NavigationService.SearchAsync([.. queryPairs]);
     }
 
-    private void FiltersButtonClicked(object sender, EventArgs e) => ToggleFilterWrapper();
-
-    private async void ToggleFilterWrapper()
-    {
-        if (isPlayingFilterAnimation)
-            return;
-
-        isPlayingFilterAnimation = true;
-
-        if (areFiltersOpen)
-        {
-            await filtersWrapper.ScaleYTo(0);
-            filtersWrapper.IsVisible = false;
-        }
-        else
-        {
-            filtersWrapper.IsVisible = true;
-            await filtersWrapper.ScaleYTo(1);
-        }
-
-        areFiltersOpen = !areFiltersOpen;
-        isPlayingFilterAnimation = false;
-    }
+    private void FiltersButtonClicked(object sender, EventArgs e) => filtersWrapper.IsVisible = !filtersWrapper.IsVisible;
 
     private void OnClearFilters(object sender, EventArgs e)
     {
@@ -258,6 +245,12 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
         secondaryMuscleFilter.ItemsSource = SecondaryMuscleGroupRepresentations;
 
         equipmentFilter.SelectedItems = null;
+
+        bookmarksCheckBoxFilter.IsChecked = false;
+
+        equipmentFilterExpander.IsExpanded = false;
+        primaryMuscleFilterExpander.IsExpanded = false;
+        secondaryMuscleFilterExpander.IsExpanded = false;
     }
 
     private void OnMuscleFilterSelect(object sender, SelectionChangedEventArgs e)
@@ -311,5 +304,7 @@ public partial class SearchResultsPage : ContentPage, IQueryAttributable
             }
         }
     }
+
+    private void OnBookmarkFilterButtonClicked(object sender, EventArgs e) => bookmarksCheckBoxFilter.IsChecked = !bookmarksCheckBoxFilter.IsChecked;
     #endregion
 }
