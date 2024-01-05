@@ -5,6 +5,5 @@
     {
         readonly string positionalString = positionalString;
         public string PositionalString => positionalString;
-        public bool IsNullable { get; set; }
     }
 }

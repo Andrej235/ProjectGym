@@ -11,32 +11,18 @@ namespace ProjectGym.Services.Delete
     {
         public async Task Delete(object id)
         {
-            try
-            {
-                T entityToDelete = await readService.Get(id, "none");
+            T entityToDelete = await readService.Get(id, "none");
 
-                context.Set<T>().Remove(entityToDelete);
-                await context.SaveChangesAsync();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            context.Set<T>().Remove(entityToDelete);
+            await context.SaveChangesAsync();
         }
 
         public async Task DeleteFirst(Expression<Func<T, bool>> criteria)
         {
-            try
-            {
-                T entityToDelete = await readService.Get(criteria, "none");
+            T entityToDelete = await readService.Get(criteria, "none");
 
-                context.Set<T>().Remove(entityToDelete);
-                await context.SaveChangesAsync();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            context.Set<T>().Remove(entityToDelete);
+            await context.SaveChangesAsync();
         }
 
         public async Task<bool> DeleteAll(Expression<Func<T, bool>> criteria)

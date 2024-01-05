@@ -131,7 +131,6 @@ namespace AppProjectGym.Pages
             var selectedSecondaryMuscleGroupRepresentatins = secondaryMuscleGroupSelector.SelectedItems.Cast<MuscleGroupRepresentation>();
 
             //exercise.Name = nameInput.Text; //Name doesn't work?
-            exercise.Description = descriptionInput.Text;
             exercise.EquipmentIds = selectedEquipment.Select(x => x.Id);
             exercise.PrimaryMuscleGroupIds = selectedPrimaryMuscleGroupRepresentatins.Select(x => x.MuscleGroupDisplay.Id);
             exercise.PrimaryMuscleIds = selectedPrimaryMuscleGroupRepresentatins.SelectMany(x => x.SelectedMuscles).Select(x => x.Id);
@@ -160,7 +159,6 @@ namespace AppProjectGym.Pages
             var selectedSecondaryMuscleGroupRepresentatins = secondaryMuscleGroupSelector.SelectedItems.Cast<MuscleGroupRepresentation>();
 
             exercise.Name = nameInput.Text;
-            exercise.Description = descriptionInput.Text;
             exercise.EquipmentIds = selectedEquipment.Select(x => x.Id);
             exercise.PrimaryMuscleGroupIds = selectedPrimaryMuscleGroupRepresentatins.Select(x => x.MuscleGroupDisplay.Id);
             exercise.PrimaryMuscleIds = selectedPrimaryMuscleGroupRepresentatins.SelectMany(x => x.SelectedMuscles).Select(x => x.Id);
@@ -255,7 +253,6 @@ namespace AppProjectGym.Pages
             exercise = value as Exercise;
 
             nameInput.Text = exercise.Name;
-            descriptionInput.Text = exercise.Description;
 
             Images = await readService.Get<List<Image>>("none", "image", $"exercise={exercise.Id}");
             originalImages = Images.ToList();

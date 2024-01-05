@@ -117,7 +117,7 @@ namespace ProjectGym.Services.DatabaseSerialization
                         continue;
                     }
 
-                    if (entityPropertyInfo.PropertyType == typeof(DateTime))
+                    if (entityPropertyInfo.PropertyType == typeof(DateOnly))
                     {
                         if (DateOnly.TryParse(Convert.ToString(propertyValue), out DateOnly date))
                             entityPropertyInfo.SetValue(newEntityInstance, date);

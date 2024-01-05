@@ -8,7 +8,7 @@ namespace ProjectGym.Models
         [Key]
         public Guid Id { get; set; }
         public User? User { get; set; } = null!;
-        [ModelReference("User", IsNullable = true)]
+        [ModelReference("User")]
         public Guid? UserGUID { get; set; }
     }
 }

@@ -21,9 +21,6 @@ namespace ProjectGym.Services.Update
                 var exercise = await readService.Get(x => x.Id == updatedEntity.Id, "none") ?? throw new NullReferenceException("Exercise was not found.");
                 context.AttachRange(exercise);
 
-                if (updatedEntity.Description != "")
-                    exercise.Description = updatedEntity.Description;
-
                 if (updatedEntity.Equipment.Any())
                 {
                     await equipmentUsageDeleteService.DeleteAll(x => x.ExerciseId == exercise.Id);

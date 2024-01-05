@@ -6,7 +6,6 @@ namespace ProjectGym.Models
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
-        public string ImageUrl { get; set; } = null!;
 
         public IEnumerable<Exercise> PrimaryInExercises { get; set; } = new List<Exercise>();
         public IEnumerable<Exercise> SecondaryInExercises { get; set; } = new List<Exercise>();

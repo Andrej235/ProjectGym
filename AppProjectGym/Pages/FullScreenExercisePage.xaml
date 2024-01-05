@@ -119,10 +119,6 @@
                         TextColor="White"
                         Clicked="OnOpenWeightHistory"/>
 
-                <Grid RowDefinitions="Auto" RowSpacing="5" Margin="7, 10, 7, 10">
-                    <Label Text="{Binding ExerciseDisplay.Exercise.Description}" FontSize="Caption"/>
-                </Grid>
-
                 <Grid RowDefinitions="Auto, Auto" IsVisible="{Binding PrimaryMuscleDisplays, Converter={StaticResource IsCollectionNotEmpty}}">
                     <Label Text="Primary Muscles:" Grid.Row="0" FontSize="Title"/>
                     <CollectionView ItemsSource="{Binding PrimaryMuscleDisplays}"

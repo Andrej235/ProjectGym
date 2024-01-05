@@ -4,7 +4,6 @@
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
-        public string Description { get; set; } = null!;
 
         public IEnumerable<MuscleGroup> PrimaryMuscleGroups { get; set; } = new List<MuscleGroup>();
         public IEnumerable<MuscleGroup> SecondaryMuscleGroups { get; set; } = new List<MuscleGroup>();
