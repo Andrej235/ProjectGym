@@ -279,8 +279,6 @@ namespace AppProjectGym.Pages
 
         private async void OnBookmarkBtnClicked(object sender, EventArgs e)
         {
-            //TODO: Make an endpoint on backend to see if an exercise is bookmarked and call it on appearing
-            //Maybe add an endpoint for toggling bookmarks so the code on the frontend is simpler?
             var newBookmark = new Bookmark()
             {
                 UserId = ClientInfo.User.Id,

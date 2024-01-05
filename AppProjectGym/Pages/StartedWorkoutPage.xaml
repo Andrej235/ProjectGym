@@ -6,7 +6,7 @@
              xmlns:ValueConverters="clr-namespace:AppProjectGym.ValueConverters"
              x:DataType="Pages:StartedWorkoutPage"
              x:Class="AppProjectGym.Pages.StartedWorkoutPage"
-             Title="StartedWorkoutPage">
+             Title="{Binding Workout.Name}">
 
     <ContentPage.Resources>
         <Style x:Key="setsStyle" TargetType="Border">

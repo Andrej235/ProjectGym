@@ -2,12 +2,53 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:Pages="clr-namespace:AppProjectGym.Pages"
+             xmlns:ValueConverters="clr-namespace:AppProjectGym.ValueConverters"
              x:Class="AppProjectGym.Pages.LoginPage"
-             Title="LoginPage"
+             Title="Login"
              x:DataType="Pages:LoginPage">
-    <VerticalStackLayout>
-        <Entry x:Name="emailInputField" Placeholder="Email"/>
-        <Entry x:Name="passwordInputField" Placeholder="Password"/>
-        <Button Clicked="OnLoginSubmited"/>
-    </VerticalStackLayout>
+
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior Command="{Binding BackCommand}"/>
+    </Shell.BackButtonBehavior>
+
+    <Border Padding="10" VerticalOptions="Center">
+        <VerticalStackLayout VerticalOptions="Center">
+
+            <VerticalStackLayout x:Name="loginWrapper" Margin="25, 10, 25, 0">
+                <Label Text="LogIn" FontSize="Title" HorizontalTextAlignment="Center"/>
+
+                <Entry x:Name="loginInputField_Email" Placeholder="Email" />
+                <Label x:Name="wrongLoginDetailsLabel" Text="Invalid email or password" FontSize="Caption" TextColor="Red" Margin="10, -5, 0, 0" IsVisible="False"/>
+                <Entry x:Name="loginInputField_Password" Placeholder="Password" IsPassword="True" />
+
+                <Button Clicked="OnSubmitLoginInfo" Text="LogIn" Margin="0, 15, 0, 0"/>
+                <HorizontalStackLayout>
+                    <Label Text="Don't have an account?" FontSize="Caption" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
+                    <Button Text="Register here" BackgroundColor="Transparent" Clicked="OnSwitchToRegister"/>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout x:Name="registerWrapper" Margin="25, 10, 25, 0" IsVisible="False">
+                <Label Text="Register" FontSize="Title" HorizontalTextAlignment="Center"/>
+
+                <Entry x:Name="registerInputField_Name" Placeholder="Name"/>
+                <Label x:Name="registerMissingLabel_Name" Text="Name is missing" FontSize="Caption" TextColor="Red" Margin="10, -5, 0, 0" IsVisible="False"/>
+
+                <Entry x:Name="registerInputField_Email" Placeholder="Email"/>
+                <Label x:Name="registerMissingLabel_Email" Text="Email is missing" FontSize="Caption" TextColor="Red" Margin="10, -5, 0, 0" IsVisible="False"/>
+
+                <Entry x:Name="registerInputField_Password" Placeholder="Password" IsPassword="True" TextChanged="OnRegisterPasswordInputChanged" />
+                <Label x:Name="registerMissingLabel_Password" Text="Password MUST contain at least 8 characters" FontSize="Caption" TextColor="Red" Margin="10, -5, 0, 0" IsVisible="False"/>
+
+                <Entry x:Name="registerInputField_RepeatPassword" Placeholder="Repeat Password" IsPassword="True" TextChanged="OnRegisterPasswordInputChanged" />
+                <Label x:Name="passwordsDontMatchLabel" Text="Passwords don't match" FontSize="Caption" TextColor="Red" Margin="10, -5, 0, 0" IsVisible="False"/>
+
+                <Button Clicked="OnSubmitRegisterInfo" Text="Register" Margin="0, 15, 0, 0"/>
+                <HorizontalStackLayout>
+                    <Label Text="Already have an account?" FontSize="Caption" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
+                    <Button Text="LogIn here" BackgroundColor="Transparent" Clicked="OnSwitchToLogin"/>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </Border>
 </ContentPage>

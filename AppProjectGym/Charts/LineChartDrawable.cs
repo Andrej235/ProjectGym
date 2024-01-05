@@ -5,7 +5,7 @@ using RectangleF = Microsoft.Maui.Graphics.RectF;
 
 namespace AppProjectGym.Charts
 {
-    internal class LineChartDrawable : View, IDrawable
+    public class LineChartDrawable : View, IDrawable
     {
         public float maxValue;
         public double xAxisScaleOrigin;

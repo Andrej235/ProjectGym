@@ -7,6 +7,10 @@
              x:DataType="Pages:UserWorkoutsPage"
              x:Class="AppProjectGym.Pages.UserWorkoutsPage"
              Title="My Workouts">
+
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior Command="{Binding BackCommand}"/>
+    </Shell.BackButtonBehavior>
     
     <Grid>
         <CollectionView ItemsSource="{Binding Workouts}" SelectionMode="None">
@@ -56,5 +60,14 @@
                 Opacity="0.5" 
                 IsVisible="false"
                 Clicked="OnWhiteOverlayClicked" />
+
+        <ImageButton Source="global.png" 
+                     VerticalOptions="Start" 
+                     HorizontalOptions="End" 
+                     HeightRequest="40" 
+                     WidthRequest="40"
+                     Margin="10" 
+                     x:Name="publicWorkoutsBtn"
+                     Clicked="OnOpenPublicWorkouts" />
     </Grid>
 </ContentPage>

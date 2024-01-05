@@ -77,7 +77,7 @@ namespace ProjectGym.Services.Read
         protected abstract Expression<Func<T, bool>> TranslateKeyValueToExpression(string key, string value);
 
         protected static IEnumerable<string>? SplitIncludeString(string? include) => include?.ToLower().Replace(" ", "").Split(',').Where(x => !string.IsNullOrWhiteSpace(x));
-        //TODO?: make ~=(=) mean one of x,y,z and =(==) mean x and y and z
+
         protected static List<List<string>> SplitQueryString(string query) => query.Split(';')
             .Select(sq => sq.Split('=').Select(x => x.Trim().ToLower()).ToList())
             .Where(x => x.Count == 2)

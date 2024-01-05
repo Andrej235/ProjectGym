@@ -6,7 +6,7 @@
              xmlns:Models="clr-namespace:AppProjectGym.Models"
              xmlns:ValueConverters="clr-namespace:AppProjectGym.ValueConverters"
              x:Class="AppProjectGym.Pages.SearchResultsPage"
-             Title="SearchResultsPage"
+             Title="Search Results"
              x:DataType="Pages:SearchResultsPage">
 
     <ContentPage.Resources>

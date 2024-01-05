@@ -54,7 +54,6 @@ namespace LocalJSONDatabase.Core
         }
         public void Add<TEntity>(TEntity entity, bool asignPrimaryKey = true) where TEntity : class => Table<TEntity>().Add(entity, asignPrimaryKey);
 
-        //TODO?: Add another delete method which takes an object like 'Add(object entity, bool asignPrimaryKey = true)'
         public void Delete<TEntity>(TEntity entity) where TEntity : class => Table<TEntity>().Delete(entity);
         public void Delete<TEntity>(IEnumerable<TEntity> entities) where TEntity : class
         {
@@ -66,8 +65,6 @@ namespace LocalJSONDatabase.Core
             }
         }
 
-
-        //TODO?: Add another Find method which takes a type parameter like 'Table(Type entityType)'
         public TEntity Find<TEntity>(object primaryKey) where TEntity : class => Table<TEntity>().Find(primaryKey);
 
 

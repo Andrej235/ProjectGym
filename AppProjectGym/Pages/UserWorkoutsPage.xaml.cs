@@ -34,6 +34,12 @@ public partial class UserWorkoutsPage : ContentPage
     protected override async void OnAppearing()
     {
         Workouts = await readService.Get<List<Workout>>("none", "workout", "personal=true", $"user={ClientInfo.User.Id}");
+        privateWorkouts = Workouts.DeepCopy();
+        publicWorkouts = null;
+
+        if (isViewingPublicWorkouts)
+            BackCommand.Execute(null);
+
         base.OnAppearing();
     }
 
@@ -79,4 +85,46 @@ public partial class UserWorkoutsPage : ContentPage
         };
         OpenConfirmDialog(workout);
     }
+
+    private List<Workout> privateWorkouts;
+    private List<Workout> publicWorkouts;
+    private bool isViewingPublicWorkouts;
+    private async void OnOpenPublicWorkouts(object sender, EventArgs e)
+    {
+        Title = "Public Workouts";
+
+        if (publicWorkouts is null)
+        {
+            Workouts = (await readService.Get<IEnumerable<Workout>>("none", "workout", $"user={ClientInfo.User.Id}", "public=true")).ToList();
+            publicWorkouts = Workouts.DeepCopy();
+        }
+        else
+        {
+            Workouts = publicWorkouts.DeepCopy();
+        }
+
+        isViewingPublicWorkouts = true;
+        publicWorkoutsBtn.IsVisible = false;
+    }
+
+    protected override bool OnBackButtonPressed()
+    {
+        BackCommand.Execute(null);
+        return true;
+    }
+
+    public Command BackCommand => new(() =>
+    {
+        if (isViewingPublicWorkouts)
+        {
+            Title = "My Workouts";
+            Workouts = privateWorkouts;
+            publicWorkoutsBtn.IsVisible = true;
+            isViewingPublicWorkouts = false;
+        }
+        else
+            GoBack();
+    });
+
+    private async void GoBack() => await NavigationService.GoToAsync("..");
 }
