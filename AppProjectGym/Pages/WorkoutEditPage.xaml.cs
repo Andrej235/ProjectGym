@@ -35,10 +35,12 @@ namespace AppProjectGym.Pages
             set
             {
                 workout = value;
+                isPublic = value.IsPublic;
                 OnPropertyChanged();
             }
         }
         private Workout workout;
+        private bool isPublic;
 
         public List<WorkoutSetDisplay> WorkoutSetDisplays
         {
@@ -286,6 +288,10 @@ namespace AppProjectGym.Pages
             }
 
             WorkoutSetDisplays = [];
+
+            if (Workout.IsPublic != isPublic)
+                await updateService.Update(Workout);
+
             await NavigationService.GoToAsync("..");
         }
 

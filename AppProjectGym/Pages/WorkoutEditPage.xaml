@@ -16,6 +16,11 @@
     <Grid VerticalOptions="Fill" HorizontalOptions="Fill">
         <ScrollView VerticalScrollBarVisibility="Always">
             <VerticalStackLayout>
+                <HorizontalStackLayout Margin="20, 0, 20, 0">
+                    <Label Text="Is Public " FontSize="Subtitle" VerticalTextAlignment="Center" />
+                    <CheckBox IsChecked="{Binding Workout.IsPublic}" />
+                </HorizontalStackLayout>
+
                 <CollectionView x:Name="setCollection" ItemsSource="{Binding WorkoutSetDisplays}" SelectionMode="None">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="Models:WorkoutSetDisplay">

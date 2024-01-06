@@ -62,7 +62,7 @@
                 Clicked="OnWhiteOverlayClicked" />
 
         <ImageButton Source="global.png" 
-                     VerticalOptions="Start" 
+                     VerticalOptions="End" 
                      HorizontalOptions="End" 
                      HeightRequest="40" 
                      WidthRequest="40"
