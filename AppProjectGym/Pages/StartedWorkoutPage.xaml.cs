@@ -442,7 +442,6 @@ namespace AppProjectGym.Pages
             repsInputHanlder = reps =>
             {
                 SaveActiveFinishedSetChanges(reps);
-                //WIP
                 activeFinishedSetDisplay = activeWorkoutSetDisplay.FinishedSets.FirstOrDefault(x => x.Time == 0);
                 if (activeFinishedSetDisplay is null)
                 {

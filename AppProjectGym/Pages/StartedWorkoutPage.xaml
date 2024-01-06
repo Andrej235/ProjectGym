@@ -33,12 +33,11 @@
             </Setter>
         </Style>
 
-        <StyleSheet Source="/Resources/Styles/StyleCSS.css" />
-
         <ValueConverters:IsNotNullConverter x:Key="IsNotNull"/>
         <ValueConverters:IsNot0Converter x:Key="IsNot0"/>
         <ValueConverters:Is0Converter x:Key="Is0"/>
         <ValueConverters:SecondsToFormattedTimeConverter x:Key="TimeFormatter"/>
+        <ValueConverters:NegativeToZeroConverter x:Key="NegativeToZero"/>
     </ContentPage.Resources>
 
     <Grid>
@@ -153,7 +152,7 @@
                                                 <Label HorizontalTextAlignment="Center" VerticalTextAlignment="Center">
                                                     <Label.FormattedText>
                                                         <FormattedString>
-                                                            <Span Text="{Binding Weight.Weight}"/>
+                                                            <Span Text="{Binding Weight.Weight, Converter={StaticResource NegativeToZero}}"/>
                                                             <Span Text=" KG"/>
                                                         </FormattedString>
                                                     </Label.FormattedText>

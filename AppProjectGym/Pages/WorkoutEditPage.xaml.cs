@@ -53,6 +53,7 @@ namespace AppProjectGym.Pages
         }
         private List<WorkoutSetDisplay> workoutSetDisplays;
         private List<WorkoutSetDisplay> originalWorkoutSetDisplays;
+        private bool isLoadingData;
 
         public WorkoutEditPage(ICreateService createService, IReadService readService, IUpdateService updateService, IDeleteService deleteService, IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper, IEntityDisplayMapper<WorkoutSet, WorkoutSetDisplay> workoutSetDisplayMapper)
         {
@@ -68,14 +69,19 @@ namespace AppProjectGym.Pages
 
         public async void ApplyQueryAttributes(IDictionary<string, object> query)
         {
+            isLoadingData = true;
             if (query.TryGetValue("selectedExercise", out object value) && value is Exercise exercise)
             {
                 exerciseSelectionHandler(await exerciseDisplayMapper.Map(exercise));
+                isLoadingData = false;
                 return;
             }
 
             if (!query.TryGetValue("workout", out object workoutObj) || workoutObj is not Workout workout)
+            {
+                await NavigationService.GoToAsync("..");
                 return;
+            }
 
             Workout = workout;
             WorkoutSetDisplays = [];
@@ -85,14 +91,23 @@ namespace AppProjectGym.Pages
 
             originalWorkoutSetDisplays = WorkoutSetDisplays.DeepCopy();
             RefreshSetCollection();
+            isLoadingData = false;
         }
 
+        private void RefreshSetCollection()
+        {
+            setCollection.ItemsSource = null;
+            setCollection.ItemsSource = WorkoutSetDisplays;
+        }
+
+        #region Dialogs
         private void OnWhiteOverlayClicked(object sender, EventArgs e)
         {
             CloseRepRangeInputDialog();
             CloseNumberInput();
         }
 
+        #region Rep range input
         private void OpenRepRangeInputDialog()
         {
             repRangeInputDialogWrapper.IsVisible = true;
@@ -104,20 +119,6 @@ namespace AppProjectGym.Pages
             repRangeInputDialogWrapper.IsVisible = false;
             whiteOverlay.IsVisible = false;
         }
-
-        private void OpenNumberInput()
-        {
-            singleNumberInputDialogWrapper.IsVisible = true;
-            whiteOverlay.IsVisible = true;
-        }
-
-        private void CloseNumberInput()
-        {
-            singleNumberInputDialogWrapper.IsVisible = false;
-            whiteOverlay.IsVisible = false;
-        }
-
-        private void OnNumberSubmit(object sender, EventArgs e) => HandleNumberInput(singleNumberInput.Text);
 
         private void OnRepRangeEdit(object sender, EventArgs e)
         {
@@ -136,21 +137,6 @@ namespace AppProjectGym.Pages
             };
 
             OpenRepRangeInputDialog();
-        }
-
-        private void OnNumberInput(object sender, EventArgs e)
-        {
-            if (sender is not Button button)
-                return;
-
-            WorkoutSetDisplay workoutSetDisplay = button.BindingContext as WorkoutSetDisplay;
-            numberInputHandler = input =>
-            {
-                workoutSetDisplay.TargetSets = input;
-                RefreshSetCollection();
-            };
-
-            OpenNumberInput();
         }
 
         private void OnRepRangeSubmit(object sender, EventArgs e) => HandleRepRangeInput(bottomRepRangeInput.Text, topRepRangeInput.Text);
@@ -173,6 +159,37 @@ namespace AppProjectGym.Pages
                 LogDebugger.LogError(ex);
             }
         }
+        #endregion
+
+        #region Number input
+        private void OpenNumberInput()
+        {
+            singleNumberInputDialogWrapper.IsVisible = true;
+            whiteOverlay.IsVisible = true;
+        }
+
+        private void CloseNumberInput()
+        {
+            singleNumberInputDialogWrapper.IsVisible = false;
+            whiteOverlay.IsVisible = false;
+        }
+
+        private void OnNumberSubmit(object sender, EventArgs e) => HandleNumberInput(singleNumberInput.Text);
+
+        private void OnNumberInput(object sender, EventArgs e)
+        {
+            if (sender is not Button button)
+                return;
+
+            WorkoutSetDisplay workoutSetDisplay = button.BindingContext as WorkoutSetDisplay;
+            numberInputHandler = input =>
+            {
+                workoutSetDisplay.TargetSets = input;
+                RefreshSetCollection();
+            };
+
+            OpenNumberInput();
+        }
 
         private void HandleNumberInput(string inputNumberAsText)
         {
@@ -192,9 +209,16 @@ namespace AppProjectGym.Pages
                 LogDebugger.LogError(ex);
             }
         }
+        #endregion
 
+        #endregion
+
+        #region Set editing
         private void OnWorkoutSetCreate(object sender, EventArgs e)
         {
+            if (isLoadingData)
+                return;
+
             WorkoutSetDisplay newWorkoutSetDisplay = new()
             {
                 Set = new()
@@ -211,6 +235,9 @@ namespace AppProjectGym.Pages
 
         private void OnWorkoutSetDelete(object sender, EventArgs e)
         {
+            if (isLoadingData)
+                return;
+
             if (sender is not ImageButton imageButton || imageButton.BindingContext is not WorkoutSetDisplay workoutSetDisplay)
                 return;
 
@@ -220,16 +247,9 @@ namespace AppProjectGym.Pages
             WorkoutSetDisplays.Remove(workoutSetDisplay);
         }
 
-        private void RefreshSetCollection()
-        {
-            setCollection.ItemsSource = null;
-            setCollection.ItemsSource = WorkoutSetDisplays;
-            //WorkoutSetDisplays = workoutSetDisplays;
-        }
-
         private async void OnSetExerciseEdit(object sender, EventArgs e)
         {
-            if (sender is not Button button || button.BindingContext is not SetDisplay setDisplay)
+            if (isLoadingData || sender is not Button button || button.BindingContext is not SetDisplay setDisplay)
                 return;
 
             exerciseSelectionHandler = exercise =>
@@ -240,10 +260,15 @@ namespace AppProjectGym.Pages
             };
 
             await NavigationService.SearchAsync(true);
-        }
+        } 
+        #endregion
 
-        private async void OnWorkoutSetSave(object sender, EventArgs e)
+        #region Saving
+        private async void OnSaveChanges(object sender, EventArgs e)
         {
+            if (isLoadingData)
+                return;
+
             List<object> updatedEntity = [];
             IEnumerable<WorkoutSetDisplay> addedWorkoutSetDisplays = WorkoutSetDisplays.Where(x => x.Id == default);
 
@@ -316,6 +341,7 @@ namespace AppProjectGym.Pages
                 }
             }
             return true;
-        }
+        } 
+        #endregion
     }
 }

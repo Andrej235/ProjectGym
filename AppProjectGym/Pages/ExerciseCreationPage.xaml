@@ -52,7 +52,7 @@
                             <DataTemplate x:DataType="Models:Image">
                                 <SwipeView>
                                     <Border Padding="10, 10, 3, 10" StrokeShape="RoundRectangle 15" Margin="0, 5, 0, 0">
-                                        <Label Text="{Binding ImageURL}" FontSize="Caption"/>
+                                        <Label Text="{Binding ImageURL}" FontSize="Caption" MaximumHeightRequest="150"/>
                                     </Border>
 
                                     <SwipeView.RightItems>

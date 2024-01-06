@@ -35,14 +35,13 @@ namespace AppProjectGym
         public MainPage(IEntityDisplayMapper<Exercise, ExerciseDisplay> exerciseDisplayMapper, IReadService readService)
         {
             InitializeComponent();
-
             BindingContext = this;
+
             this.readService = readService;
             this.exerciseDisplayMapper = exerciseDisplayMapper;
 
             PageNumber = 1;
-            exercisesPerPage = 15;
-
+            exercisesPerPage = 10;
             OnLoad();
         }
 
@@ -96,7 +95,7 @@ namespace AppProjectGym
             exerciseCollectionView.ItemsSource = exerciseDisplays;
             exerciseCollectionView.SelectedItem = null;
 
-            await exerciseCollectionScrollView.ScrollToAsync(0, 0, true);
+            await exerciseCollectionScrollView.ScrollToAsync(0, 0, false);
             isWaitingForExerciseData = false;
         }
 
@@ -334,7 +333,7 @@ namespace AppProjectGym
 
         private async void OnExerciseSelect(object sender, SelectionChangedEventArgs e)
         {
-            if (e.CurrentSelection is null || !e.CurrentSelection.Any())
+            if (isWaitingForExerciseData || e.CurrentSelection is null || !e.CurrentSelection.Any())
                 return;
 
             var exerciseDisplay = e.CurrentSelection[0] as ExerciseDisplay;
@@ -343,5 +342,17 @@ namespace AppProjectGym
             await NavigationService.GoToAsync(nameof(FullScreenExercisePage), new KeyValuePair<string, object>("id", exerciseDisplay.Exercise.Id));
         }
         #endregion
+
+        protected override bool OnBackButtonPressed()
+        {
+            if (PageNumber > 1 && !isWaitingForExerciseData)
+            {
+                PageNumber--;
+                LoadExercises();
+                return true;
+            }
+
+            return false;
+        }
     }
 }

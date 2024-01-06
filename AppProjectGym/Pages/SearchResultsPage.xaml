@@ -33,7 +33,8 @@
                 </VisualStateGroupList>
             </Setter>
         </Style>
-
+        
+        <ValueConverters:ListToListOfObjectConverter x:Key="ToObjectList"/>
     </ContentPage.Resources>
 
     <ScrollView x:Name="scrollView">
