@@ -18,23 +18,7 @@ namespace LocalJSONDatabase.Services.Files
             file = File.Open(filePath, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite);
         }
 
-        public string Read()
-        {
-            return File.ReadAllText(FilePath);
-        }
-
-        public IEnumerable<T>? Read<T>()
-        {
-            try
-            {
-                return JsonSerializer.Deserialize<IEnumerable<T>>(Read()) ?? throw new NullReferenceException();
-            }
-            catch (Exception ex)
-            {
-                LogDebugger.LogError(ex);
-                return null;
-            }
-        }
+        public string Read() => File.ReadAllText(FilePath);
 
         ~FileReadingService()
         {

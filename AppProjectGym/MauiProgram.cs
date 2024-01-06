@@ -57,23 +57,7 @@ namespace AppProjectGym
 
             builder.Services.AddTransient<HttpClient>();
 
-            LoadUser();
-            InitializeLocalDB();
-
             return builder.Build();
-        }
-
-        private static async void InitializeLocalDB() => await new FinishedWorkoutContext(new()).Initialize();
-
-        private static async void LoadUser()
-        {
-            if (!await ClientInfo.SetUser())
-            {
-                Debug.WriteLine("---> Open login page");
-                await NavigationService.GoToAsync(nameof(LoginPage));
-            }
-
-            Debug.WriteLine($"---> Client guid: {ClientInfo.ClientGuid}");
         }
     }
 }

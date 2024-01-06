@@ -21,15 +21,7 @@ namespace AppProjectGym.Services
             }
         }
 
-        public static async Task GoToAsync(Type page, params KeyValuePair<string, object>[] navigationParameters) => await GoToAsync(page.Name, navigationParameters);
-
-        public static async Task GoToAsync(ShellNavigationState state, Dictionary<string, object> navigationParameters) => await Shell.Current.GoToAsync(state, navigationParameters);
-
-        public static async Task GoToAsync(Type page, Dictionary<string, object> navigationParameters) => await Shell.Current.GoToAsync(page.Name, navigationParameters);
-
         public static async Task GoToAsync(ShellNavigationState state) => await Shell.Current.GoToAsync(state);
-
-        public static async Task GoToAsync(Type page) => await Shell.Current.GoToAsync(page.Name);
 
         public static async Task SearchAsync(params string[] queryPairs) => await GoToAsync(nameof(SearchResultsPage), new KeyValuePair<string, object>("q", queryPairs.Length > 1 || !queryPairs.Any(x => x.Contains("strict=")) ? string.Join(';', queryPairs) : ""));
 
