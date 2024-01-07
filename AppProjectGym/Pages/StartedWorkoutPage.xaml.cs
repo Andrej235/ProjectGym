@@ -119,7 +119,7 @@ namespace AppProjectGym.Pages
         {
             weightEditorDialogWrapper.IsVisible = true;
             whiteOverlay.IsVisible = true;
-            weightEditorEntry.Text = currentWeight.ToString();
+            weightEditorEntry.Text = (currentWeight < 0 ? 0 : currentWeight).ToString();
         }
 
         private void CloseWeighEditorDialog()

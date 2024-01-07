@@ -212,126 +212,129 @@
                 </VerticalStackLayout>
             </VerticalStackLayout>
         </ScrollView>
-        
-        <Grid x:Name="finishedWorkoutDisplayWrapper"
-              VerticalOptions="Fill" 
-              HorizontalOptions="Fill"
-              BackgroundColor="Black"
-              IsVisible="False">
 
-            <VerticalStackLayout>
-                <Label Text="{Binding SelectedWorkout.Name}" HorizontalTextAlignment="Center" FontSize="Title"/>
+        <ScrollView x:Name="finishedWorkoutDisplayWrapper"
+                    VerticalOptions="Fill" 
+                    HorizontalOptions="Fill"
+                    BackgroundColor="Black"
+                    IsVisible="False">
 
-                <Label HorizontalTextAlignment="Center" FontSize="Subtitle">
-                    <Label.FormattedText>
-                        <FormattedString>
-                            <FormattedString.Spans>
-                                <Span Text="{Binding SelectedWorkout.DateTime.DayOfWeek}"/>
-                                <Span Text=" | "/>
-                                <Span Text="{Binding SelectedWorkout.DateTime.Day}"/>
-                                <Span Text="."/>
-                                <Span Text="{Binding SelectedWorkout.DateTime.Month}"/>
-                                <Span Text="."/>
-                                <Span Text="{Binding SelectedWorkout.DateTime.Year}"/>
-                                <Span Text="@"/>
-                                <Span Text="{Binding SelectedWorkout.DateTime.Hour}"/>
-                                <Span Text=":"/>
-                                <Span Text="{Binding SelectedWorkout.DateTime.Minute}"/>
-                            </FormattedString.Spans>
-                        </FormattedString>
-                    </Label.FormattedText>
-                </Label>
+            <Grid>
+
+                <VerticalStackLayout>
+                    <Label Text="{Binding SelectedWorkout.Name}" HorizontalTextAlignment="Center" FontSize="Title"/>
+
+                    <Label HorizontalTextAlignment="Center" FontSize="Subtitle">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <FormattedString.Spans>
+                                    <Span Text="{Binding SelectedWorkout.DateTime.DayOfWeek}"/>
+                                    <Span Text=" | "/>
+                                    <Span Text="{Binding SelectedWorkout.DateTime.Day}"/>
+                                    <Span Text="."/>
+                                    <Span Text="{Binding SelectedWorkout.DateTime.Month}"/>
+                                    <Span Text="."/>
+                                    <Span Text="{Binding SelectedWorkout.DateTime.Year}"/>
+                                    <Span Text="@"/>
+                                    <Span Text="{Binding SelectedWorkout.DateTime.Hour}"/>
+                                    <Span Text=":"/>
+                                    <Span Text="{Binding SelectedWorkout.DateTime.Minute}"/>
+                                </FormattedString.Spans>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
 
 
-                <CollectionView x:Name="finishedSetsCollection" ItemsLayout="HorizontalList">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="Models:StartedWorkout_SetDisplay">
-                            <VerticalStackLayout>
+                    <CollectionView x:Name="finishedSetsCollection" ItemsLayout="HorizontalList">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="Models:StartedWorkout_SetDisplay">
+                                <VerticalStackLayout>
 
-                                <Border StrokeThickness="3"
+                                    <Border StrokeThickness="3"
                                         Margin="15, 25, 15, 25" 
                                         StrokeShape="RoundRectangle 100"
                                         Stroke="CadetBlue"/>
 
-                                <ScrollView>
-                                    <Border Padding="15" 
+                                    <ScrollView>
+                                        <Border Padding="15" 
                                             Margin="10, 0, 10, 10"
                                             StrokeShape="RoundRectangle 15">
 
-                                        <VerticalStackLayout WidthRequest="325">
-                                            <Image Source="{Binding WorkoutSet.Set.Exercise.Image.ImageURL}" 
+                                            <VerticalStackLayout WidthRequest="325">
+                                                <Image Source="{Binding WorkoutSet.Set.Exercise.Image.ImageURL}" 
                                                    WidthRequest="350"
                                                    VerticalOptions="Start"/>
 
-                                            <Label Text="{Binding WorkoutSet.Set.Exercise.Exercise.Name}"
+                                                <Label Text="{Binding WorkoutSet.Set.Exercise.Exercise.Name}"
                                                    HorizontalTextAlignment="Center" 
                                                    FontSize="Subtitle" 
                                                    Margin="5"/>
 
-                                            <CollectionView ItemsSource="{Binding FinishedSets}" Margin="0, 15, 0, 0">
-                                                <CollectionView.ItemTemplate>
-                                                    <DataTemplate x:DataType="Models:FinishedSetDisplay">
-                                                        <VerticalStackLayout>
-                                                            <Border StrokeShape="RoundRectangle 10"
+                                                <CollectionView ItemsSource="{Binding FinishedSets}" Margin="0, 15, 0, 0">
+                                                    <CollectionView.ItemTemplate>
+                                                        <DataTemplate x:DataType="Models:FinishedSetDisplay">
+                                                            <VerticalStackLayout>
+                                                                <Border StrokeShape="RoundRectangle 10"
                                                                 Margin="0, 10, 0, 10"
                                                                 Padding="10">
 
-                                                                <VerticalStackLayout>
-                                                                    <Label>
-                                                                        <Label.FormattedText>
-                                                                            <FormattedString>
-                                                                                <FormattedString.Spans>
-                                                                                    <Span Text="Time spent: "/>
-                                                                                    <Span Text="{Binding Time, Converter={StaticResource TimeFormatter}}"/>
-                                                                                </FormattedString.Spans>
-                                                                            </FormattedString>
-                                                                        </Label.FormattedText>
-                                                                    </Label>
+                                                                    <VerticalStackLayout>
+                                                                        <Label>
+                                                                            <Label.FormattedText>
+                                                                                <FormattedString>
+                                                                                    <FormattedString.Spans>
+                                                                                        <Span Text="Time spent: "/>
+                                                                                        <Span Text="{Binding Time, Converter={StaticResource TimeFormatter}}"/>
+                                                                                    </FormattedString.Spans>
+                                                                                </FormattedString>
+                                                                            </Label.FormattedText>
+                                                                        </Label>
 
-                                                                    <Label>
-                                                                        <Label.FormattedText>
-                                                                            <FormattedString>
-                                                                                <FormattedString.Spans>
-                                                                                    <Span Text="Completed reps: "/>
-                                                                                    <Span Text="{Binding FinishedReps}"/>
-                                                                                </FormattedString.Spans>
-                                                                            </FormattedString>
-                                                                        </Label.FormattedText>
-                                                                    </Label>
+                                                                        <Label>
+                                                                            <Label.FormattedText>
+                                                                                <FormattedString>
+                                                                                    <FormattedString.Spans>
+                                                                                        <Span Text="Completed reps: "/>
+                                                                                        <Span Text="{Binding FinishedReps}"/>
+                                                                                    </FormattedString.Spans>
+                                                                                </FormattedString>
+                                                                            </Label.FormattedText>
+                                                                        </Label>
 
-                                                                    <Label>
-                                                                        <Label.FormattedText>
-                                                                            <FormattedString>
-                                                                                <FormattedString.Spans>
-                                                                                    <Span Text="Weight used: "/>
-                                                                                    <Span Text="{Binding Weight.Weight}"/>
-                                                                                    <Span Text="KG"/>
-                                                                                </FormattedString.Spans>
-                                                                            </FormattedString>
-                                                                        </Label.FormattedText>
-                                                                    </Label>
-                                                                </VerticalStackLayout>
-                                                            </Border>
+                                                                        <Label>
+                                                                            <Label.FormattedText>
+                                                                                <FormattedString>
+                                                                                    <FormattedString.Spans>
+                                                                                        <Span Text="Weight used: "/>
+                                                                                        <Span Text="{Binding Weight.Weight}"/>
+                                                                                        <Span Text="KG"/>
+                                                                                    </FormattedString.Spans>
+                                                                                </FormattedString>
+                                                                            </Label.FormattedText>
+                                                                        </Label>
+                                                                    </VerticalStackLayout>
+                                                                </Border>
 
-                                                            <Grid>
-                                                                <Border StrokeShape="Line -1000, 0, 125, 0" VerticalOptions="Center" />
-                                                                <Label Text="{Binding RestTime, Converter={StaticResource TimeFormatter}}" HorizontalTextAlignment="Center" />
-                                                                <Border StrokeShape="Line 195, 0, 1000, 0" VerticalOptions="Center" />
-                                                            </Grid>
-                                                        </VerticalStackLayout>
-                                                    </DataTemplate>
-                                                </CollectionView.ItemTemplate>
-                                            </CollectionView>
-                                        </VerticalStackLayout>
-                                    </Border>
-                                </ScrollView>
-                            </VerticalStackLayout>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </VerticalStackLayout>
-        </Grid>
-
+                                                                <Grid>
+                                                                    <Border StrokeShape="Line -1000, 0, 125, 0" VerticalOptions="Center" />
+                                                                    <Label Text="{Binding RestTime, Converter={StaticResource TimeFormatter}}" HorizontalTextAlignment="Center" />
+                                                                    <Border StrokeShape="Line 195, 0, 1000, 0" VerticalOptions="Center" />
+                                                                </Grid>
+                                                            </VerticalStackLayout>
+                                                        </DataTemplate>
+                                                    </CollectionView.ItemTemplate>
+                                                </CollectionView>
+                                            </VerticalStackLayout>
+                                        </Border>
+                                    </ScrollView>
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Grid>
+        </ScrollView>
+        
         <ImageButton Source="logout.png" 
                      WidthRequest="30"
                      HeightRequest="30"

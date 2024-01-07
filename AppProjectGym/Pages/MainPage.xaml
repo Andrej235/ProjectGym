@@ -303,18 +303,18 @@
                                 JustifyContent="Center"
                                 Grid.Row="1">
 
-                    <Button Text="Prev"
-                                Margin="5, 0, 5, 0"
-                                Clicked="LoadPreviousPage"/>
+                    <Button Text="-"
+                            Margin="5, 0, 5, 0"
+                            Clicked="LoadPreviousPage" />
 
                     <Label x:Name="pageNumberLabel"
-                               Margin="5, 0, 5, 0"
-                               VerticalTextAlignment="Center"
-                               HorizontalTextAlignment="Center"/>
+                           Margin="5, 0, 5, 0"
+                           VerticalTextAlignment="Center"
+                           HorizontalTextAlignment="Center" />
 
-                    <Button Text="Next"
-                                Margin="5, 0, 5, 0"
-                                Clicked="LoadNextPage"/>
+                    <Button Text="+"
+                            Margin="5, 0, 5, 0"
+                            Clicked="LoadNextPage" />
 
                 </FlexLayout>
             </VerticalStackLayout>
