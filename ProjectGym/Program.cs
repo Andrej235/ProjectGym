@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using ProjectGym.Data;
 using ProjectGym.DTOs;
 using ProjectGym.Models;
@@ -14,6 +15,17 @@ namespace ProjectGym
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost" || new Uri(origin).Host == "192.168.1.100")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+                });
+            });
 
             builder.Services.AddTransient<ExerciseContext>();
 
@@ -155,9 +167,11 @@ namespace ProjectGym
             builder.Services.AddControllers();
 
             var app = builder.Build();
+
             //app.UseHttpsRedirection();
             app.UseAuthorization();
             app.MapControllers();
+            app.UseCors();
             app.Run();
         }
     }
