@@ -7,6 +7,7 @@ namespace ProjectGym.Services.Mapping
     {
         public PersonalExerciseWeight Map(PersonalExerciseWeightDTO dto) => new()
         {
+            Id = dto.Id,
             Weight = dto.Weight,
             IsCurrent = true,
             DateOfAchieving = DateTime.Now,
